@@ -48,8 +48,8 @@ def Error(message, deep):
 def placeShips(game, user):
     ships = [
         ship.Short(),
-        ship.Medium(),
-        ship.Medium(),
+        ship.Medium1(),
+        ship.Medium2(),
         ship.Long(),
         ship.ExtraLong()
     ]
