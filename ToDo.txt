@@ -4,10 +4,11 @@ Index:
 🅿️ = In Progress
 ◾️ = To do
 --------------------------------------------------------------------------------
+Main:
 ✅ Generate Board
 🅿️ Menu
 ✅ Place Ships
-◾️ Fire at opponent
+✅ Fire at opponent
 ◾️ View info about ships
 🅿️ More than one game
 ◾️ Multiplayer
@@ -15,7 +16,7 @@ Index:
   ◾️ Extra file support
 ◾️ Settings
 --------------------------------------------------------------------------------
-AI
+AI:
 ◾️ Training
 ◾️ Auto place
 ◾️ Auto Shoot
