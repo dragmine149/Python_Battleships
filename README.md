@@ -1,6 +1,8 @@
 # Battleships
  Normal battleships made in a python terminal... or is it?
 
+ Project made for fun, and also to learn things about neural networks (and ai)
+
 # Features
  Erm, not much. Still in progress
 
