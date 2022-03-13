@@ -29,7 +29,7 @@ def ProcessChoice(choice):
         return None
     elif choice == 1:
         # load game
-        os.system("clear")
+        Functions.clear()
         loadGames()
         game = Functions.InputDigitCheck("Enter number of game to load (-1 to go back): ", loadGames, None, LoadRangeCheck)  # noqa
         if game == -1:
@@ -71,7 +71,7 @@ def fileRead():
 def setup():
     choice = None
     while not choice:
-        os.system("clear")
+        Functions.clear()
         # Load interface thing...
         fileRead()
         # get the user choice
