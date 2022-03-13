@@ -6,12 +6,13 @@ Index:
 --------------------------------------------------------------------------------
 Main:
 ✅ Generate Board
-🅿️ Menu
+✅ Menu
+  ◾️ Small things that do not effect the game (settings)
 ✅ Place Ships
 ✅ Fire at opponent
 ◾️ View info about ships
-🅿️ More than one game
-◾️ Multiplayer
+✅ More than one game
+✅ Multiplayer
 ◾️ Network
   ◾️ Extra file support
 ◾️ Settings
