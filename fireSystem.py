@@ -30,12 +30,12 @@ def FireShip(game, fireUser, targetUser):
                 fireBoard[y][x] = "+"
                 print("Miss")
             shotTaken = True
-            DestroyedCheck(fireBoard, targetBoard)
+            DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser)
             save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
 
 
 # Compares both boards to check if any has been destroyed
-def DestroyedCheck(fireBoard, targetBoard):
+def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser):
     ships = [
         ship.Short(),
         ship.Medium1(),
@@ -44,6 +44,7 @@ def DestroyedCheck(fireBoard, targetBoard):
         ship.ExtraLong()
     ]
     destroyedList = "Destroyed Ships:\n"  # makes a list
+    destroyedAmmount = 0
 
     # This could be made better
     for pShip in ships:
@@ -54,6 +55,13 @@ def DestroyedCheck(fireBoard, targetBoard):
                         pShip.Health -= 1  # remove
         if pShip.Health == 0:  # add
             destroyedList += f"{pShip.Name}\n"
+            destroyedAmmount += 1
+
+    # game over check
+    if destroyedAmmount == len(ships):
+        Functions.clear()
+        print("GG!")
+        print(f"{fireUser} has beaten {targetUser}")
     Functions.clear(2, destroyedList)
 
 if __name__ == "__main__":
