@@ -1,5 +1,6 @@
 import time
 import os
+import json
 
 
 def save(data, name, users):
@@ -20,11 +21,12 @@ def save(data, name, users):
 
 def UpdateFile(data, path, o):
     with open(f'{path}/{o}.txt', 'w+') as file:
-        file.write(str(data))
+        file.write(str(json.dumps(data)))
 
 
 def read(game, user):
     data = None
     with open(f'Saves/{game}/{user}/grid.txt', 'r') as file:
         data = file.read()
+        data = json.loads(data)
     return data
