@@ -15,7 +15,9 @@ Main:
 ✅ Multiplayer
 ◾️ Network
   ◾️ Extra file support
+  ◾️ Google Drive Support
 ◾️ Settings
+◾️ UI (optional)
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training
