@@ -7,12 +7,21 @@ class Short:
         self.Health = 2
 
 
-class Medium:
+class Medium1:
     def __init__(self):
         self.Length = 3
         self.Height = 1
         self.Name = "NAME (3 long)"
         self.Symbol = "}"
+        self.Health = 3
+
+
+class Medium2:
+    def __init__(self):
+        self.Length = 3
+        self.Height = 1
+        self.Name = "NAME2 (3 long)"
+        self.Symbol = "="
         self.Health = 3
 
 

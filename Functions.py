@@ -9,7 +9,7 @@ def NumberRangeCheck(value, x):
         return False
 
 
-def clear(timeS, message=None):
+def clear(timeS=0, message=None):
     if message:
         print(message)
     time.sleep(timeS)

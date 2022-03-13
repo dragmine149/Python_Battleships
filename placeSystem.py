@@ -2,7 +2,6 @@ import SaveSystem as save
 import board
 import ShipInfo as ship
 import Functions
-import os
 import copy
 
 
@@ -49,8 +48,8 @@ def Error(message, deep):
 def placeShips(game, user):
     ships = [
         ship.Short(),
-        ship.Medium(),
-        ship.Medium(),
+        ship.Medium1(),
+        ship.Medium2(),
         ship.Long(),
         ship.ExtraLong()
     ]
@@ -121,8 +120,8 @@ def placeShips(game, user):
 
 
 if __name__ == "__main__":
-    os.system("clear")
+    Functions.clear()
     # LoadBoard("1", "me")
     placeShips("1", "me")
-    os.system("clear")
+    Functions.clear()
     placeShips("1", "me2")

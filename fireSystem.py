@@ -1,12 +1,13 @@
 import SaveSystem as save
 import board
 import Functions
+import ShipInfo as ship
 
 
 def FireShip(game, fireUser, targetUser):
     # load data
     fireBoard = save.read(game, fireUser)
-    targetUser = save.read(game, targetUser, "ships")
+    targetBoard = save.read(game, targetUser, "ships")
     shotTaken = False
     while not shotTaken:
         board.DisplayBoard(fireBoard)
@@ -22,17 +23,42 @@ def FireShip(game, fireUser, targetUser):
             # Find enemy and place icon depending on hit or miss. (X = hit, + = miss)
 
             # Do we save it in there account as well? or just compare?
-            if targetUser[y][x] != "-":  # has ship, no matter the symbol
+            if targetBoard[y][x] != "-":  # has ship, no matter the symbol
                 fireBoard[y][x] = "X"
                 print("HIT!")
             else:
                 fireBoard[y][x] = "+"
                 print("Miss")
             shotTaken = True
+            DestroyedCheck(fireBoard, targetBoard)
+            save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
 
+
+# Compares both boards to check if any has been destroyed
+def DestroyedCheck(fireBoard, targetBoard):
+    ships = [
+        ship.Short(),
+        ship.Medium1(),
+        ship.Medium2(),
+        ship.Long(),
+        ship.ExtraLong()
+    ]
+    destroyedList = "Destroyed Ships:\n"  # makes a list
+
+    # This could be made better
+    for pShip in ships:
+        for y in range(len(fireBoard)):
+            for x in range(len(fireBoard[y])):
+                if fireBoard[y][x] == "X":  # check if hit
+                    if targetBoard[y][x] == pShip.Symbol:  # find ship
+                        pShip.Health -= 1  # remove
+        if pShip.Health == 0:  # add
+            destroyedList += f"{pShip.Name}\n"
+    Functions.clear(2, destroyedList)
 
 if __name__ == "__main__":
     Functions.clear()
-    FireShip("1", "me", "me2")
-    Functions.clear(1)
-    FireShip("1", "me2", "me")
+    for _ in range(2):
+        FireShip("1", "me", "me2")
+        Functions.clear(1)
+        FireShip("1", "me2", "me")
