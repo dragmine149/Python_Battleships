@@ -24,9 +24,9 @@ def UpdateFile(data, path, o):
         file.write(str(json.dumps(data)))
 
 
-def read(game, user):
+def read(game, user, o="grid"):
     data = None
-    with open(f'Saves/{game}/{user}/grid.txt', 'r') as file:
+    with open(f'Saves/{game}/{user}/{o}.txt', 'r') as file:
         data = file.read()
         data = json.loads(data)
     return data
