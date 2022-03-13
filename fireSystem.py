@@ -30,8 +30,8 @@ def FireShip(game, fireUser, targetUser):
                 fireBoard[y][x] = "+"
                 print("Miss")
             shotTaken = True
-            DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser)
             save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
+            return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser)
 
 
 # Compares both boards to check if any has been destroyed
@@ -62,7 +62,9 @@ def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser):
         Functions.clear()
         print("GG!")
         print(f"{fireUser} has beaten {targetUser}")
+        return True
     Functions.clear(2, destroyedList)
+
 
 if __name__ == "__main__":
     Functions.clear()

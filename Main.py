@@ -1,7 +1,26 @@
 import GameSetup as setup
 import placeSystem as place
 import fireSystem as fire
+import Functions
 
-setup.setup()
-place.placeShips("1", "me")  # change this to the file and save.
-fire.FireShip("1", "me", "me2")  # change this to the file and save.
+while True:
+    # Terminal setup ui
+    gameName, users, Placed = setup.setup()
+
+    Functions.clear()
+
+    if not Placed:  # check to see if game has already been started and there are ships on the board.
+        # Placing ships on the borad
+        place.placeShips(gameName, users[0])
+        Functions.clear()
+        place.placeShips(gameName, users[1])
+
+    Functions.clear()
+
+    game = False
+    while not game:
+        game = fire.FireShip(gameName, users[0], users[1])
+        if not game:
+            game = fire.FireShip(gameName, users[1], users[0])
+
+    Functions.clear(10)

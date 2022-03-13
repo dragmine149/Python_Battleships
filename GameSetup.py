@@ -26,17 +26,21 @@ def LoadRangeCheck(value):
 def ProcessChoice(choice):
     if choice == 1 and not os.path.exists("Saves"):
         print("There is no game to load!!")
-        return None
+        return None, None, None, None
     elif choice == 1:
         # load game
         Functions.clear()
         loadGames()
         game = Functions.InputDigitCheck("Enter number of game to load (-1 to go back): ", loadGames, None, LoadRangeCheck)  # noqa
+        users = []
+        placed = False
         if game == -1:
-            return None
+            return None, None, None
         else:
-            print("Loading (NOT IMPLEMENT YET)")
-        return True
+            users = os.listdir(f"Saves/{os.listdir('Saves')[game - 1]}")
+            if os.path.exists(f"Saves/{os.listdir('Saves')[game - 1]}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{os.listdir('Saves')[game - 1]}/{users[1]}/ships.txt"):
+                placed = True
+        return True, os.listdir("Saves")[game - 1], users, placed
     elif choice == 2:
         # get the size
         size = [
@@ -52,10 +56,10 @@ def ProcessChoice(choice):
                 input("Please enter player 2's name: ")
             ]
             create = save.save(GameBoard, name, users)
-        return True
+        return True, name, users, False
     elif choice == 3:
         sys.exit("Thank you for playing")
-        return True
+        return True, None, None, None
 
 
 def fileRead():
@@ -78,9 +82,9 @@ def setup():
         choice = Functions.InputDigitCheck("Your Choice (number): ", fileRead)
 
         # Process choice
-        choice = ProcessChoice(choice)
+        choice, name, users, Placed = ProcessChoice(choice)
         time.sleep(1)
-
+    return name, users, Placed
 
 if __name__ == "__main__":
     setup()
