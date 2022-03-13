@@ -6,10 +6,11 @@ Index:
 --------------------------------------------------------------------------------
 ✅ Generate Board
 🅿️ Menu
-🅿️ Place Ships
+✅ Place Ships
 ◾️ Fire at opponent
 ◾️ View info about ships
 🅿️ More than one game
+◾️ Multiplayer
 ◾️ Network
   ◾️ Extra file support
 ◾️ Settings

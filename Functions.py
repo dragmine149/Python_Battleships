@@ -3,14 +3,15 @@ import os
 
 
 def NumberRangeCheck(value, x):
-    if value > 0 and value < x:
+    if value >= 0 and value <= x:
         return True
     else:
         return False
 
 
-def clear(timeS, message):
-    print(message)
+def clear(timeS, message=None):
+    if message:
+        print(message)
     time.sleep(timeS)
     os.system("clear")
 
