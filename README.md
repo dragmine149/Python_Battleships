@@ -9,7 +9,10 @@
 # How to run locally
  2 ways:
   1. Download the exectable file for your os
-  2. Download the source code and run Main.py
+  2. Download the source code and run `python Main.py`
 
 # Create a local build
  Download the files and build.
+
+# Helping
+ Anyone can help, just make a new branch and submit a pull request. Not all requests will be accepted though
