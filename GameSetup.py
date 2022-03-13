@@ -24,7 +24,7 @@ def LoadRangeCheck(value):
 
 
 def ProcessChoice(choice):
-    if choice == 1 and not os.path.exists("Saves"):
+    if choice == 1 and len(os.listdir("Saves")) == 0:
         print("There is no game to load!!")
         return None, None, None, None
     elif choice == 1:
@@ -57,7 +57,7 @@ def ProcessChoice(choice):
             ]
             create = save.save(GameBoard, name, users)
         return True, name, users, False
-    elif choice == 3:
+    elif choice == 0:
         sys.exit("Thank you for playing")
         return True, None, None, None
 
@@ -66,7 +66,7 @@ def fileRead():
     with open("Options.txt", "r") as options:
         lines = options.readlines()
         for line in range(len(lines)):
-            if line == 0 and not os.path.exists("Saves"):
+            if line == 1 and len(os.listdir("Saves")) == 0:
                 print(f"{lines[line].strip()} (disabled)")
             else:
                 print(f"{lines[line].strip()}")
