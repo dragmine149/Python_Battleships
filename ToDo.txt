@@ -1,0 +1,21 @@
+--------------------------------------------------------------------------------
+Index:
+✅ = done
+🅿️ = In Progress
+◾️ = To do
+--------------------------------------------------------------------------------
+✅ Generate Board
+🅿️ Menu
+🅿️ Place Ships
+◾️ Fire at opponent
+◾️ View info about ships
+🅿️ More than one game
+◾️ Network
+  ◾️ Extra file support
+◾️ Settings
+--------------------------------------------------------------------------------
+AI
+◾️ Training
+◾️ Auto place
+◾️ Auto Shoot
+◾️ Levels to what your level is.
