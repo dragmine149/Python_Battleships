@@ -50,10 +50,10 @@ def ProcessChoice(choice):
         GameBoard = board.CreateBoard(size)  # creates a board
         create = None
         while not create:  # saves the board
-            name = input("Please enter a name for this game: ")
+            name = input("Please enter a name for this game: ").replace(" ", "")
             users = [
-                input("Please enter player 1's name: "),
-                input("Please enter player 2's name: ")
+                str(input("Please enter player 1's name: ").replace(" ", "")),
+                str(input("Please enter player 2's name: ").replace(" ", ""))
             ]
             create = save.save(GameBoard, name, users)
         return True, name, users, False

@@ -1,4 +1,4 @@
-import time
+import Functions
 import os
 import json
 
@@ -8,15 +8,25 @@ def save(data, name, users):
         os.mkdir("Saves")
     if os.path.exists(f"Saves/{name}"):
         print("Please enter a name that has not already been used.")
-        time.sleep(1)
+        Functions.clear(1)
         return None
     else:
         os.system(f"mkdir Saves/{name}")
         os.system(f"mkdir Saves/{name}/{users[0]}")
-        UpdateFile(data, f"Saves/{name}/{users[0]}", "grid")
-        os.system(f"mkdir Saves/{name}/{users[1]}")
-        UpdateFile(data, f"Saves/{name}/{users[1]}", "grid")
-        return True
+        if os.path.exists(f"Saves/{name}/{users[0]}"):
+            UpdateFile(data, f"Saves/{name}/{users[0]}", "grid")
+            os.system(f"mkdir Saves/{name}/{users[1]}")
+            if os.path.exists(f"Saves/{name}/{users[1]}"):
+                UpdateFile(data, f"Saves/{name}/{users[1]}", "grid")
+                return True
+            else:
+                Functions.clear(1, "Error in path creation... (invalid characters?)")
+                os.system(f"rm -d -r Saves/{name}")
+                return False
+        else:
+            Functions.clear(1, "Error in path creation... (invalid characters?)")
+            os.system(f"rm -d -r Saves/{name}")
+            return False
 
 
 def UpdateFile(data, path, o):
