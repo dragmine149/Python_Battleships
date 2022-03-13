@@ -1,6 +1,3 @@
-import json
-
-
 # Create the board in a 2d array.
 def CreateBoard(size):
     board = []
@@ -10,12 +7,12 @@ def CreateBoard(size):
             x.append('-')
         board.append(x)
 
-    return json.dumps(board)
+    return board
 
 
 # Loops through the board and prints it out.
 def DisplayBoard(board):
-    board = json.loads(board)
+    # board = json.loads(board)
     for y in board:
         for x in y:
             print(x, end="")

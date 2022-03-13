@@ -2,6 +2,13 @@ import time
 import os
 
 
+def NumberRangeCheck(value, x):
+    if value > 0 and value < x:
+        return True
+    else:
+        return False
+
+
 def clear(timeS, message):
     print(message)
     time.sleep(timeS)
@@ -43,7 +50,7 @@ def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, range
                             extra()
                         else:
                             extra(extraValue)
-                        InputDigitCheck(request, extra, rangeCheck)
+                        return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValues)  # noqa
                 else:
                     print("ERROR, range check is not a function!")
                     return Id
