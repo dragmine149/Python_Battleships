@@ -40,27 +40,27 @@ def ProcessChoice(choice):
         Functions.clear()
         loadGames()
         game = Functions.InputDigitCheck("Enter number of game to load (-1 to go back): ", loadGames, None, LoadRangeCheck)  # noqa
-        gameName = os.listdir('Saves')[game - 1]
-        users = os.listdir(f"Saves/{gameName}")
-        if os.path.exists(f"Saves/{gameName}/win.txt"):
-            os.system("clear")
-            for i in range(2):
-                print(f"{users[i]} data")
-                print("grid (where they shot)")
-                board.DisplayBoard(save.read(gameName, users[i]))
-                print(f"{users[i]} data")
-                print("ships (The ship layout they had)")
-                board.DisplayBoard(save.read(gameName, users[i], "ships"))
-            input("Press enter when you are ready to continue.")
+        if game == -1:
             return None, None, None, None
         else:
-            placed = False
-            if game == -1:
+            gameName = os.listdir('Saves')[game - 1]
+            users = os.listdir(f"Saves/{gameName}")
+            if os.path.exists(f"Saves/{gameName}/win.txt"):
+                os.system("clear")
+                for i in range(2):
+                    print(f"{users[i]} data")
+                    print("grid (where they shot)")
+                    board.DisplayBoard(save.read(gameName, users[i]))
+                    print(f"{users[i]} data")
+                    print("ships (The ship layout they had)")
+                    board.DisplayBoard(save.read(gameName, users[i], "ships"))
+                input("Press enter when you are ready to continue.")
                 return None, None, None, None
             else:
+                placed = False
                 if os.path.exists(f"Saves/{gameName}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{gameName}/{users[1]}/ships.txt"):
                     placed = True
-            return True, gameName, users, placed
+                return True, gameName, users, placed
     elif choice == 2:
         # get the size
         x = Functions.InputDigitCheck("Please enter X size (length): ", None, None, SizeRangeCheck)
