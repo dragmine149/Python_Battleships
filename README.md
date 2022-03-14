@@ -4,7 +4,7 @@
  Project made for fun, and also to learn things about neural networks (and ai)
 
 ### Timmings
- These are aproximations of how long i spent working on each area of this project.
+ These are aproximations of how long i spent working on each area of this project. </br>
  Creating the game: ~4 days (with breaks) ~4 - 12 hours (without breaks)
 
 # Features
