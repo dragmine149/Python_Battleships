@@ -14,8 +14,9 @@ def FireShip(game, fireUser, targetUser):
         board.DisplayBoard(fireBoard)
 
         # get shooting cooridnates
-        x = Functions.InputDigitCheck("Enter X position to fire at: ", board.DisplayBoard, fireBoard, Functions.NumberRangeCheck, len(fireBoard)) - 1  # noqa
-        y = Functions.InputDigitCheck("Enter Y position to fire at: ", board.DisplayBoard, fireBoard, Functions.NumberRangeCheck, len(fireBoard)) - 1  # noqa
+        x, y = Functions.LocationInput(input("Enter position to shoot at: "))
+        # x = Functions.InputDigitCheck("Enter X position to fire at: ", board.DisplayBoard, fireBoard, Functions.NumberRangeCheck, len(fireBoard)) - 1  # noqa
+        # y = Functions.InputDigitCheck("Enter Y position to fire at: ", board.DisplayBoard, fireBoard, Functions.NumberRangeCheck, len(fireBoard)) - 1  # noqa
 
         # check if haven't already shot there
         if fireBoard[y][x] != "-":

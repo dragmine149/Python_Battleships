@@ -5,7 +5,9 @@ import os
 def LetterConvert(letter):
     List = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    return List.index(letter)
+    if letter.strip() != "":
+        return List.index(letter.strip())
+    return 0
 
 
 def LocationInput(value):
