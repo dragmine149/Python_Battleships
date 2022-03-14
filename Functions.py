@@ -2,6 +2,30 @@ import time
 import os
 
 
+def LetterConvert(letter):
+    List = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+    return List.index(letter)
+
+
+def LocationInput(value):
+    # split string into number and letters
+    value = value.lower()
+    letters = ""
+    y = 0
+    for v in value:
+        if v.isdigit():
+            y += int(v)
+        else:
+            letters += v
+
+    # convert letters into numbers
+    x = 0
+    for letter in letters:
+        x = LetterConvert(letter)
+    return x, y - 1
+
+
 def NumberRangeCheck(value, x):
     if value >= 0 and value <= x:
         return True

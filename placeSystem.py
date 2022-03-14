@@ -65,8 +65,7 @@ def placeShips(game, user):
             placed = False
             while not placed:
                 # get ship position
-                x = Functions.InputDigitCheck("Enter X position to place ship: ", board.DisplayBoard, cBoard, Functions.NumberRangeCheck, len(cBoard[0])) - 1  # noqa
-                y = Functions.InputDigitCheck("Enter Y position to place ship: ", board.DisplayBoard, cBoard, Functions.NumberRangeCheck, len(cBoard)) - 1  # noqa
+                x, y = Functions.LocationInput(input("Enter location to place ship: "))  # noqa
                 rot = rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
 
                 # Attempts to place the ship at the desiered location
