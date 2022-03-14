@@ -6,7 +6,7 @@
  Run `Main.py` to play
 
 # Ship Information
- (ShipInfo.py) already contains the required information to know about all the ships.
+ [ShipInfo](ShipInfo.py) already contains the required information to know about all the ships.
 
 # Other Information
  More comming soon when game is more advanced.
