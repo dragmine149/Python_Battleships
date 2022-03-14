@@ -20,11 +20,11 @@ def save(data, name, users):
                 UpdateFile(data, f"Saves/{name}/{users[1]}", "grid")
                 return True
             else:
-                Functions.clear(1, "Error in path creation... (invalid characters?)")
+                Functions.clear(1, "Error in path creation... (invalid characters?)")  # noqa
                 os.system(f"rm -d -r Saves/{name}")
                 return False
         else:
-            Functions.clear(1, "Error in path creation... (invalid characters?)")
+            Functions.clear(1, "Error in path creation... (invalid characters?)")  # noqa
             os.system(f"rm -d -r Saves/{name}")
             return False
 

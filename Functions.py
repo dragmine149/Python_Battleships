@@ -45,9 +45,7 @@ def PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request):
         return Id
 
 
-def FailCheck(Id, extra, extraValue):
-    Id = None  # reset
-
+def FailCheck(extra, extraValue):
     # user notification
     clear(1, "Please enter a valid input")
     if extra is not None:
@@ -58,6 +56,7 @@ def FailCheck(Id, extra, extraValue):
                 extra(extraValue)
         else:
             print(extra)
+    return None
 
 
 def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
@@ -67,8 +66,8 @@ def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, range
         if not Id.isdigit():  # check
             if len(Id) >= 2:
                 if not Id[1:].isdigit():
-                    FailCheck(Id, extra, extraValue)
+                    Id = FailCheck(extra, extraValue)
                 else:
-                    return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)
+                    return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)  # noqa
         else:
-            return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)
+            return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)  # noqa

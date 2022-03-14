@@ -9,7 +9,9 @@ while True:
 
     Functions.clear()
 
-    if not Placed:  # check to see if game has already been started and there are ships on the board.
+    # check to see if game has already been started
+    # and there are ships on the board.
+    if not Placed:
         # Placing ships on the borad
         place.placeShips(gameName, users[0])
         Functions.clear()

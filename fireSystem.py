@@ -21,7 +21,8 @@ def FireShip(game, fireUser, targetUser):
         if fireBoard[y][x] != "-":
             Functions.clear(1, "You have already shot there")
         else:
-            # Find enemy and place icon depending on hit or miss. (X = hit, + = miss)
+            # Find enemy and place icon depending on hit or miss.
+            # (X = hit, + = miss)
 
             # Do we save it in there account as well? or just compare?
             if targetBoard[y][x] != "-":  # has ship, no matter the symbol
@@ -32,7 +33,7 @@ def FireShip(game, fireUser, targetUser):
                 print("Miss")
             shotTaken = True
             save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
-            return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game)
+            return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game)  # noqa
 
 
 # Compares both boards to check if any has been destroyed

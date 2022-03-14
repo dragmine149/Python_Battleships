@@ -45,6 +45,7 @@ def Error(message, deep):
     Functions.clear(1, message)
     return False, deep
 
+
 def placeShips(game, user):
     ships = [
         ship.Short(),
@@ -68,7 +69,8 @@ def placeShips(game, user):
                 y = Functions.InputDigitCheck("Enter Y position to place ship: ", board.DisplayBoard, cBoard, Functions.NumberRangeCheck, len(cBoard)) - 1  # noqa
                 rot = rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
 
-                # Attempts to place the ship at the desiered location with rotation.
+                # Attempts to place the ship at the desiered location
+                # with rotation.
                 try:
                     breaked = False
                     for i in range(ships[place].Length):
@@ -76,32 +78,32 @@ def placeShips(game, user):
                             if cBoard[y - i][x] == "-":
                                 cBoard[y - i][x] = ships[place].Symbol
                             else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)
+                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
                                 breaked = True
                                 break
                         elif rot == 90:  # right
                             if cBoard[y][x + i] == "-":
                                 cBoard[y][x + i] = ships[place].Symbol
                             else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)
+                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
                                 breaked = True
                                 break
                         elif rot == 180:  # down
                             if cBoard[y + i][x] == "-":
                                 cBoard[y + i][x] = ships[place].Symbol
                             else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)
+                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
                                 breaked = True
                                 break
                         elif rot == 270:  # left
                             if cBoard[y][x - i] == "-":
                                 cBoard[y][x - i] = ships[place].Symbol
                             else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)
+                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
                                 breaked = True
                                 break
                         else:  # Fail safe check.
-                            Functions.clear(1, "Error in placing ship, Please try again")
+                            Functions.clear(1, "Error in placing ship, Please try again")  # noqa
                             placed = False
                     if not breaked:
                         placed = True

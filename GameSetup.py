@@ -27,9 +27,10 @@ def LoadRangeCheck(value):
 
 
 def SizeRangeCheck(size):
-    if size >= 5: # got to be big enough to hold all ships
+    if size >= 5:  # got to be big enough to hold all ships
         return True
     return False
+
 
 def ProcessChoice(choice):
     if choice == 1 and len(os.listdir("Saves")) == 0:
@@ -58,18 +59,18 @@ def ProcessChoice(choice):
                 return None, None, None, None
             else:
                 placed = False
-                if os.path.exists(f"Saves/{gameName}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{gameName}/{users[1]}/ships.txt"):
+                if os.path.exists(f"Saves/{gameName}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{gameName}/{users[1]}/ships.txt"):  # noqa
                     placed = True
                 return True, gameName, users, placed
     elif choice == 2:
         # get the size
-        x = Functions.InputDigitCheck("Please enter X size (length): ", None, None, SizeRangeCheck)
-        y = Functions.InputDigitCheck("Please enter Y size (length): ", None, None, SizeRangeCheck)
+        x = Functions.InputDigitCheck("Please enter X size (length): ", None, None, SizeRangeCheck)  # noqa
+        y = Functions.InputDigitCheck("Please enter Y size (length): ", None, None, SizeRangeCheck)  # noqa
         size = [x, y]
         GameBoard = board.CreateBoard(size)  # creates a board
         create = None
         while not create:  # saves the board
-            name = input("Please enter a name for this game: ").replace(" ", "")
+            name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
             users = [
                 str(input("Please enter player 1's name: ").replace(" ", "")),
                 str(input("Please enter player 2's name: ").replace(" ", ""))
@@ -85,10 +86,13 @@ def fileRead():
     with open("Options.txt", "r") as options:
         lines = options.readlines()
         for line in range(len(lines)):
-            if line == 1 and len(os.listdir("Saves")) == 0:
-                print(f"{lines[line].strip()} (disabled)")
+            if os.path.exists("Saves") and line == 1:
+                if line == 1 and len(os.listdir("Saves")) == 0:
+                    print(f"{lines[line].strip()} (disabled)")
+                else:
+                    print(f"{lines[line].strip()}")
             else:
-                print(f"{lines[line].strip()}")
+                print(f"{lines[line].strip()} (disabled)")
 
 
 def setup():
@@ -104,6 +108,7 @@ def setup():
         choice, name, users, Placed = ProcessChoice(choice)
         time.sleep(1)
     return name, users, Placed
+
 
 if __name__ == "__main__":
     setup()

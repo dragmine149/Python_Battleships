@@ -18,6 +18,7 @@ Main:
   ◾️ Google Drive Support
 ◾️ Settings
 ◾️ UI (optional)
+◾️ Bug Fixes
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training
