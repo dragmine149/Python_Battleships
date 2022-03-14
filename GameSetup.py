@@ -33,7 +33,10 @@ def SizeRangeCheck(size):
 
 
 def ProcessChoice(choice):
-    if choice == 1 and len(os.listdir("Saves")) == 0:
+    if choice == 1 and not os.path.exists("Saves"):
+        print("There is no game to load!!")
+        return None, None, None, None
+    elif choice == 1 and len(os.listdir("Saves")) == 0:
         print("There is no game to load!!")
         return None, None, None, None
     elif choice == 1:
@@ -86,13 +89,16 @@ def fileRead():
     with open("Options.txt", "r") as options:
         lines = options.readlines()
         for line in range(len(lines)):
-            if os.path.exists("Saves") and line == 1:
-                if line == 1 and len(os.listdir("Saves")) == 0:
-                    print(f"{lines[line].strip()} (disabled)")
+            if line == 1:
+                if os.path.exists("Saves"):
+                    if len(os.listdir("Saves")) == 0:
+                        print(f"{lines[line].strip()} (disabled)")
+                    else:
+                        print(f"{lines[line].strip()}")
                 else:
-                    print(f"{lines[line].strip()}")
+                    print(f"{lines[line].strip()} (disabled)")
             else:
-                print(f"{lines[line].strip()} (disabled)")
+                print(f"{lines[line].strip()}")
 
 
 def setup():
