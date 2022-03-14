@@ -10,6 +10,7 @@ def FireShip(game, fireUser, targetUser):
     targetBoard = save.read(game, targetUser, "ships")
     shotTaken = False
     while not shotTaken:
+        print(f"{fireUser}'s Turn to shoot\n")
         board.DisplayBoard(fireBoard)
 
         # get shooting cooridnates
@@ -31,11 +32,11 @@ def FireShip(game, fireUser, targetUser):
                 print("Miss")
             shotTaken = True
             save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
-            return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser)
+            return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game)
 
 
 # Compares both boards to check if any has been destroyed
-def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser):
+def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game):
     ships = [
         ship.Short(),
         ship.Medium1(),
@@ -62,6 +63,7 @@ def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser):
         Functions.clear()
         print("GG!")
         print(f"{fireUser} has beaten {targetUser}")
+        save.UpdateFile(fireUser, f"Saves/{game}", "win")
         return True
     Functions.clear(2, destroyedList)
 

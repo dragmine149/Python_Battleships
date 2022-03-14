@@ -10,7 +10,10 @@ def loadGames():
     print("Games found on disk:")
     games = os.listdir("Saves")
     for file in range(len(games)):
-        print(f"{file + 1}: {games[file]}")
+        if os.path.exists(f"Saves/{games[file]}/win.txt"):
+            print(f"{file + 1}: {games[file]} (finished)")
+        else:
+            print(f"{file + 1}: {games[file]}")
 
 
 def LoadRangeCheck(value):
@@ -23,6 +26,11 @@ def LoadRangeCheck(value):
         return False
 
 
+def SizeRangeCheck(size):
+    if size >= 5: # got to be big enough to hold all ships
+        return True
+    return False
+
 def ProcessChoice(choice):
     if choice == 1 and len(os.listdir("Saves")) == 0:
         print("There is no game to load!!")
@@ -32,21 +40,32 @@ def ProcessChoice(choice):
         Functions.clear()
         loadGames()
         game = Functions.InputDigitCheck("Enter number of game to load (-1 to go back): ", loadGames, None, LoadRangeCheck)  # noqa
-        users = []
-        placed = False
-        if game == -1:
-            return None, None, None
+        gameName = os.listdir('Saves')[game - 1]
+        users = os.listdir(f"Saves/{gameName}")
+        if os.path.exists(f"Saves/{gameName}/win.txt"):
+            os.system("clear")
+            for i in range(2):
+                print(f"{users[i]} data")
+                print("grid (where they shot)")
+                board.DisplayBoard(save.read(gameName, users[i]))
+                print(f"{users[i]} data")
+                print("ships (The ship layout they had)")
+                board.DisplayBoard(save.read(gameName, users[i], "ships"))
+            input("Press enter when you are ready to continue.")
+            return None, None, None, None
         else:
-            users = os.listdir(f"Saves/{os.listdir('Saves')[game - 1]}")
-            if os.path.exists(f"Saves/{os.listdir('Saves')[game - 1]}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{os.listdir('Saves')[game - 1]}/{users[1]}/ships.txt"):
-                placed = True
-        return True, os.listdir("Saves")[game - 1], users, placed
+            placed = False
+            if game == -1:
+                return None, None, None, None
+            else:
+                if os.path.exists(f"Saves/{gameName}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{gameName}/{users[1]}/ships.txt"):
+                    placed = True
+            return True, gameName, users, placed
     elif choice == 2:
         # get the size
-        size = [
-            Functions.InputDigitCheck("Please enter X size (length): "),
-            Functions.InputDigitCheck("Please enter Y size (length): ")
-        ]
+        x = Functions.InputDigitCheck("Please enter X size (length): ", None, None, SizeRangeCheck)
+        y = Functions.InputDigitCheck("Please enter Y size (length): ", None, None, SizeRangeCheck)
+        size = [x, y]
         GameBoard = board.CreateBoard(size)  # creates a board
         create = None
         while not create:  # saves the board

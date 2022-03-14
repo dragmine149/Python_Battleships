@@ -16,7 +16,7 @@ def clear(timeS=0, message=None):
     os.system("clear")
 
 
-def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValues=None):  # noqa
+def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
     Id = None
     while not Id:
         Id = input(f"{request}")  # get input
@@ -38,20 +38,23 @@ def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, range
             if rangeCheck is not None:
                 if callable(rangeCheck):
                     check = None
-                    if rangeCheckValues is None:
+                    if rangeCheckValue is None:
                         check = rangeCheck(Id)
                     else:
-                        check = rangeCheck(Id, rangeCheckValues)
+                        check = rangeCheck(Id, rangeCheckValue)
 
                     if check:
                         return Id
                     else:
                         clear(1, "Out of range.")
-                        if extraValue is None:
-                            extra()
-                        else:
-                            extra(extraValue)
-                        return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValues)  # noqa
+                        if callable(extra):
+                            if extraValue is None:
+                                extra()
+                            else:
+                                extra(extraValue)
+                        elif extra is not None:
+                            print(extra)
+                        return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValue)  # noqa
                 else:
                     print("ERROR, range check is not a function!")
                     return Id
