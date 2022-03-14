@@ -16,47 +16,59 @@ def clear(timeS=0, message=None):
     os.system("clear")
 
 
+def PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request):
+    Id = int(Id)
+    if rangeCheck is not None:
+        if callable(rangeCheck):
+            check = None
+            if rangeCheckValue is None:
+                check = rangeCheck(Id)
+            else:
+                check = rangeCheck(Id, rangeCheckValue)
+
+            if check:
+                return Id
+            else:
+                clear(1, "Out of range.")
+                if callable(extra):
+                    if extraValue is None:
+                        extra()
+                    else:
+                        extra(extraValue)
+                elif extra is not None:
+                    print(extra)
+                return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValue)  # noqa
+        else:
+            print("ERROR, range check is not a function!")
+            return Id
+    else:
+        return Id
+
+
+def FailCheck(Id, extra, extraValue):
+    Id = None  # reset
+
+    # user notification
+    clear(1, "Please enter a valid input")
+    if extra is not None:
+        if callable(extra):
+            if extraValue is None:
+                extra()  # call function
+            else:
+                extra(extraValue)
+        else:
+            print(extra)
+
+
 def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
     Id = None
     while not Id:
         Id = input(f"{request}")  # get input
         if not Id.isdigit():  # check
-            Id = None  # reset
-
-            # user notification
-            clear(1, "Please enter a valid input")
-            if extra is not None:
-                if callable(extra):
-                    if extraValue is None:
-                        extra()  # call function
-                    else:
-                        extra(extraValue)
+            if len(Id) >= 2:
+                if not Id[1:].isdigit():
+                    FailCheck(Id, extra, extraValue)
                 else:
-                    print(extra)
+                    return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)
         else:
-            Id = int(Id)
-            if rangeCheck is not None:
-                if callable(rangeCheck):
-                    check = None
-                    if rangeCheckValue is None:
-                        check = rangeCheck(Id)
-                    else:
-                        check = rangeCheck(Id, rangeCheckValue)
-
-                    if check:
-                        return Id
-                    else:
-                        clear(1, "Out of range.")
-                        if callable(extra):
-                            if extraValue is None:
-                                extra()
-                            else:
-                                extra(extraValue)
-                        elif extra is not None:
-                            print(extra)
-                        return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValue)  # noqa
-                else:
-                    print("ERROR, range check is not a function!")
-                    return Id
-            else:
-                return Id
+            return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)
