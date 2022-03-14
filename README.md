@@ -3,7 +3,7 @@
 
  Project made for fun, and also to learn things about neural networks (and ai)
 
-# Features
+# Features
  Erm, not much. Still in progress
 
 # How to run locally
