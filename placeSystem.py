@@ -1,4 +1,4 @@
-import SaveSystem as save
+import save
 import board
 import ShipInfo as ship
 import Functions

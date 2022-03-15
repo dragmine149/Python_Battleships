@@ -2,10 +2,11 @@ import GameSetup as setup
 import placeSystem as place
 import fireSystem as fire
 import Functions
+setclass = setup.game()
 
 while True:
     # Terminal setup ui
-    gameName, users, Placed = setup.setup()
+    gameName, users, Placed = setclass.setup()
 
     Functions.clear()
 
