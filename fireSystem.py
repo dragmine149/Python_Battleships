@@ -1,5 +1,4 @@
 import save
-import board
 import Functions
 import ShipInfo as ship
 
@@ -11,7 +10,7 @@ def FireShip(game, fireUser, targetUser):
     shotTaken = False
     while not shotTaken:
         print(f"{fireUser}'s Turn to shoot\n")
-        board.DisplayBoard(fireBoard)
+        save.DisplayBoard(fireBoard)
 
         # get shooting cooridnates
         x, y = Functions.LocationInput(input("Enter position to shoot at: "))

@@ -1,5 +1,4 @@
 import save
-import board
 import ShipInfo as ship
 import Functions
 import copy
@@ -8,7 +7,7 @@ import copy
 # Get the board saved.
 def LoadBoard(game, user):
     gameBoard = save.read(game, user)
-    board.DisplayBoard(gameBoard)
+    save.DisplayBoard(gameBoard)
 
 
 def ShowShips(list):
@@ -107,7 +106,7 @@ def placeShips(game, user):
                     if not breaked:
                         placed = True
                     else:
-                        board.DisplayBoard(cBoard)
+                        save.DisplayBoard(cBoard)
                         print(f"{user}'s Turn to place ships\n")
                         print(f"Ship placing: {ships[place].Name}")
                 except IndexError:  # reset if ship can't go there
@@ -115,7 +114,7 @@ def placeShips(game, user):
 
             ships.pop(place)  # removed placed ship
         Functions.clear(0)
-        board.DisplayBoard(cBoard)
+        save.DisplayBoard(cBoard)
 
     save.UpdateFile(cBoard, f"Saves/{game}/{user}", "ships")
 

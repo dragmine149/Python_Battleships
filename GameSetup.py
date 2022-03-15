@@ -1,4 +1,3 @@
-import board
 import os
 import sys
 import time
@@ -64,9 +63,9 @@ class game:
                     # change to a different layout
                     for i in range(2):
                         print(f"{users[i]} data\ngrid (where they shot)")
-                        board.DisplayBoard(save.read(gameName, users[i]))
+                        save.DisplayBoard(save.read(gameName, users[i]))
                         print(f"{users[i]} data\nships (The ship layout they had)")
-                        board.DisplayBoard(save.read(gameName, users[i], "ships"))
+                        save.DisplayBoard(save.read(gameName, users[i], "ships"))
                     input("Press enter when you are ready to continue.")
                     self.__reset()
                 else:
@@ -78,7 +77,7 @@ class game:
             # get the size
             x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
             y = Functions.check("Please enter Y size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
-            GameBoard = board.CreateBoard([x, y])  # creates a board
+            GameBoard = save.CreateBoard([x, y])  # creates a board
             create = None
             while not create:  # saves the board
                 name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
