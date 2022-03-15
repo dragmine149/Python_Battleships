@@ -116,7 +116,3 @@ class game:
             self._ProcessChoice()
             time.sleep(1)
         return self.name, self.users, self.Placed
-
-
-if __name__ == "__main__":
-    setup()

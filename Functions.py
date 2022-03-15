@@ -19,16 +19,20 @@ class LocationConvert:
         return v
 
     def Convert(self):
-        # split string into number and letters
-        self.input = self.input.lower()
-        for v in self.input:
-            if v.isdigit():
-                self.y += v
-            else:
-                self.letters += v
+        if len(self.input) >= 2:
+            # split string into number and letters
+            self.input = self.input.lower()
+            for v in self.input:
+                if v.isdigit():
+                    self.y += v
+                else:
+                    self.letters += v
 
-        # convert letters into numbers
-        return self._decode(self.letters), (int(self.y) - 1)
+            # convert letters into numbers
+            return self._decode(self.letters) - 1, (int(self.y) - 1)
+        else:
+            clear(1, "Must be at least two digits, a letter (x) and a number (y)")
+            return None, None
 
 
 def NumberRangeCheck(value, x):
@@ -42,6 +46,7 @@ def clear(timeS=0, message=None):
         print(message)
     time.sleep(timeS)
     os.system("clear")
+
 
 class check:
     def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):
