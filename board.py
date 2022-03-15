@@ -15,11 +15,6 @@ def CreateBoard(size):
 
 # Loops through the board and prints it out.
 def DisplayBoard(board):
-    # board = json.loads(board)
-    # for y in board:
-    #     for x in y:
-    #         print(x, end="")
-    #     print()
     Message.sendGrid(board)
 
 
