@@ -1,5 +1,6 @@
 import time
 import os
+import Message
 
 
 def LetterConvert(letter):
@@ -37,7 +38,7 @@ def NumberRangeCheck(value, x):
 
 def clear(timeS=0, message=None):
     if message:
-        print(message)
+        Message.sendMessage(message)
     time.sleep(timeS)
     os.system("clear")
 
@@ -62,10 +63,10 @@ def PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request):
                     else:
                         extra(extraValue)
                 elif extra is not None:
-                    print(extra)
+                    Message.sendMessage(extra)
                 return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValue)  # noqa
         else:
-            print("ERROR, range check is not a function!")
+            Message.sendMessage("ERROR, range check is not a function!")
             return Id
     else:
         return Id
@@ -81,7 +82,7 @@ def FailCheck(extra, extraValue):
             else:
                 extra(extraValue)
         else:
-            print(extra)
+            Message.sendMessage(extra)
     return None
 
 

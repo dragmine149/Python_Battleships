@@ -3,6 +3,7 @@ import board
 import ShipInfo as ship
 import Functions
 import copy
+import Message
 
 
 # Get the board saved.
@@ -12,10 +13,10 @@ def LoadBoard(game, user):
 
 
 def ShowShips(list):
-    print("Alvalible Ships:")
-    print("0: View Grid")
+    Message.sendMessage("Alvalible Ships:")
+    Message.sendMessage("0: View Grid")
     for sHip in range(len(list)):
-        print(f"{sHip + 1}: {list[sHip].Name}")
+        Message.sendMessage(f"{sHip + 1}: {list[sHip].Name}")
 
 
 def rangeCheck(value, list):
@@ -56,7 +57,7 @@ def placeShips(game, user):
     ]
     cBoard = save.read(game, user)
     while len(ships) > 0:
-        print(f"{user}'s Turn to place ships\n")
+        Message.sendMessage(f"{user}'s Turn to place ships\n")
         ShowShips(ships)
         place = Functions.InputDigitCheck("Enter ship you want to place: ", ShowShips, ships, rangeCheck, ships) - 1 # noqa
         deep = copy.deepcopy(cBoard)
@@ -108,8 +109,8 @@ def placeShips(game, user):
                         placed = True
                     else:
                         board.DisplayBoard(cBoard)
-                        print(f"{user}'s Turn to place ships\n")
-                        print(f"Ship placing: {ships[place].Name}")
+                        Message.sendMessage(f"{user}'s Turn to place ships\n")
+                        Message.sendMessage(f"Ship placing: {ships[place].Name}")  # noqa
                 except IndexError:  # reset if ship can't go there
                     placed, cBoard = Error("Ship does not fit on board", deep)
 

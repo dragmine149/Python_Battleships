@@ -1,13 +1,14 @@
 import Functions
 import os
 import json
+import Message
 
 
 def save(data, name, users):
     if not os.path.exists("Saves"):
         os.mkdir("Saves")
     if os.path.exists(f"Saves/{name}"):
-        print("Please enter a name that has not already been used.")
+        Message.sendMessage("Please enter a name that has not already been used.")  # noqa
         Functions.clear(1)
         return None
     else:

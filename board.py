@@ -1,3 +1,6 @@
+import Message
+
+
 # Create the board in a 2d array.
 def CreateBoard(size):
     board = []
@@ -13,10 +16,11 @@ def CreateBoard(size):
 # Loops through the board and prints it out.
 def DisplayBoard(board):
     # board = json.loads(board)
-    for y in board:
-        for x in y:
-            print(x, end="")
-        print()
+    # for y in board:
+    #     for x in y:
+    #         print(x, end="")
+    #     print()
+    Message.sendGrid(board)
 
 
 if __name__ == "__main__":

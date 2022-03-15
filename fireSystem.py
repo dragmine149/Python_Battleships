@@ -2,6 +2,7 @@ import SaveSystem as save
 import board
 import Functions
 import ShipInfo as ship
+import Message
 
 
 def FireShip(game, fireUser, targetUser):
@@ -10,7 +11,7 @@ def FireShip(game, fireUser, targetUser):
     targetBoard = save.read(game, targetUser, "ships")
     shotTaken = False
     while not shotTaken:
-        print(f"{fireUser}'s Turn to shoot\n")
+        Message.sendMessage(f"{fireUser}'s Turn to shoot\n")
         board.DisplayBoard(fireBoard)
 
         # get shooting cooridnates
@@ -26,10 +27,10 @@ def FireShip(game, fireUser, targetUser):
             # Do we save it in there account as well? or just compare?
             if targetBoard[y][x] != "-":  # has ship, no matter the symbol
                 fireBoard[y][x] = "X"
-                print("HIT!")
+                Message.sendMessage("HIT!")
             else:
                 fireBoard[y][x] = "+"
-                print("Miss")
+                Message.sendMessage("Miss")
             shotTaken = True
             save.UpdateFile(fireBoard, f"Saves/{game}/{fireUser}", "grid")
             return DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game)  # noqa
@@ -61,8 +62,8 @@ def DestroyedCheck(fireBoard, targetBoard, fireUser, targetUser, game):
     # game over check
     if destroyedAmmount == len(ships):
         Functions.clear()
-        print("GG!")
-        print(f"{fireUser} has beaten {targetUser}")
+        Message.sendMessage("GG!")
+        Message.sendMessage(f"{fireUser} has beaten {targetUser}")
         save.UpdateFile(fireUser, f"Saves/{game}", "win")
         return True
     Functions.clear(2, destroyedList)

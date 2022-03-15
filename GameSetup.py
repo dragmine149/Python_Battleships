@@ -4,16 +4,13 @@ import sys
 import time
 import SaveSystem as save
 import Functions
+import Message
 
 
 def loadGames():
-    print("Games found on disk:")
+    Message.sendMessage("Games found on disk:")
     games = os.listdir("Saves")
-    for file in range(len(games)):
-        if os.path.exists(f"Saves/{games[file]}/win.txt"):
-            print(f"{file + 1}: {games[file]} (finished)")
-        else:
-            print(f"{file + 1}: {games[file]}")
+    Message.Load(games)
 
 
 def LoadRangeCheck(value):
@@ -34,10 +31,10 @@ def SizeRangeCheck(size):
 
 def ProcessChoice(choice):
     if choice == 1 and not os.path.exists("Saves"):
-        print("There is no game to load!!")
+        Message.sendMessage("There is no game to load!!")
         return None, None, None, None
     elif choice == 1 and len(os.listdir("Saves")) == 0:
-        print("There is no game to load!!")
+        Message.sendMessage("There is no game to load!!")
         return None, None, None, None
     elif choice == 1:
         # load game
@@ -52,11 +49,11 @@ def ProcessChoice(choice):
             if os.path.exists(f"Saves/{gameName}/win.txt"):
                 os.system("clear")
                 for i in range(2):
-                    print(f"{users[i]} data")
-                    print("grid (where they shot)")
+                    Message.sendMessage(f"{users[i]} data")
+                    Message.sendMessage("grid (where they shot)")
                     board.DisplayBoard(save.read(gameName, users[i]))
-                    print(f"{users[i]} data")
-                    print("ships (The ship layout they had)")
+                    Message.sendMessage(f"{users[i]} data")
+                    Message.sendMessage("ships (The ship layout they had)")
                     board.DisplayBoard(save.read(gameName, users[i], "ships"))
                 input("Press enter when you are ready to continue.")
                 return None, None, None, None
@@ -86,6 +83,7 @@ def ProcessChoice(choice):
 
 
 def fileRead():
+    # convert over to the new Message System
     with open("Options.txt", "r") as options:
         lines = options.readlines()
         for line in range(len(lines)):
