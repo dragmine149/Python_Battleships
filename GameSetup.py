@@ -2,7 +2,7 @@ import board
 import os
 import sys
 import time
-import SaveSystem as save
+import save
 import Functions
 
 
@@ -10,10 +10,10 @@ def loadGames():
     print("Games found on disk:")
     games = os.listdir("Saves")
     for file in range(len(games)):
+        path = f"{file + 1}: {games[file]}"
         if os.path.exists(f"Saves/{games[file]}/win.txt"):
-            print(f"{file + 1}: {games[file]} (finished)")
-        else:
-            print(f"{file + 1}: {games[file]}")
+            path += " (finished)"
+        print(path)
 
 
 def LoadRangeCheck(value):
@@ -22,8 +22,7 @@ def LoadRangeCheck(value):
         return True
     elif value == -1:
         return True
-    else:
-        return False
+    return False
 
 
 def SizeRangeCheck(size):
