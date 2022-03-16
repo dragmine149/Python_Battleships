@@ -106,12 +106,12 @@ class check:
     def InputDigitCheck(self):  # noqa
         while not self.Id:
             self.Id = input("{}".format(self.request))  # get input
-            if not self.Id.isdigit():
-                self._FailCheck()
-            elif len(self.Id) >= 2:  # check
+            if len(self.Id) >= 2:  # check
                 if not self.Id[1:].isdigit():
                     self._FailCheck()
                 else:
                     return self._PassCheck()
+            elif not self.Id.isdigit():
+                self._FailCheck()
             else:
                 return self._PassCheck()
