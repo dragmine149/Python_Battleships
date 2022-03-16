@@ -1,5 +1,6 @@
 import time
 import os
+import platform
 
 
 class LocationConvert:
@@ -46,7 +47,10 @@ def clear(timeS=0, message=None):
     if message:
         print(message)
     time.sleep(timeS)
-    os.system("clear")
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 
 class check:
@@ -99,7 +103,7 @@ class check:
 
     def InputDigitCheck(self):  # noqa
         while not self.Id:
-            self.Id = input(f"{self.request}")  # get input
+            self.Id = input("{}".format(self.request))  # get input
             if not self.Id.isdigit() and len(self.Id) >= 2:  # check
                 if not self.Id[1:].isdigit():
                     self._FailCheck()

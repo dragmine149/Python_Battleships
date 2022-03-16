@@ -2,11 +2,14 @@ import GameSetup as setup
 import placeSystem as place
 import fireSystem as fire
 import Functions
-setClass = setup.game()
+import os
+print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+gameName, users, Placed = None, None, None
 
 while True:
     # Terminal setup ui
-    gameName, users, Placed = setClass.setup()
+    gameName, users, Placed = setup.game().setup()
     Functions.clear()
     # check to see if game has already been started
     # and there are ships on the board.
@@ -22,3 +25,4 @@ while True:
         if not game:
             game = fire.fire(gameName, users[1], users[0]).Fire()
     Functions.clear(10)
+    gameName, users, Placed = None, None, None

@@ -25,8 +25,8 @@ class game:
         print("Games found on disk:")
         games = os.listdir("Saves")
         for file in range(len(games)):
-            path = f"{file + 1}: {games[file]}"
-            if os.path.exists(f"Saves/{games[file]}/win.txt"):
+            path = "{}: {}".format(file + 1, games[file])
+            if os.path.exists("Saves/{}/win.txt".format(games[file])):
                 path += " (finished)"
             print(path)
 
@@ -58,20 +58,20 @@ class game:
                 self.__reset()
             else:
                 gameName = os.listdir('Saves')[game - 1]
-                users = os.listdir(f"Saves/{gameName}")
-                if os.path.exists(f"Saves/{gameName}/win.txt"):
-                    os.system("clear")
+                users = os.listdir("Saves/{}".format(gameName))
+                if os.path.exists("Saves/{}/win.txt".format(gameName)):
+                    Functions.clear()
                     # change to a different layout
                     for i in range(2):
-                        print(f"{users[i]} data\ngrid (where they shot)")
+                        print("{} data\ngrid (where they shot)".format(users[i]))
                         save.DisplayBoard(save.read(gameName, users[i]))
-                        print(f"{users[i]} data\nships (The ship layout they had)")  # noqa
+                        print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
                         save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
                     input("Press enter when you are ready to continue.")
                     self.__reset()
                 else:
                     placed = False
-                    if os.path.exists(f"Saves/{gameName}/{users[0]}/ships.txt") and os.path.exists(f"Saves/{gameName}/{users[1]}/ships.txt"):  # noqa
+                    if os.path.exists("Saves/{}/{}/ships.txt".format(gameName, users[0])) and os.path.exists("Saves/{}/{}/ships.txt".format(gameName, users[1])):  # noqa
                         placed = True
                     self.__reset(None, True, gameName, users, placed)
         elif self.choice == 2:
@@ -97,7 +97,7 @@ class game:
         with open("Options.txt", "r") as options:
             lines = options.readlines()
             for line in range(len(lines)):
-                path = f"{lines[line].strip()}"
+                path = str(lines[line].strip())
                 if line == 1:
                     if os.path.exists("Saves"):
                         if len(os.listdir("Saves")) == 0:

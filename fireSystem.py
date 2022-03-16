@@ -1,6 +1,8 @@
 import save
 import Functions
 import ShipInfo as ship
+import os
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class fire:
@@ -13,9 +15,11 @@ class fire:
         self.targetBoard = save.read(game, targetUser, "ships")
 
     def Fire(self):
+        if os.path.exists("Saves/{}/win.txt".format(self.game)):
+            return True
         # load data
         while not self.shotTaken:
-            print(f"{self.fireUser}'s Turn to shoot\n")
+            print("{}'s Turn to shoot\n".format(self.fireUser))
             save.DisplayBoard(self.fireBoard)
             # get shooting cooridnates
             x, y = None, None
@@ -35,7 +39,7 @@ class fire:
                     self.fireBoard[y][x] = "+"
                     print("Miss")
                 self.shotTaken = True
-                save.UpdateFile(self.fireBoard, f"Saves/{self.game}/{self.fireUser}", "grid")  # noqa
+                save.UpdateFile(self.fireBoard, "Saves/{}/{}".format(self.game, self.fireUser), "grid")  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
@@ -57,13 +61,13 @@ class fire:
                     if self.fireBoard[y][x] == "X" and self.targetBoard[y][x] == pShip.Symbol:  # check if hit   # noqa
                         pShip.Health -= 1  # remove
             if pShip.Health == 0:  # add
-                destroyedList += f"{pShip.Name}\n"
+                destroyedList += "{}\n".format(pShip.Name)
                 destroyedAmmount += 1
 
         # game over check
         if destroyedAmmount == len(ships):
             Functions.clear()
-            print(f"GG!\n'{self.fireUser}'' has beaten ''{self.targetUser}''")
-            save.UpdateFile(self.fireUser, f"Saves/{self.game}", "win")
+            print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))
+            save.UpdateFile(self.fireUser, "Saves/{}".format(self.game), "win")
             return True
         Functions.clear(2, destroyedList)

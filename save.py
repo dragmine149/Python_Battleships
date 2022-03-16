@@ -1,42 +1,44 @@
 import Functions
 import os
 import json
+import shutil
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 def save(data, name, users):
     if not os.path.exists("Saves"):
         os.mkdir("Saves")
-    if os.path.exists(f"Saves/{name}"):
+    if os.path.exists("Saves/{}".format(name)):
         print("Please enter a name that has not already been used.")
         Functions.clear(1)
         return None
     else:
-        os.system(f"mkdir Saves/{name}")
-        os.system(f"mkdir Saves/{name}/{users[0]}")
-        if os.path.exists(f"Saves/{name}/{users[0]}"):
-            UpdateFile(data, f"Saves/{name}/{users[0]}", "grid")
-            os.system(f"mkdir Saves/{name}/{users[1]}")
-            if os.path.exists(f"Saves/{name}/{users[1]}"):
-                UpdateFile(data, f"Saves/{name}/{users[1]}", "grid")
+        os.mkdir("Saves/{}".format(name))
+        os.mkdir("Saves/{}/{}".format(name, users[0]))
+        if os.path.exists("Saves/{}/{}".format(name, users[0])):
+            UpdateFile(data, "Saves/{}/{}".format(name, users[0], "grid"))
+            os.mkdir("Saves/{}/{}".format(name, users[1]))
+            if os.path.exists("Saves/{}/{}".format(name, users[1])):
+                UpdateFile(data, "Saves/{}/{}".format(name, users[1]), "grid")
                 return True
             else:
-                Functions.clear(1, "Error in path creation... (invalid characters?)")  # noqa
-                os.system(f"rm -d -r Saves/{name}")
+                Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
+                shutil.rmtree("rm -d -r Saves/{}".format(name))
                 return False
         else:
-            Functions.clear(1, "Error in path creation... (invalid characters?)")  # noqa
-            os.system(f"rm -d -r Saves/{name}")
+            Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
+            shutil.rmtree("rm -d -r Saves/{}".format(name))
             return False
 
 
-def UpdateFile(data, path, o):
-    with open(f'{path}/{o}.txt', 'w+') as file:
+def UpdateFile(data, path, o="grid"):
+    with open('{}/{}.txt'.format(path, o), 'w+') as file:
         file.write(str(json.dumps(data)))
 
 
 def read(game, user, o="grid"):
     data = None
-    with open(f'Saves/{game}/{user}/{o}.txt', 'r') as file:
+    with open('Saves/{}/{}/{}.txt'.format(game, user, o), 'r') as file:
         data = file.read()
         data = json.loads(data)
     return data

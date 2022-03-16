@@ -11,7 +11,7 @@ class place:
         self.rot = 0
         self.breaked = False
         self.placed = False
-        self.gameBoard = None
+        self.gameBoard = save.read(self.game, self.user)
 
     # Get the board saved.
     def _LoadBoard(self):
@@ -21,7 +21,7 @@ class place:
     def _ShowShips(self, list):
         print("Alvalible Ships:\n0: View Grid")
         for sHip in range(len(list)):
-            print(f"{sHip + 1}: {list[sHip].Name}")
+            print("{}: {}".format(sHip + 1, list[sHip].Name))
 
     def _rangeCheck(self, value, list):
         if value >= 0 and value <= len(list):
@@ -49,8 +49,12 @@ class place:
         self.breaked = True
         self.placed = False
 
+    def _Reset(self):
+        self.rot = 0
+        self.breaked = False
+        self.placed = False
+
     def Place(self):
-        self.__init__(self.game, self.user)
         ships = [
             ship.Short(),
             ship.Medium1(),
@@ -59,7 +63,8 @@ class place:
             ship.ExtraLong()
         ]
         while len(ships) > 0:
-            print(f"{self.user}'s Turn to place ships\n")
+            self._Reset()
+            print("{}'s Turn to place ships\n".format(self.user))
             self._ShowShips(ships)
             place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() - 1 # noqa
             deep = copy.deepcopy(self.gameBoard)
@@ -101,7 +106,7 @@ class place:
                             self.placed = True
                         else:
                             save.DisplayBoard(self.gameBoard)
-                            print(f"{self.user}'s Turn to place ships\n\nShip placing: {ships[place].Name}")  # noqa
+                            print("{}'s Turn to place ships\n\nShip placing: {ships[place].Name}".format(self.user))  # noqa
                     except IndexError:  # reset if ship can't go there
                         self._Error("Ship does not fit on board",)
                         self.gameBoard = deep
@@ -112,4 +117,4 @@ class place:
             Functions.clear(0)
             save.DisplayBoard(self.gameBoard)
 
-        save.UpdateFile(self.gameBoard, f"Saves/{self.game}/{self.user}", "ships")  # noqa
+        save.UpdateFile(self.gameBoard, "Saves/{}/{}".format(self.game, self.user), "ships")  # noqa
