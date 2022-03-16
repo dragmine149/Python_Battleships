@@ -24,5 +24,8 @@ while True:
         game = fire.fire(gameName, users[0], users[1]).Fire()
         if not game:
             game = fire.fire(gameName, users[1], users[0]).Fire()
-    Functions.clear(10)
+    if game != "Fake":
+        Functions.clear(10)
+    else:
+        Functions.clear()
     gameName, users, Placed = None, None, None

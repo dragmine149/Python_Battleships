@@ -24,7 +24,11 @@ class fire:
             # get shooting cooridnates
             x, y = None, None
             while x is None and y is None:
-                x, y = Functions.LocationConvert(input("Enter position to shoot at: ")).Convert()  # noqa
+                shotPos = input("Enter position to shoot at (-1 to quit game for now): ")
+                if shotPos != "-1":
+                    x, y = Functions.LocationConvert(shotPos).Convert()  # noqa
+                else:
+                    return "Fake" # fake win
             # check if haven't already shot there
             if self.fireBoard[y][x] != "-":
                 Functions.clear(1, "You have already shot there")
