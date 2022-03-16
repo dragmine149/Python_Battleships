@@ -1,6 +1,7 @@
 import time
 import os
 
+
 class LocationConvert:
     def __init__(self, value):
         self.input = value
@@ -31,7 +32,7 @@ class LocationConvert:
             # convert letters into numbers
             return self._decode(self.letters) - 1, (int(self.y) - 1)
         else:
-            clear(1, "Must be at least two digits, a letter (x) and a number (y)")
+            clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
             return None, None
 
 
@@ -49,7 +50,7 @@ def clear(timeS=0, message=None):
 
 
 class check:
-    def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):
+    def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
         self.request = request
         self.extra = extra
         self.extraValue = extraValue
@@ -106,6 +107,7 @@ class check:
                     return self._PassCheck()
             else:
                 return self._PassCheck()
+
 
 if __name__ == "__main__":
     lc = LocationConvert(input("Test: "))

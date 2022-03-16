@@ -3,6 +3,7 @@ import ShipInfo as ship
 import Functions
 import copy
 
+
 class place:
     def __init__(self, game, user):
         self.game = game
@@ -66,7 +67,7 @@ class place:
             if place != -1:
                 while not self.placed:
                     # get ship position
-                    x,y = None, None
+                    x, y = None, None
                     while x is None and y is None:
                         x, y = Functions.LocationConvert(input("Enter location to place ship: ")).Convert()  # noqa
                     self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
@@ -87,12 +88,12 @@ class place:
                                 squareId = [y, x - i]
                             else:  # Fail safe check.
                                 Functions.clear(1, "Error in placing ship, Please try again")  # noqa
-                                placed = False
+                                self.placed = False
                                 break
                             if self.gameBoard[squareId[0]][squareId[1]] == "-":
-                                self.gameBoard[squareId[0]][squareId[1]] = ships[place].Symbol
+                                self.gameBoard[squareId[0]][squareId[1]] = ships[place].Symbol  # noqa
                             else:
-                                Error("Ship collides with another ship!")
+                                self._Error("Ship collides with another ship!")
                                 self.gameBoard = deep
                                 break
 
@@ -100,7 +101,7 @@ class place:
                             self.placed = True
                         else:
                             save.DisplayBoard(self.gameBoard)
-                            print(f"{self.user}'s Turn to place ships\n\nShip placing: {ships[place].Name}")
+                            print(f"{self.user}'s Turn to place ships\n\nShip placing: {ships[place].Name}")  # noqa
                     except IndexError:  # reset if ship can't go there
                         self._Error("Ship does not fit on board",)
                         self.gameBoard = deep
@@ -111,4 +112,4 @@ class place:
             Functions.clear(0)
             save.DisplayBoard(self.gameBoard)
 
-        save.UpdateFile(self.gameBoard, f"Saves/{game}/{user}", "ships")
+        save.UpdateFile(self.gameBoard, f"Saves/{self.game}/{self.user}", "ships")  # noqa

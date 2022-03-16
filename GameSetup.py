@@ -4,6 +4,7 @@ import time
 import save
 import Functions
 
+
 class game:
     def __init__(self):
         self.choice = None
@@ -12,7 +13,7 @@ class game:
         self.Placed = None
 
     # replaces the return in _ProcessChoice
-    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None):
+    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None):  # noqa
         self.name = name
         self.users = users
         self.Placed = Placed
@@ -64,8 +65,8 @@ class game:
                     for i in range(2):
                         print(f"{users[i]} data\ngrid (where they shot)")
                         save.DisplayBoard(save.read(gameName, users[i]))
-                        print(f"{users[i]} data\nships (The ship layout they had)")
-                        save.DisplayBoard(save.read(gameName, users[i], "ships"))
+                        print(f"{users[i]} data\nships (The ship layout they had)")  # noqa
+                        save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
                     input("Press enter when you are ready to continue.")
                     self.__reset()
                 else:
@@ -82,8 +83,8 @@ class game:
             while not create:  # saves the board
                 name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
                 users = [
-                    str(input("Please enter player 1's name: ").replace(" ", "")),
-                    str(input("Please enter player 2's name: ").replace(" ", ""))
+                    str(input("Please enter player 1's name: ").replace(" ", "")),  # noqa
+                    str(input("Please enter player 2's name: ").replace(" ", ""))  # noqa
                 ]
                 create = save.save(GameBoard, name, users)
             self.__reset(None, True, name, users, False)
@@ -111,7 +112,7 @@ class game:
             # Load interface thing...
             self._fileRead()
             # get the user choice
-            self.choice = Functions.check("Your Choice (number): ", self._fileRead).InputDigitCheck()
+            self.choice = Functions.check("Your Choice (number): ", self._fileRead).InputDigitCheck()  # noqa
             # Process choice
             self._ProcessChoice()
             time.sleep(1)
