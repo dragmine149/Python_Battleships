@@ -62,11 +62,12 @@ class game:
                 if os.path.exists("Saves/{}/win.txt".format(gameName)):
                     Functions.clear()
                     # change to a different layout
-                    for i in range(2):
-                        print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
-                        save.DisplayBoard(save.read(gameName, users[i]))
-                        print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
-                        save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
+                    for i in range(len(users)):
+                        if users[i] != "win.txt":
+                            print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
+                            save.DisplayBoard(save.read(gameName, users[i]))
+                            print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
+                            save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
                     input("Press enter when you are ready to continue.")
                     self.__reset()
                 else:
