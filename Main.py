@@ -12,9 +12,9 @@ while True:
     # and there are ships on the board.
     if not Placed:
         # Placing ships on the borad
-        place.placeShips(gameName, users[0])
+        place.place(gameName, users[0]).Place()
         Functions.clear()
-        place.placeShips(gameName, users[1])
+        place.place(gameName, users[1]).Place()
     Functions.clear()
     game = False
     while not game:
