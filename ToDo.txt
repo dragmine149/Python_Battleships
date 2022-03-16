@@ -17,8 +17,8 @@ Main:
   ◾️ Extra file support
   ◾️ Google Drive Support
 ◾️ Settings
-◾️ UI (optional)
-◾️ Bug Fixes
+◾️ UI (optional for user)
+🅿️ Bug Fixes
 🅿️ Code Rewrite
 --------------------------------------------------------------------------------
 AI:
