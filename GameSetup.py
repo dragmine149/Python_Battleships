@@ -63,7 +63,7 @@ class game:
                     Functions.clear()
                     # change to a different layout
                     for i in range(2):
-                        print("{} data\ngrid (where they shot)".format(users[i]))
+                        print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
                         save.DisplayBoard(save.read(gameName, users[i]))
                         print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
                         save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa

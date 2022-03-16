@@ -16,7 +16,7 @@ def save(data, name, users):
         os.mkdir("Saves/{}".format(name))
         os.mkdir("Saves/{}/{}".format(name, users[0]))
         if os.path.exists("Saves/{}/{}".format(name, users[0])):
-            UpdateFile(data, "Saves/{}/{}".format(name, users[0], "grid"))
+            UpdateFile(data, "Saves/{}/{}".format(name, users[0]), "grid")
             os.mkdir("Saves/{}/{}".format(name, users[1]))
             if os.path.exists("Saves/{}/{}".format(name, users[1])):
                 UpdateFile(data, "Saves/{}/{}".format(name, users[1]), "grid")
@@ -62,8 +62,3 @@ def DisplayBoard(board):
         for x in y:
             print(x, end="")
         print()
-
-
-if __name__ == "__main__":
-    board = CreateBoard([10, 10])
-    DisplayBoard(board)

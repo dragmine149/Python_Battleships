@@ -67,7 +67,7 @@ class fire:
         # game over check
         if destroyedAmmount == len(ships):
             Functions.clear()
-            print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))
+            print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
             save.UpdateFile(self.fireUser, "Saves/{}".format(self.game), "win")
             return True
         Functions.clear(2, destroyedList)
