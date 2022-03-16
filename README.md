@@ -27,6 +27,9 @@
 <!-- # Create a local build
  Download the files and build. -->
 
+# NOTE
+ Please note not all IDLE will give you the full experience due to not being able to run the command. For the best experience, run this program in a terminal window (instead of an IDLE)
+
 # Helping
  Anyone can help, just make a new branch and submit a pull request. Not all requests will be accepted though.
  Depending on the request and what it does, depends on if it will get accepted.
