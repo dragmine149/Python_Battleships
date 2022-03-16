@@ -77,8 +77,11 @@ class game:
                     self.__reset(None, True, gameName, users, placed)
         elif self.choice == 2:
             # get the size
-            x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
-            y = Functions.check("Please enter Y size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
+            x,y = None, None
+            while x is None:
+                x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
+            while y is None:
+                y = Functions.check("Please enter Y size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
             GameBoard = save.CreateBoard([x, y])  # creates a board
             create = None
             while not create:  # saves the board
