@@ -13,19 +13,24 @@ while True:
     Functions.clear()
     # check to see if game has already been started
     # and there are ships on the board.
+    v = 0
     if not Placed:
         # Placing ships on the borad
-        place.place(gameName, users[0]).Place()
+        v = place.place(gameName, users[0]).Place()
         Functions.clear()
-        place.place(gameName, users[1]).Place()
-    Functions.clear()
-    game = False
-    while not game:
-        game = fire.fire(gameName, users[0], users[1]).Fire()
-        if not game:
-            game = fire.fire(gameName, users[1], users[0]).Fire()
-    if game != "Fake":
-        Functions.clear(10)
+        if v == 0:
+            v = place.place(gameName, users[1]).Place()
+    if v == 0:
+        Functions.clear()
+        game = False
+        while not game:
+            game = fire.fire(gameName, users[0], users[1]).Fire()
+            if not game:
+                game = fire.fire(gameName, users[1], users[0]).Fire()
+        if game != "Fake":
+            Functions.clear(10)
+        else:
+            Functions.clear()
     else:
         Functions.clear()
     gameName, users, Placed = None, None, None

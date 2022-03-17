@@ -19,7 +19,7 @@ class place:
         save.DisplayBoard(self.gameBoard)
 
     def _ShowShips(self, list):
-        print("Alvalible Ships:\n0: View Grid")
+        print("Alvalible Ships:\n-1:Return (data will not be saved untill all ships palced)\n0: View Grid")
         for sHip in range(len(list)):
             print("{}: {}".format(sHip + 1, list[sHip].Name))
 
@@ -66,7 +66,13 @@ class place:
             self._Reset()
             print("{}'s Turn to place ships\n".format(self.user))
             self._ShowShips(ships)
-            place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() - 1 # noqa
+            place = None
+            while place is None:
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
+                if place == -1:
+                    return -1
+                if place is not None:
+                    place -= 1
             deep = copy.deepcopy(self.gameBoard)
 
             if place != -1:

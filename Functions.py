@@ -76,9 +76,10 @@ class check:
                 if self.check:
                     return self.Id
                 else:
-                    clear(1, "Out of range. (Value must be greater than or equal to 5)")
+                    if self.Id == -1:
+                        return self.Id
+                    clear(1, "Out of range.")
                     self._CallExtra()
-                    # return self.InputDigitCheck()
                     self.Id = None
                     return self.Id
             else:
