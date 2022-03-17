@@ -19,7 +19,7 @@ Main:
 ◾️ Settings
 ◾️ UI (optional for user)
 🅿️ Bug Fixes
-🅿️ Code Rewrite
+✅ Code Rewrite
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training
