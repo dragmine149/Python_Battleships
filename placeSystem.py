@@ -1,128 +1,126 @@
-import SaveSystem as save
-import board
+import save
 import ShipInfo as ship
 import Functions
 import copy
 
 
-# Get the board saved.
-def LoadBoard(game, user):
-    gameBoard = save.read(game, user)
-    board.DisplayBoard(gameBoard)
+class place:
+    def __init__(self, game, user):
+        self.game = game
+        self.user = user
+        self.rot = 0
+        self.breaked = False
+        self.placed = False
+        self.gameBoard = save.read(self.game, self.user)
 
+    # Get the board saved.
+    def _LoadBoard(self):
+        self.gameBoard = save.read(self.game, self.user)
+        save.DisplayBoard(self.gameBoard)
 
-def ShowShips(list):
-    print("Alvalible Ships:")
-    print("0: View Grid")
-    for sHip in range(len(list)):
-        print(f"{sHip + 1}: {list[sHip].Name}")
+    def _ShowShips(self, list):
+        print("Alvalible Ships:\n-1:Return (data will not be saved untill all ships palced)\n0: View Grid")  # noqa
+        for sHip in range(len(list)):
+            print("{}: {}".format(sHip + 1, list[sHip].Name))
 
-
-def rangeCheck(value, list):
-    if value >= 0 and value <= len(list):
-        return True
-    else:
+    def _rangeCheck(self, value, list):
+        if value >= 0 and value <= len(list):
+            return True
         return False
 
-
-def rotationCheck(request):
-    string = None
-    while not string:
-        string = input(request)[0].lower()
-        if string == "n":
-            return 0
-        if string == "e":
-            return 90
-        if string == "s":
-            return 180
-        if string == "w":
-            return 270
+    def _rotationCheck(self, request):
         string = None
-        Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
+        rotation = {
+            "n": 0,
+            "e": 90,
+            "s": 180,
+            "w": 270
+        }
+        while not string:
+            string = input(request)[0].lower()
+            try:
+                self.rot = rotation[string]
+            except KeyError:
+                string = None
+                Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
 
+    def _Error(self, message, deep):
+        Functions.clear(1, message)
+        self.breaked = True
+        self.placed = False
 
-def Error(message, deep):
-    Functions.clear(1, message)
-    return False, deep
+    def _Reset(self):
+        self.rot = 0
+        self.breaked = False
+        self.placed = False
 
+    def Place(self):
+        ships = [
+            ship.Short(),
+            ship.Medium1(),
+            ship.Medium2(),
+            ship.Long(),
+            ship.ExtraLong()
+        ]
+        while len(ships) > 0:
+            self._Reset()
+            print("{}'s Turn to place ships\n".format(self.user))
+            self._ShowShips(ships)
+            place = None
+            while place is None:
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
+                if place == -1:
+                    return -1
+                if place is not None:
+                    place -= 1
+            deep = copy.deepcopy(self.gameBoard)
 
-def placeShips(game, user):
-    ships = [
-        ship.Short(),
-        ship.Medium1(),
-        ship.Medium2(),
-        ship.Long(),
-        ship.ExtraLong()
-    ]
-    cBoard = save.read(game, user)
-    while len(ships) > 0:
-        print(f"{user}'s Turn to place ships\n")
-        ShowShips(ships)
-        place = Functions.InputDigitCheck("Enter ship you want to place: ", ShowShips, ships, rangeCheck, ships) - 1 # noqa
-        deep = copy.deepcopy(cBoard)
+            if place != -1:
+                while not self.placed:
+                    # get ship position
+                    x, y = None, None
+                    while x is None and y is None:
+                        x, y = Functions.LocationConvert(input("Enter location to place ship: ")).Convert()  # noqa
+                    self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
 
-        if place != -1:
-            placed = False
-            while not placed:
-                # get ship position
-                x, y = Functions.LocationInput(input("Enter location to place ship: "))  # noqa
-                rot = rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
-
-                # Attempts to place the ship at the desiered location
-                # with rotation.
-                try:
-                    breaked = False
-                    for i in range(ships[place].Length):
-                        if rot == 0:  # up
-                            if cBoard[y - i][x] == "-":
-                                cBoard[y - i][x] = ships[place].Symbol
-                            else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
-                                breaked = True
+                    # Attempts to place the ship at the desiered location
+                    # with rotation.
+                    try:
+                        self.breaked = False
+                        for i in range(ships[place].Length):
+                            squareId = [0, 0]
+                            if self.rot == 0:
+                                squareId = [y - i, x]
+                            elif self.rot == 90:
+                                squareId = [y, x + i]
+                            elif self.rot == 180:
+                                squareId = [y + i, x]
+                            elif self.rot == 270:
+                                squareId = [y, x - i]
+                            else:  # Fail safe check.
+                                Functions.clear(1, "Error in placing ship, Please try again")  # noqa
+                                self.placed = False
                                 break
-                        elif rot == 90:  # right
-                            if cBoard[y][x + i] == "-":
-                                cBoard[y][x + i] = ships[place].Symbol
+                            if self.gameBoard[squareId[0]][squareId[1]] == "-":
+                                self.gameBoard[squareId[0]][squareId[1]] = ships[place].Symbol  # noqa
                             else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
-                                breaked = True
+                                self._Error("Ship collides with another ship!")
+                                self.gameBoard = deep
                                 break
-                        elif rot == 180:  # down
-                            if cBoard[y + i][x] == "-":
-                                cBoard[y + i][x] = ships[place].Symbol
-                            else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
-                                breaked = True
-                                break
-                        elif rot == 270:  # left
-                            if cBoard[y][x - i] == "-":
-                                cBoard[y][x - i] = ships[place].Symbol
-                            else:
-                                placed, cBoard = Error("Ship collides with another ship!", deep)  # noqa
-                                breaked = True
-                                break
-                        else:  # Fail safe check.
-                            Functions.clear(1, "Error in placing ship, Please try again")  # noqa
-                            placed = False
-                    if not breaked:
-                        placed = True
-                    else:
-                        board.DisplayBoard(cBoard)
-                        print(f"{user}'s Turn to place ships\n")
-                        print(f"Ship placing: {ships[place].Name}")
-                except IndexError:  # reset if ship can't go there
-                    placed, cBoard = Error("Ship does not fit on board", deep)
 
-            ships.pop(place)  # removed placed ship
-        Functions.clear(0)
-        board.DisplayBoard(cBoard)
+                        if not self.breaked:
+                            self.placed = True
+                        else:
+                            save.DisplayBoard(self.gameBoard)
+                            print("{}'s Turn to place ships\n\nShip placing: {ships[place].Name}".format(self.user))  # noqa
+                    except IndexError:  # reset if ship can't go there
+                        self._Error("Ship does not fit on board",)
+                        self.gameBoard = deep
 
-    save.UpdateFile(cBoard, f"Saves/{game}/{user}", "ships")
+                ships.pop(place)  # removed placed ship
+            else:
+                print("This has not been implement yet!")
+            Functions.clear(0)
+            save.DisplayBoard(self.gameBoard)
 
-
-if __name__ == "__main__":
-    Functions.clear()
-    # LoadBoard("1", "me")
-    placeShips("1", "me")
-    Functions.clear()
-    placeShips("1", "me2")
+        save.UpdateFile(self.gameBoard, "Saves/{}/{}".format(self.game, self.user), "ships")  # noqa

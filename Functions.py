@@ -1,99 +1,118 @@
 import time
 import os
+import platform
 
 
-def LetterConvert(letter):
-    List = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    if letter.strip() != "":
-        return List.index(letter.strip())
-    return 0
+class LocationConvert:
+    def __init__(self, value):
+        self.input = value
+        self.letters = ""
+        self.y = ""
 
+    def _decode(self, s: str) -> int:
+        s = s.lower()
+        ref = ord('a') - 1
+        v = 0
+        exp = 1
+        for c in reversed(s):
+            v += (ord(c) - ref) * exp
+            exp *= 26
 
-def LocationInput(value):
-    # split string into number and letters
-    value = value.lower()
-    letters = ""
-    y = 0
-    for v in value:
-        if v.isdigit():
-            y += int(v)
+        return v
+
+    def Convert(self):
+        if len(self.input) >= 2:
+            # split string into number and letters
+            self.input = self.input.lower()
+            for v in self.input:
+                if v.isdigit():
+                    self.y += v
+                else:
+                    self.letters += v
+
+            # convert letters into numbers
+            return self._decode(self.letters) - 1, (int(self.y) - 1)
         else:
-            letters += v
-
-    # convert letters into numbers
-    x = 0
-    for letter in letters:
-        x = LetterConvert(letter)
-    return x, y - 1
+            clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
+            return None, None
 
 
 def NumberRangeCheck(value, x):
     if value >= 0 and value <= x:
         return True
-    else:
-        return False
+    return False
 
 
 def clear(timeS=0, message=None):
     if message:
         print(message)
     time.sleep(timeS)
-    os.system("clear")
-
-
-def PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request):
-    Id = int(Id)
-    if rangeCheck is not None:
-        if callable(rangeCheck):
-            check = None
-            if rangeCheckValue is None:
-                check = rangeCheck(Id)
-            else:
-                check = rangeCheck(Id, rangeCheckValue)
-
-            if check:
-                return Id
-            else:
-                clear(1, "Out of range.")
-                if callable(extra):
-                    if extraValue is None:
-                        extra()
-                    else:
-                        extra(extraValue)
-                elif extra is not None:
-                    print(extra)
-                return InputDigitCheck(request, extra, extraValue, rangeCheck, rangeCheckValue)  # noqa
-        else:
-            print("ERROR, range check is not a function!")
-            return Id
+    if platform.system() == "Windows":
+        os.system("cls")
     else:
-        return Id
+        os.system("clear")
 
 
-def FailCheck(extra, extraValue):
-    # user notification
-    clear(1, "Please enter a valid input")
-    if extra is not None:
-        if callable(extra):
-            if extraValue is None:
-                extra()  # call function
-            else:
-                extra(extraValue)
-        else:
-            print(extra)
-    return None
+class check:
+    def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
+        self.request = request
+        self.extra = extra
+        self.extraValue = extraValue
+        self.rangeCheck = rangeCheck
+        self.rangeCheckValue = rangeCheckValue
+        self.Id = None
+        self.check = None
 
-
-def InputDigitCheck(request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
-    Id = None
-    while not Id:
-        Id = input(f"{request}")  # get input
-        if not Id.isdigit():  # check
-            if len(Id) >= 2:
-                if not Id[1:].isdigit():
-                    Id = FailCheck(extra, extraValue)
+    def _PassCheck(self):
+        # Checks to see if the value is okay
+        self.Id = int(self.Id)
+        if self.rangeCheck is not None:  # checks if in certain range
+            if callable(self.rangeCheck):
+                if self.rangeCheckValue is None:
+                    self.check = self.rangeCheck(self.Id)
                 else:
-                    return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)  # noqa
+                    self.check = self.rangeCheck(self.Id, self.rangeCheckValue)
+
+                if self.check:
+                    return self.Id
+                else:
+                    if self.Id == -1:
+                        return self.Id
+                    clear(1, "Out of range.")
+                    self._CallExtra()
+                    self.Id = None
+                    return self.Id
+            else:
+                print("ERROR, range check is not a function!")
+                return self.Id
         else:
-            return PassCheck(Id, rangeCheck, rangeCheckValue, extra, extraValue, request)  # noqa
+            return self.Id
+
+    def _FailCheck(self):
+        # user notification
+        clear(1, "Please enter a valid input")
+        self._CallExtra()
+        self.Id = None
+
+    def _CallExtra(self):  # repeats any information the user needs to know
+        if self.extra is not None:
+            if callable(self.extra):
+                if self.extraValue is None:
+                    self.extra()  # call function
+                else:
+                    self.extra(self.extraValue)
+            else:
+                print(self.extra)
+
+    def InputDigitCheck(self):  # noqa
+        while not self.Id:
+            self.Id = input("{}".format(self.request))  # get input
+            if len(self.Id) >= 2:  # check
+                if not self.Id[1:].isdigit():
+                    self._FailCheck()
+                else:
+                    return self._PassCheck()
+            elif not self.Id.isdigit():
+                self._FailCheck()
+            else:
+                return self._PassCheck()
