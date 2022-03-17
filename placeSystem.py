@@ -19,7 +19,7 @@ class place:
         save.DisplayBoard(self.gameBoard)
 
     def _ShowShips(self, list):
-        print("Alvalible Ships:\n-1:Return (data will not be saved untill all ships palced)\n0: View Grid")
+        print("Alvalible Ships:\n-1:Return (data will not be saved untill all ships palced)\n0: View Grid")  # noqa
         for sHip in range(len(list)):
             print("{}: {}".format(sHip + 1, list[sHip].Name))
 
