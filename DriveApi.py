@@ -6,7 +6,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from apiclient.http import MediaFileUpload, MediaIoBaseDownload
 import os
-import datetime
 import io
 import time
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -39,7 +38,7 @@ class Api:
 
         return build('drive', 'v3', credentials=creds)
 
-    def Test(self, folderId):
+    def Test(self):
         def makeFolder(folderId):
             folder_metadata = {
                 'name': 'Battleships_test',
@@ -47,7 +46,7 @@ class Api:
                 'parents': [folderId]
             }
             return self.service.files().create(body=folder_metadata,
-                                            fields='id').execute()
+                                               fields='id').execute()
 
         def uploadFile(folderMadeId):
             file_metadata = {
@@ -56,11 +55,11 @@ class Api:
                 'parents': [folderMadeId.get('id')]
             }
             media = MediaFileUpload('UploadFileTest.txt',
-                            mimetype='text/plain',
-                            resumable=True)
+                                    mimetype='text/plain',
+                                    resumable=True)
             return self.service.files().create(body=file_metadata,
-                                                media_body=media,
-                                                fields='id').execute()
+                                               media_body=media,
+                                               fields='id').execute()
 
         def downloadFile(file):
             request = self.service.files().get_media(fileId=file)
@@ -87,18 +86,20 @@ class Api:
             self.service.files().delete(fileId=file).execute()
             self.service.files().delete(fileId=folder).execute()
 
-        folder = makeFolder(folderId)
+        folder = makeFolder(self.folder)
         print(folder)
         file = uploadFile(folder)
         print(file)
-        down = downloadFile(file['id'])
+        downloadFile(file['id'])
         time.sleep(5)  # updates
         DelLocal()
         DelServer(file['id'], folder['id'])
 
-    def UploadData(self, data={'name':'error', 'path':'UploadFileTest.txt'}, folder=False):
+    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
         metadata = {}
         media = None
+        if data['folder']:
+            self.folder = data['folder']
         if folder:
             metadata = {
                 'name': data['name'],
@@ -111,108 +112,40 @@ class Api:
                 'mimeType': '*/*',  # not readable on drive
                 'parents': [self.folder]
             }
-            media = MediaFileUpload(data['path'],
-                                    mimeType='*/*',
+            media = MediaFileUpload(os.path.join(os.path.dirname(os.path.realpath(__file__)), data['path']),  # noqa
+                                    mimetype='*/*',
                                     resumable=True)
         if media:
             return self.service.files().create(body=metadata,
-                                                media_body=media,
-                                                fields='id').execute()
+                                               media_body=media,
+                                               fields='id').execute()
         else:
             return self.service.files().create(body=metadata,
-                                                fields='id').execute()
+                                               fields='id').execute()
 
+    def DownlaodData(self, data={'name': 'error', 'path': 'Saves'}):
+        try:
+            request = self.service.files().get_media(fileId=data['name'])
+            fileHandler = io.BytesIO()
+            downloader = MediaIoBaseDownload(fileHandler, request)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+                print("Downloaded {}%".format(int(status.progress()) * 100))
+            html = fileHandler.getvalue()
 
-    # def GetFilesForDownload(self):
-    #     self.Files = []
-    #     page_token = None
-    #
-    #     while True:
-    #         print(self.folder_id)
-    #         response = self.service.files().list(
-    #             q=f"mimeType='image/png' and parents in '{self.folder_id}'",
-    #             spaces='drive',
-    #             fields='nextPageToken, files(id, name)',
-    #             pageToken=page_token).execute()
-    #
-    #         for file in response.get('files', []):
-    #             self.Files.append(file)
-    #
-    #         page_token = response.get('nextPageToken', None)
-    #         if page_token is None:
-    #             break
-    #
-    # def DownloadFiles(self):
-    #     self.GetFilesForDownload()
-    #     print("-------------------Downloading Files----------------------")
-    #     self.newFiles = []
-    #     for file in self.Files:
-    #         file_Id = file.get('id')
-    #         print(f"{file.get('name')} ({file.get('id')})")
-    #
-    #         # download stuff
-    #         request = self.service.files().get_media(fileId=file_Id)  # noqa
-    #         fileHandler = io.BytesIO()
-    #         downloader = MediaIoBaseDownload(fileHandler, request)
-    #         done = False
-    #         while done is False:
-    #             status, done = downloader.next_chunk()
-    #             print(f"Downloaded {int(status.progress()) * 100}%")
-    #         html = fileHandler.getvalue()
-    #
-    #         with open(f"{self.Path}{file.get('name')}", 'wb') as f:
-    #             f.write(html)
-    #             self.newFiles.append(f)
-    #     print("----------------------------END---------------------------")
-    #
-    # def MoveFiles(self):
-    #     print("Moving Files")
-    #     # self.GetFilesForDownload()  # make sure it has files
-    #     if len(self.Files) == 0:
-    #         self.GetFilesForDownload()
-    #     self.newid = self.MakeFolder()
-    #     for file in self.Files:
-    #         file_Id = file.get('id')
-    #         currentfile = self.service.files().get(fileId=file_Id,
-    #                                                fields='parents').execute()
-    #         previousParent = ",".join(currentfile.get('parents'))
-    #         self.service.files().update(fileId=file_Id,
-    #                                     addParents=self.newid,
-    #                                     removeParents=previousParent,
-    #                                     fields='id, parents').execute()
-    #         print(f"Moved file: {file.get('name')} to {id}")
-    #
-    # def MoveFilesBack(self):
-    #     print("Moving files back")
-    #     self.GetFilesForDownload()
-    #     for file in self.files:
-    #         file_Id = file.get('id')
-    #         self.service.files().update(fileId=file_Id,
-    #                                     addParents=self.moveFolder_Id,
-    #                                     removeParents=self.newid,
-    #                                     fields='id, parents').execute()
-    #         print(f"Moved file: {file.get('name')} back to {self.moveFolder_Id}")  # noqa
-    #
-    # def List(self):
-    #     print("----------------------Files in Drive----------------------")
-    #     self.GetFilesForDownload()
-    #     for file in self.Files:
-    #         print(f"{file.get('name')} ({file.get('id')})")
-    #     print("----------------------------END---------------------------")
-    #
-    # def MakeFolder(self):
-    #     file_metadata = {
-    #         'name': f'{datetime.datetime.now()}',
-    #         'mimeType': 'application/vnd.google-apps.folder',
-    #         'parents': [self.moveFolder_Id]
-    #     }
-    #     file = self.service.files().create(body=file_metadata,
-    #                                        fields='id').execute()
-    #     return file.get('id')
+            with open("{}.txt".format(data['path']), 'wb') as f:
+                f.write(html)
+            return True
+        except HttpError as error:
+            print("Error occured!: {}".format(error.reason))
+            return False
+
 
 if __name__ == "__main__":
     api = Api(input("Folder id: "))
-    api.Test(input("folder id: "))
-    # result = api.UploadData({'name':'FolderTest', 'path':''}, True)
-    # print(result)
-    # api.UploadData({'name':'FileTest', 'path':'UploadFileTest.txt'}, False)
+    result = api.UploadData({'name': 'FolderTest', 'path': '', 'folder': None}, True)  # noqa
+    print(result)
+    file = api.UploadData({'name': 'FileTest', 'path': 'UploadFileTest.txt', 'folder': result['id']}, False)  # noqa
+    print(file)
+    api.DownlaodData({'name': file['id'], 'path': 'Download'})
