@@ -124,3 +124,4 @@ class place:
             save.DisplayBoard(self.gameBoard)
 
         save.UpdateFile(self.gameBoard, "Saves/{}/{}".format(self.game, self.user), "ships")  # noqa
+        return 0  # returns if all good.
