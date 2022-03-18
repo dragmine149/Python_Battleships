@@ -13,9 +13,9 @@ Main:
 🅿️ View info about ships
 ✅ More than one game
 ✅ Multiplayer
-◾️ Network
+🅿 Network
   ◾️ Extra file support
-  ◾️ Google Drive Support
+  🅿 Google Drive Support
 ◾️ Settings
 ◾️ UI (optional for user)
 🅿️ Bug Fixes

@@ -1,3 +1,5 @@
 Saves
 __pycache__
 .DS_Store
+ApiFiles
+DownloadFileTest.txt
