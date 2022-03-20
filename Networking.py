@@ -3,9 +3,10 @@ import time
 import shutil
 import random
 import string
+import json
 
 
-class Network:
+class save:
     # path = saves dir on network
     def __init__(self, path):
         self.path = path.rstrip().replace("\\", "")
@@ -106,10 +107,10 @@ class Network:
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "w+") as gameData:  # noqa
-                    gameData.write(data)
+                    gameData.write(json.dumps(data))
             else:
                 with open(self.newgame + file, "w+") as file:
-                    file.write(data)
+                    file.write(json.dumps(data))
         except FileNotFoundError:
             return "Folder to hold file was not found"
         return "Success"
@@ -131,14 +132,58 @@ class Network:
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
-                    gameData.read()
+                    return json.loads(gameData.read())
             else:
                 with open(self.newgame + file, "r") as file:
-                    file.read()
+                    return json.loads(file.read())
         except FileNotFoundError:
-            return "Folder to hold file was not found"
-        return "Success"
+            return "Failed -> Folder not found"
+
+    def saveCreation(data, name, users):
+        if not os.path.exists("Saves"):
+            os.mkdir("Saves")
+        if os.path.exists("Saves/{}".format(name)):
+            print("Please enter a name that has not already been used.")
+            Functions.clear(1)
+            return None
+        else:
+            os.mkdir("Saves/{}".format(name))
+            os.mkdir("Saves/{}/{}".format(name, users[0]))
+            if os.path.exists("Saves/{}/{}".format(name, users[0])):
+                UpdateFile(data, "Saves/{}/{}".format(name, users[0]), "grid")
+                os.mkdir("Saves/{}/{}".format(name, users[1]))
+                if os.path.exists("Saves/{}/{}".format(name, users[1])):
+                    UpdateFile(data, "Saves/{}/{}".format(name, users[1]), "grid")
+                    return True
+                else:
+                    Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
+                    shutil.rmtree("rm -d -r Saves/{}".format(name))
+                    return False
+            else:
+                Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
+                shutil.rmtree("rm -d -r Saves/{}".format(name))
+                return False
+
+class board:
+    # Create the board in a 2d array.
+    def CreateBoard(size):
+        board = []
+        for _ in range(size[1]):  # _ = assaign it to nothing.
+            x = []
+            for _ in range(size[0]):  # x grid
+                x.append('-')
+            board.append(x)
+
+        return board
+
+    # Loops through the board and prints it out.
+    def DisplayBoard(board):
+        for y in board:
+            for x in y:
+                print(x, end="")
+            print()
+
 
 
 if __name__ == "__main__":
-    n = Network(input("Path of files: "))
+    n = save(input("Path of files: "))
