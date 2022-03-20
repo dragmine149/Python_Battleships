@@ -134,8 +134,6 @@ class save:
 
     def readFile(self, game, file):
         try:
-            with open('Tests/a.txt', "w+") as f:
-                f.write('{}\n{}'.format(self.newgame, file))
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
                     return json.loads(gameData.read())

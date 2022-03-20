@@ -13,11 +13,17 @@ class place:
         self.rot = 0
         self.breaked = False
         self.placed = False
-        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        print('init')
+        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        if self.gameBoard == "Failed -> Folder not found":
+            os.path.sys('Failed to find folder, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        print('load')
+        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        if self.gameBoard == "Failed -> Folder not found":
+            os.path.sys('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
 
     # List ships that the user can places
@@ -136,6 +142,7 @@ class place:
                         if not data[0]:
                             data[1] = str(random.randint(0, 10))
                             self.rot = rot
+                            locInput = chr(random.randint(ord('a'), ord('j'))) + str(random.randint(1, 11))
 
                 ships.pop(place)  # removed placed ship
             else:
