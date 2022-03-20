@@ -13,8 +13,8 @@ Main:
 🅿️ View info about ships
 ✅ More than one game
 ✅ Multiplayer
-🅿 Network
-  🅿 Extra file support
+🅿️ Network
+  🅿️ Extra file support
   ✅ Google Drive Support
 ◾️ Settings
 ◾️ UI (optional for user)

@@ -6,6 +6,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class fire:
+    # Setup
     def __init__(self, game, fireUser, targetUser):
         self.game = game
         self.fireUser = fireUser
@@ -14,10 +15,13 @@ class fire:
         self.fireBoard = save.read(game, fireUser)
         self.targetBoard = save.read(game, targetUser, "ships")
 
+    # Does multiple checks and fires at the other user
     def Fire(self):
+        # Just in case another check fails.
         if os.path.exists("Saves/{}/win.txt".format(self.game)):
             return True
-        # load data
+
+        # Keep shooting until shot is know to be completed.
         while not self.shotTaken:
             print("{}'s Turn to shoot\n".format(self.fireUser))
             save.DisplayBoard(self.fireBoard)
@@ -29,6 +33,7 @@ class fire:
                     x, y = Functions.LocationConvert(shotPos).Convert()  # noqa
                 else:
                     return "Fake"  # fake win
+
             # check if haven't already shot there
             if self.fireBoard[y][x] != "-":
                 Functions.clear(1, "You have already shot there")
@@ -42,12 +47,16 @@ class fire:
                 else:
                     self.fireBoard[y][x] = "+"
                     print("Miss")
+
+                # Update files.
                 self.shotTaken = True
                 save.UpdateFile(self.fireBoard, "Saves/{}/{}".format(self.game, self.fireUser), "grid")  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
     def _DestroyedCheck(self):
+        # Change ships to take the ammount from file instead of in list.
+        # Mod support bascially.
         ships = [
             ship.Short(),
             ship.Medium1(),
@@ -56,9 +65,9 @@ class fire:
             ship.ExtraLong()
         ]
         destroyedList = "Destroyed Ships:\n"  # makes a list
-        destroyedAmmount = 0
+        destroyedAmount = 0
 
-        # This could be made better
+        # Could this be better?
         for pShip in ships:
             for y in range(len(self.fireBoard)):
                 for x in range(len(self.fireBoard[y])):
@@ -66,10 +75,10 @@ class fire:
                         pShip.Health -= 1  # remove
             if pShip.Health == 0:  # add
                 destroyedList += "{}\n".format(pShip.Name)
-                destroyedAmmount += 1
+                destroyedAmount += 1
 
         # game over check
-        if destroyedAmmount == len(ships):
+        if destroyedAmount == len(ships):
             Functions.clear()
             print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
             save.UpdateFile(self.fireUser, "Saves/{}".format(self.game), "win")

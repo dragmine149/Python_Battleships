@@ -10,9 +10,9 @@ import Functions
 class save:
     # path = saves dir on network
     def __init__(self, path):
-        self.path = path.rstrip().replace("\\", "")
+        self.path = path.rstrip().replace("\\", "")  # mac os check
         self.newgame = None
-        self.Test()
+        self.Test()  # runs a bunch of tests on start
 
     def Test(self):
         os.system("clear")
@@ -51,6 +51,7 @@ class save:
             Is server down?""")
 
     def _writeCheck(self):
+        # Runs a series of checks to see if can write to deginated location.
         print("Write Check 1 -> In Progress", end="\r")
         wc1 = self.makeFolder("Test")
         print("Write Check 1 -> {}         ".format(wc1))
@@ -79,6 +80,7 @@ class save:
             print("Error whilst completing a task, Please try again")
 
     def makeFolder(self, game):
+        # Makes a folder in said path.
         path = os.path.join(self.path, game)
         if os.path.exists(path):
             self.newgame = game + '-' + ''.join(random.choice(string.ascii_letters) for _ in range(10))  # noqa
@@ -90,6 +92,7 @@ class save:
             return "Failed"
 
     def copyFile(self, game, file):
+        # Copies a file from one place to another
         if os.path.isfile(file):
             gameDir = None
             if not self.newgame:
@@ -105,6 +108,7 @@ class save:
             return "Game file given is not a file"
 
     def writeFile(self, game, file, data):
+        # Attempts to write a file at said location
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "w+") as gameData:  # noqa
@@ -117,6 +121,7 @@ class save:
         return "Success"
 
     def _readCheck(self):
+        # A series of checks to see if can read from location.
         print("Read Check 1 -> In Progress      ", end="\r")
         rc1 = self.readFile("Test", "grid.txt")
         print("Read Check 1 -> {}         ".format(rc1))
@@ -130,6 +135,7 @@ class save:
             print("Error whilst completing a task, Please try again")
 
     def readFile(self, game, file):
+        # Tries to read file at location
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
@@ -141,6 +147,8 @@ class save:
             return "Failed -> Folder not found"
 
     def saveCreation(self, data, name, users):
+        # Main system to save user data.
+        # And to setup new games
         if not os.path.exists("Saves"):
             os.mkdir("Saves")
         if os.path.exists("Saves/{}".format(name)):
