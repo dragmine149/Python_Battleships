@@ -1,3 +1,4 @@
+# Google drive api inputs (a lot)
 from __future__ import print_function
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -5,6 +6,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+
+
 import os
 import io
 import time
@@ -14,12 +17,14 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 
 
 class Api:
+    # Setup the api class
     def __init__(self, folderId):
         if not os.path.exists("ApiFiles"):
             os.mkdir("ApiFiles")
         self.service = self.__LoadAPI__()
         self.folder = folderId
 
+    # Loads the api for use later.
     def __LoadAPI__(self):
         creds = None
         if os.path.exists('ApiFiles/token.json'):  # noqa
@@ -38,7 +43,9 @@ class Api:
 
         return build('drive', 'v3', credentials=creds)
 
+    # Runs a series of tests to make sure the client has all correct permission
     def Test(self):
+        # Makes test folder
         def makeFolder(folderId):
             folder_metadata = {
                 'name': 'Battleships_test',
@@ -48,6 +55,7 @@ class Api:
             return self.service.files().create(body=folder_metadata,
                                                fields='id').execute()
 
+        # Makes test file
         def uploadFile(folderMadeId):
             file_metadata = {
                 'name': 'README.txt',
@@ -61,6 +69,7 @@ class Api:
                                                media_body=media,
                                                fields='id').execute()
 
+        # Download test file
         def downloadFile(file):
             request = self.service.files().get_media(fileId=file)
             fileHandler = io.BytesIO()
@@ -75,6 +84,7 @@ class Api:
                 f.write(html)
             return True
 
+        # Delete local files (that got downloaded)
         def DelLocal():
             if os.path.exists("DownloadFileTest.txt"):
                 os.remove("DownloadFileTest.txt")
@@ -82,10 +92,14 @@ class Api:
             else:
                 return False
 
+        # Delete server files (test)
         def DelServer(file, folder):
             self.service.files().delete(fileId=file).execute()
             self.service.files().delete(fileId=folder).execute()
 
+        # Runs tests.
+        # TODO: Add checks for fails
+        # TODO: Replace some checks with the actual function
         folder = makeFolder(self.folder)
         print(folder)
         file = uploadFile(folder)
@@ -95,6 +109,7 @@ class Api:
         DelLocal()
         DelServer(file['id'], folder['id'])
 
+    # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
         metadata = {}
         media = None
@@ -123,6 +138,7 @@ class Api:
             return self.service.files().create(body=metadata,
                                                fields='id').execute()
 
+    # Download data from fileid. (Change to file name?)
     def DownlaodData(self, data={'name': 'error', 'path': 'Saves'}):
         try:
             request = self.service.files().get_media(fileId=data['name'])

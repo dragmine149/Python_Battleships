@@ -22,6 +22,8 @@ while True:
         Functions.clear()
         if v == 0:
             v = place.place(gameName, users[1]).Place()
+
+    # Plays the game until stops or someone wins.
     if v == 0:
         Functions.clear()
         game = False

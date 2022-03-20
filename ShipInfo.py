@@ -1,3 +1,6 @@
+# A file containing information about every single ship in the game.
+# TODO: make easier to add new ships
+
 class Short:
     def __init__(self):
         self.Length = 2
