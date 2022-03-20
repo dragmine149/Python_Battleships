@@ -4,6 +4,7 @@ import shutil
 import random
 import string
 import json
+import Functions
 
 
 class save:
@@ -139,7 +140,7 @@ class save:
         except FileNotFoundError:
             return "Failed -> Folder not found"
 
-    def saveCreation(data, name, users):
+    def saveCreation(self, data, name, users):
         if not os.path.exists("Saves"):
             os.mkdir("Saves")
         if os.path.exists("Saves/{}".format(name)):
@@ -150,10 +151,10 @@ class save:
             os.mkdir("Saves/{}".format(name))
             os.mkdir("Saves/{}/{}".format(name, users[0]))
             if os.path.exists("Saves/{}/{}".format(name, users[0])):
-                UpdateFile(data, "Saves/{}/{}".format(name, users[0]), "grid")
+                self.writeFile(data, "Saves/{}/{}".format(name, users[0]), "grid") # noqa
                 os.mkdir("Saves/{}/{}".format(name, users[1]))
                 if os.path.exists("Saves/{}/{}".format(name, users[1])):
-                    UpdateFile(data, "Saves/{}/{}".format(name, users[1]), "grid")
+                    self.writeFile(data, "Saves/{}/{}".format(name, users[1]), "grid")  # noqa
                     return True
                 else:
                     Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
@@ -163,6 +164,7 @@ class save:
                 Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
                 shutil.rmtree("rm -d -r Saves/{}".format(name))
                 return False
+
 
 class board:
     # Create the board in a 2d array.
@@ -182,7 +184,6 @@ class board:
             for x in y:
                 print(x, end="")
             print()
-
 
 
 if __name__ == "__main__":
