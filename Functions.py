@@ -103,7 +103,7 @@ class check:
                     clear(1, "Out of range.")
                     self._CallExtra()
                     self.Id = None
-                    return self.Id
+                    return None
             else:
                 print("ERROR, range check is not a function!")
                 return self.Id
@@ -126,15 +126,19 @@ class check:
             else:
                 print(self.extra)
 
-    def InputDigitCheck(self):  # noqa
+    def InputDigitCheck(self, Input=True, idIn=0):  # noqa
         while not self.Id:
-            self.Id = input("{}".format(self.request))  # get input
-            if len(self.Id) >= 2:  # check
-                if not self.Id[1:].isdigit():
+            if Input:
+                self.Id = input("{}".format(self.request))  # get input
+                if len(self.Id) >= 2:  # check
+                    if not self.Id[1:].isdigit():
+                        self._FailCheck()
+                    else:
+                        return self._PassCheck()
+                elif not self.Id.isdigit():
                     self._FailCheck()
                 else:
                     return self._PassCheck()
-            elif not self.Id.isdigit():
-                self._FailCheck()
             else:
+                self.Id = idIn
                 return self._PassCheck()

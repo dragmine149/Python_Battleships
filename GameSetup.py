@@ -1,8 +1,9 @@
 import os
 import sys
 import time
-import save
+import SaveSystem as save
 import Functions
+import boardCreate as Create
 
 
 class game:
@@ -70,9 +71,9 @@ class game:
                     for i in range(len(users)):
                         if users[i] != "win.txt":
                             print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
-                            save.DisplayBoard(save.read(gameName, users[i]))
+                            save.board.DisplayBoard(save.read(gameName, users[i]))  # noqa
                             print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
-                            save.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
+                            save.board.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
                     input("Press enter when you are ready to continue.")
                     self.__reset()
                 else:
@@ -81,23 +82,7 @@ class game:
                         placed = True
                     self.__reset(None, True, gameName, users, placed)
         elif self.choice == 2:
-            # Creates a new game.
-            # get the size
-            x, y = None, None
-            while x is None:
-                x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
-            while y is None:
-                y = Functions.check("Please enter Y size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
-            GameBoard = save.CreateBoard([x, y])  # creates a board
-            create = None
-            while not create:  # saves the board
-                name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
-                users = [
-                    str(input("Please enter player 1's name: ").replace(" ", "")),  # noqa
-                    str(input("Please enter player 2's name: ").replace(" ", ""))  # noqa
-                ]
-                create = save.save(GameBoard, name, users)
-            self.__reset(None, True, name, users, False)
+            Create.create().setup()
         elif self.choice == 0:
             # Quites
             sys.exit("Thank you for playing")

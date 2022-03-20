@@ -18,10 +18,10 @@ while True:
     v = 0
     if not Placed:
         # Placing ships on the borad
-        v = place.place(gameName, users[0]).Place()
+        v = place.place(gameName, users[0]).Place(input("Enter location to place ship: "))  # noqa
         Functions.clear()
         if v == 0:
-            v = place.place(gameName, users[1]).Place()
+            v = place.place(gameName, users[1]).Place(input("Enter location to place ship: ")) # noqa
 
     # Plays the game until stops or someone wins.
     if v == 0:

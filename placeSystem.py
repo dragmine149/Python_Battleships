@@ -1,7 +1,9 @@
-import save
+import SaveSystem as save
 import ShipInfo as ship
 import Functions
 import copy
+import random
+import os
 
 
 class place:
@@ -11,12 +13,12 @@ class place:
         self.rot = 0
         self.breaked = False
         self.placed = False
-        self.gameBoard = save.read(self.game, self.user)
+        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid")  # noqa
 
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = save.read(self.game, self.user)
-        save.DisplayBoard(self.gameBoard)
+        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        save.board.DisplayBoard(self.gameBoard)
 
     # List ships that the user can places
     def _ShowShips(self, list):
@@ -48,7 +50,7 @@ class place:
                 Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
 
     # Reset error function
-    def _Error(self, message, deep):
+    def _Error(self, message):
         Functions.clear(1, message)
         self.breaked = True
         self.placed = False
@@ -59,7 +61,7 @@ class place:
         self.placed = False
 
     # Function to palce ship
-    def Place(self):
+    def Place(self, locInput, data=[True, None], rot=None):
         # TODO: change to allow mod support
         ships = [
             ship.Short(),
@@ -73,12 +75,17 @@ class place:
             print("{}'s Turn to place ships\n".format(self.user))
             self._ShowShips(ships)
             place = None
+            testTemp = 0
             while place is None:
-                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
+                # Test code support.
+                if testTemp >= 1 and data[1] is not None:
+                    data[1] = str(random.randint(1, 11))
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck(data[0], data[1]) # noqa
                 if place == -1:
                     return -1
                 if place is not None:
                     place -= 1
+                testTemp += 1
             deep = copy.deepcopy(self.gameBoard)
 
             if place != -1:
@@ -86,8 +93,11 @@ class place:
                     # get ship position
                     x, y = None, None
                     while x is None and y is None:
-                        x, y = Functions.LocationConvert(input("Enter location to place ship: ")).Convert()  # noqa
-                    self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
+                        x, y = Functions.LocationConvert(locInput).Convert()  # noqa
+                    if type(rot) != int:
+                        self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
+                    else:
+                        self.rot = rot
 
                     # Attempts to place the ship at the desiered location
                     # with rotation.
@@ -108,7 +118,7 @@ class place:
                                 self.placed = False
                                 break
                             if self.gameBoard[squareId[0]][squareId[1]] == "-":
-                                self.gameBoard[squareId[0]][squareId[1]] = ships[place].Symbol  # noqa
+                                self.gameBoard[squareId[0]][squareId[1]] = str(ships[place].Symbol)  # noqa
                             else:
                                 self._Error("Ship collides with another ship!")
                                 self.gameBoard = deep
@@ -117,16 +127,20 @@ class place:
                         if not self.breaked:
                             self.placed = True
                         else:
-                            save.DisplayBoard(self.gameBoard)
-                            print("{}'s Turn to place ships\n\nShip placing: {ships[place].Name}".format(self.user))  # noqa
+                            save.board.DisplayBoard(self.gameBoard)
+                            print("{}'s Turn to place ships\n\nShip placing: {}".format(self.user, ships[place].Name))  # noqa
                     except IndexError:  # reset if ship can't go there
-                        self._Error("Ship does not fit on board",)
+                        self._Error("Ship does not fit on board")
                         self.gameBoard = deep
+                        self.placed = False
+                        if not data[0]:
+                            data[1] = str(random.randint(0, 10))
+                            self.rot = rot
 
                 ships.pop(place)  # removed placed ship
             else:
                 print("This has not been implement yet!")
             Functions.clear(0)
-            save.DisplayBoard(self.gameBoard)
+            save.board.DisplayBoard(self.gameBoard)
 
-        save.UpdateFile(self.gameBoard, "Saves/{}/{}".format(self.game, self.user), "ships")  # noqa
+        save.writeFile("Saves/{}/{}".format(self.game, self.user), "ships", gameBoard)  # noqa

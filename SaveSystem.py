@@ -28,11 +28,12 @@ class save:
         # Tries to remove excess files
         try:
             if self.newgame:
-                shutil.rmtree(self.newgame)
+                shutil.rmtree(os.path.join(self.path, self.newgame))
             else:
                 shutil.rmtree(os.path.join(self.path, "Test"))
         except FileNotFoundError:
             print("Failed to remove files created")
+        self.newgame = None
         time.sleep(1)
         print("\n\n")
 
@@ -107,10 +108,12 @@ class save:
     def writeFile(self, game, file, data):
         try:
             if not self.newgame:
-                with open(os.path.join(os.path.join(self.path, game), file), "w+") as gameData:  # noqa
+                newPath = os.path.join(os.path.join(self.path, game), file)
+                with open(newPath, "w+") as gameData:  # noqa
                     gameData.write(json.dumps(data))
             else:
-                with open(self.newgame + file, "w+") as file:
+                newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
+                with open(newPath, "w+") as file:
                     file.write(json.dumps(data))
         except FileNotFoundError:
             return "Folder to hold file was not found"
@@ -122,7 +125,7 @@ class save:
         print("Read Check 1 -> {}         ".format(rc1))
 
         complete = [
-            rc1 == "Success"
+            rc1 != "Failed -> Folder not found"
         ]
         if complete[0]:
             return True
@@ -131,38 +134,45 @@ class save:
 
     def readFile(self, game, file):
         try:
+            with open('Tests/a.txt', "w+") as f:
+                f.write('{}\n{}'.format(self.newgame, file))
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
                     return json.loads(gameData.read())
             else:
-                with open(self.newgame + file, "r") as file:
+                newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
+                with open(newPath, "r") as file:
                     return json.loads(file.read())
         except FileNotFoundError:
             return "Failed -> Folder not found"
 
     def saveCreation(self, data, name, users):
-        if not os.path.exists("Saves"):
-            os.mkdir("Saves")
-        if os.path.exists("Saves/{}".format(name)):
+        Functions.clear(1)
+        print("Saving data")
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
+        if os.path.exists("{}/{}".format(self.path, name)):
             print("Please enter a name that has not already been used.")
             Functions.clear(1)
-            return None
+            return "E"
         else:
-            os.mkdir("Saves/{}".format(name))
-            os.mkdir("Saves/{}/{}".format(name, users[0]))
-            if os.path.exists("Saves/{}/{}".format(name, users[0])):
-                self.writeFile(data, "Saves/{}/{}".format(name, users[0]), "grid") # noqa
-                os.mkdir("Saves/{}/{}".format(name, users[1]))
-                if os.path.exists("Saves/{}/{}".format(name, users[1])):
-                    self.writeFile(data, "Saves/{}/{}".format(name, users[1]), "grid")  # noqa
+            os.mkdir("{}/{}".format(self.path, name))
+            os.mkdir("{}/{}/{}".format(self.path, name, users[0]))
+            print("Made dir -> {}/{}/{}".format(self.path, name, users[0]))
+            if os.path.exists("{}/{}/{}".format(self.path, name, users[0])):
+                print(self.writeFile("{}/{}".format(name, users[0]), "grid.txt", data)) # noqa
+                os.mkdir("{}/{}/{}".format(self.path, name, users[1]))
+                print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))
+                if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
+                    print(self.writeFile("{}/{}".format(name, users[1]), "grid.txt", data))  # noqa
                     return True
                 else:
                     Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
-                    shutil.rmtree("rm -d -r Saves/{}".format(name))
+                    shutil.rmtree("rm -d -r {}/{}".format(self.path, name))
                     return False
             else:
                 Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
-                shutil.rmtree("rm -d -r Saves/{}".format(name))
+                shutil.rmtree("rm -d -r {}/{}".format(self.path, name))
                 return False
 
 
