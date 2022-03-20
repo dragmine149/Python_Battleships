@@ -12,7 +12,7 @@ class game:
         self.users = None
         self.Placed = None
 
-    # replaces the return in _ProcessChoice
+    # Resets the game class for a new use
     def __reset(self, message=None, choice=None, name=None, users=None, Placed=None):  # noqa
         self.name = name
         self.users = users
@@ -21,6 +21,7 @@ class game:
         if message:
             print(message)
 
+    # Prints off all games found
     def _loadGames(self):
         print("Games found on disk:")
         games = os.listdir("Saves")
@@ -30,6 +31,7 @@ class game:
                 path += " (finished)"
             print(path)
 
+    # The range check function for amount of saves
     def _LoadRangeCheck(self, value):
         amount = len(os.listdir("Saves"))
         if value > 0 and value <= amount:
@@ -40,11 +42,14 @@ class game:
 
     @staticmethod
     def SizeRangeCheck(size):
+        # replace with amount of ships in game.
         if size >= 5:  # got to be big enough to hold all ships
             return True
         return False
 
+    # Function to process user inputs
     def _ProcessChoice(self):
+        # Errors if files not found.
         if self.choice == 1 and not os.path.exists("Saves"):
             self.__reset("There is no game to load!!")
         elif self.choice == 1 and len(os.listdir("Saves")) == 0:
@@ -76,8 +81,9 @@ class game:
                         placed = True
                     self.__reset(None, True, gameName, users, placed)
         elif self.choice == 2:
+            # Creates a new game.
             # get the size
-            x,y = None, None
+            x, y = None, None
             while x is None:
                 x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck()  # noqa
             while y is None:
@@ -93,10 +99,13 @@ class game:
                 create = save.save(GameBoard, name, users)
             self.__reset(None, True, name, users, False)
         elif self.choice == 0:
+            # Quites
             sys.exit("Thank you for playing")
         elif self.choice == 3:
+            # Other small stuff
             self.__reset("Settings are comming later, please wait")
 
+    # Read the options. Allows for easy to change menu
     def _fileRead(self):
         with open("Options.txt", "r") as options:
             lines = options.readlines()

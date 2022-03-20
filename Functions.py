@@ -3,12 +3,15 @@ import os
 import platform
 
 
+# Converts the input to a valid location (a1 -> [0,0])
 class LocationConvert:
     def __init__(self, value):
         self.input = value
         self.letters = ""
         self.y = ""
 
+    # Thanks to Guy_732
+    # changes letter to number based in the alphabet
     def _decode(self, s: str) -> int:
         s = s.lower()
         ref = ord('a') - 1
@@ -22,8 +25,9 @@ class LocationConvert:
 
     def Convert(self):
         if len(self.input) >= 2:
-            # split string into number and letters
+            # lower input
             self.input = self.input.lower()
+            # splits the input into numbers and letters
             for v in self.input:
                 if v.isdigit():
                     self.y += v
@@ -37,23 +41,40 @@ class LocationConvert:
             return None, None
 
 
+# Checks if a number is within 0 and another value.
 def NumberRangeCheck(value, x):
     if value >= 0 and value <= x:
         return True
     return False
 
 
+# Clears the console with a message before clear.
 def clear(timeS=0, message=None):
     if message:
         print(message)
     time.sleep(timeS)
+    # Windows doesn't have 'clear' so having to use the other option.
+    # Mac / Linux doesn't have 'cls' same issue as windows
     if platform.system() == "Windows":
         os.system("cls")
     else:
         os.system("clear")
 
 
+# Check if the input is a valid input using a whole bunch of data
 class check:
+    """
+    request -> String
+        - What you want to ask the user
+    extra -> String / function
+        - Any extra information you want to display to the user
+    extraValue -> value
+        - Information that the function needs
+    rangeCheck -> function
+        - A callable function that checks if the input is within 2 digits
+    rangeCheckValue -> Interager
+        - The other digit for the range check
+    """
     def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
         self.request = request
         self.extra = extra
@@ -67,6 +88,7 @@ class check:
         # Checks to see if the value is okay
         self.Id = int(self.Id)
         if self.rangeCheck is not None:  # checks if in certain range
+            # A lot of checks to call a function or not
             if callable(self.rangeCheck):
                 if self.rangeCheckValue is None:
                     self.check = self.rangeCheck(self.Id)

@@ -1,3 +1,6 @@
+# The old save system
+# Currently in progress of moving to SaveSystem.py
+
 import Functions
 import os
 import json

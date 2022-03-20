@@ -18,16 +18,19 @@ class place:
         self.gameBoard = save.read(self.game, self.user)
         save.DisplayBoard(self.gameBoard)
 
+    # List ships that the user can places
     def _ShowShips(self, list):
         print("Alvalible Ships:\n-1:Return (data will not be saved untill all ships palced)\n0: View Grid")  # noqa
         for sHip in range(len(list)):
             print("{}: {}".format(sHip + 1, list[sHip].Name))
 
+    # Range check for input (in length of list)
     def _rangeCheck(self, value, list):
         if value >= 0 and value <= len(list):
             return True
         return False
 
+    # Custom check for the rotation
     def _rotationCheck(self, request):
         string = None
         rotation = {
@@ -44,6 +47,7 @@ class place:
                 string = None
                 Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
 
+    # Reset error function
     def _Error(self, message, deep):
         Functions.clear(1, message)
         self.breaked = True
@@ -54,7 +58,9 @@ class place:
         self.breaked = False
         self.placed = False
 
+    # Function to palce ship
     def Place(self):
+        # TODO: change to allow mod support
         ships = [
             ship.Short(),
             ship.Medium1(),
