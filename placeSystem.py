@@ -4,6 +4,7 @@ import Functions
 import copy
 import random
 import os
+import sys
 
 
 class place:
@@ -17,14 +18,14 @@ class place:
         self.saveLocation = Location
         self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
-            os.path.sys('Failed to find folder, please check')
+            sys.exit('Failed to find folder, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
         print('load')
         self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
-            os.path.sys('Failed to find folder, please check')
+            sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
 
     # List ships that the user can places
