@@ -1,4 +1,4 @@
-import save
+import SaveSystem as save
 import Functions
 import ShipInfo as ship
 import os
@@ -12,14 +12,14 @@ class fire:
         self.fireUser = fireUser
         self.targetUser = targetUser
         self.shotTaken = False
-        self.fireBoard = save.save(Location).readFile(os.path.join(game, fireUser), "grid.txt")
-        self.targetBoard = save.save(Location).readFile(os.path.join(game, targetUser), "ships.txt")
+        self.fireBoard = save.save(Location).readFile(os.path.join(game, fireUser), "grid")  # noqa
+        self.targetBoard = save.save(Location).readFile(os.path.join(game, targetUser), "ships")  # noqa
         self.saveLocation = Location
 
     # Does multiple checks and fires at the other user
     def Fire(self):
         # Just in case another check fails.
-        if os.path.exists("{}/{}/win.txt".format(self.saveLocation, self.game)):
+        if os.path.exists("{}/{}/win".format(self.saveLocation, self.game)):
             return True
 
         # Keep shooting until shot is know to be completed.
@@ -51,7 +51,7 @@ class fire:
 
                 # Update files.
                 self.shotTaken = True
-                save.writeFile("{}/{}/{}".format(self.saveLocation, self.game, self.fireUser), "grid.txt", self.fireBoard)  # noqa
+                save.writeFile("{}/{}/{}".format(self.saveLocation, self.game, self.fireUser), "grid", self.fireBoard)  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
@@ -82,6 +82,6 @@ class fire:
         if destroyedAmount == len(ships):
             Functions.clear()
             print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
-            save.writeFile("{}/{}".format(self.saveLocation, self.game), "win.txt", self.fireUser)
+            save.writeFile("{}/{}".format(self.saveLocation, self.game), "win", self.fireUser)  # noqa
             return True
         Functions.clear(2, destroyedList)
