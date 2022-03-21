@@ -15,14 +15,14 @@ class place:
         self.placed = False
         print('init')
         self.saveLocation = Location
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             os.path.sys('Failed to find folder, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
         print('load')
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             os.path.sys('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -144,7 +144,7 @@ class place:
                         if not data[0]:
                             data[1] = str(random.randint(0, 10))
                             self.rot = rot
-                            locInput = chr(random.randint(ord('a'), ord('j'))) + str(random.randint(1, 11))
+                            locInput = chr(random.randint(ord('a'), ord('j'))) + str(random.randint(1, 11))  # noqa
 
                 ships.pop(place)  # removed placed ship
             else:
@@ -152,5 +152,5 @@ class place:
             Functions.clear(0)
             save.board.DisplayBoard(self.gameBoard)
 
-        save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships.txt", self.gameBoard)  # noqa
-        return 0 # pass check
+        save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships", self.gameBoard)  # noqa
+        return 0  # pass check
