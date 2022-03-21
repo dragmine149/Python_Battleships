@@ -5,16 +5,14 @@ import random
 import string
 import json
 import Functions
-import platform
+import sys
 
 
 class save:
     # path = saves dir on network
     def __init__(self, path):
-        self.path = path.rstrip().replace('"', '')
-        if platform.system() != "Windows":
-            self.path.replace("\\", "")
-        if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":
+        self.path = path.rstrip().replace('"', '').replace("\\", "")
+        if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":  # noqa
             # Load google api
             import DriveApi
             self.Api = DriveApi.Api(self.path)
@@ -53,13 +51,13 @@ class save:
             print("Client can access server files. Everything is ready.")
         elif writeCheck:
             print("Client can write to server but not read... how?")
-            os.path.sys.exit("Required permission missing: Read.")
+            sys.exit("Required permission missing: Read.")
         elif readCheck:
             print("Client can read server data but not write.")
-            os.path.sys.exit("Required permission missing: Write.")
+            sys.exit("Required permission missing: Write.")
         else:
             print("Client can not read or write to server.")
-            os.path.sys.exit("""Required permissions missing: Read + Write.
+            sys.exit("""Required permissions missing: Read + Write.
             Is server down?""")
 
     def _writeCheck(self):
@@ -77,7 +75,7 @@ class save:
         time.sleep(1)
 
         print("Write Check 3 -> In Progress", end="\r")
-        wc3 = self.writeFile("Test", "grid.txt", "H E L L O")
+        wc3 = self.writeFile("Test", "grid", "H E L L O")
         print("Write Check 3 -> {}         ".format(wc3))
 
         complete = [
@@ -132,7 +130,7 @@ class save:
 
     def _readCheck(self):
         print("Read Check 1 -> In Progress      ", end="\r")
-        rc1 = self.readFile("Test", "grid.txt")
+        rc1 = self.readFile("Test", "grid")
         print("Read Check 1 -> {}         ".format(rc1))
 
         complete = [
@@ -169,11 +167,11 @@ class save:
             os.mkdir("{}/{}/{}".format(self.path, name, users[0]))
             print("Made dir -> {}/{}/{}".format(self.path, name, users[0]))
             if os.path.exists("{}/{}/{}".format(self.path, name, users[0])):
-                print(self.writeFile("{}/{}".format(name, users[0]), "grid.txt", data)) # noqa
+                print(self.writeFile("{}/{}".format(name, users[0]), "grid", data)) # noqa
                 os.mkdir("{}/{}/{}".format(self.path, name, users[1]))
                 print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))
                 if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
-                    print(self.writeFile("{}/{}".format(name, users[1]), "grid.txt", data))  # noqa
+                    print(self.writeFile("{}/{}".format(name, users[1]), "grid", data))  # noqa
                     return True
                 else:
                     Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
