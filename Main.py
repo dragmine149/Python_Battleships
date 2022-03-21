@@ -9,8 +9,10 @@ print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 gameName, users, Placed, Location = None, None, None, None
 
+
 def getLocation():
     return input("Enter location to place ship: ")
+
 
 while True:
     # Terminal setup ui
