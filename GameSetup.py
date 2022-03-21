@@ -14,28 +14,32 @@ class game:
         self.Placed = None
 
     # Resets the game class for a new use
-    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None):  # noqa
+    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None, Location=None):  # noqa
         self.name = name
         self.users = users
         self.Placed = Placed
         self.choice = choice
+        self.saveLocation = Location
         if message:
             print(message)
 
     # Prints off all games found
-    def _loadGames(self):
+    def _loadGames(self, external="saves"):
         print("Games found on disk:")
-        games = os.listdir("Saves")
+        if external == "saves":
+            print("0: Load from external area")
+        games = os.listdir(external)
         for file in range(len(games)):
-            path = "{}: {}".format(file + 1, games[file])
-            if os.path.exists("Saves/{}/win.txt".format(games[file])):
-                path += " (finished)"
-            print(path)
+            if not games[file].startswith("."):
+                path = "{}: {}".format(file + 1, games[file])
+                if os.path.exists("{}/{}/win".format(external, games[file])):
+                    path += " (finished)"
+                print(path)
 
     # The range check function for amount of saves
-    def _LoadRangeCheck(self, value):
-        amount = len(os.listdir("Saves"))
-        if value > 0 and value <= amount:
+    def _LoadRangeCheck(self, value, path="Saves"):
+        amount = len(os.listdir(path))
+        if value >= 0 and value <= amount:
             return True
         elif value == -1:
             return True
@@ -47,6 +51,26 @@ class game:
         if size >= 5:  # got to be big enough to hold all ships
             return True
         return False
+
+    def _LoadGame(self, Path="Saves", game=None):
+        gameName = os.listdir(Path)[game - 1]
+        users = os.listdir("{}/{}".format(Path, gameName))
+        if os.path.exists("{}/{}/win".format(Path, gameName)):
+            Functions.clear()
+            # change to a different layout
+            for i in range(len(users)):
+                if users[i] != "win":
+                    print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
+                    save.board.DisplayBoard(save.read(gameName, users[i]))  # noqa
+                    print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
+                    save.board.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
+            input("Press enter when you are ready to continue.")
+            self.__reset()
+        else:
+            placed = False
+            if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[0])) and os.path.exists("Saves/{}/{}/ships".format(gameName, users[1])):  # noqa
+                placed = True
+            self.__reset(None, True, gameName, users, placed, Path)
 
     # Function to process user inputs
     def _ProcessChoice(self):
@@ -62,27 +86,25 @@ class game:
             game = Functions.check("Enter number of game to load (-1 to go back): ", self._loadGames, None, self._LoadRangeCheck).InputDigitCheck()  # noqa
             if game == -1:
                 self.__reset()
-            else:
-                gameName = os.listdir('Saves')[game - 1]
-                users = os.listdir("Saves/{}".format(gameName))
-                if os.path.exists("Saves/{}/win.txt".format(gameName)):
-                    Functions.clear()
-                    # change to a different layout
-                    for i in range(len(users)):
-                        if users[i] != "win.txt":
-                            print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
-                            save.board.DisplayBoard(save.read(gameName, users[i]))  # noqa
-                            print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
-                            save.board.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
-                    input("Press enter when you are ready to continue.")
+            elif game == 0:
+                Functions.clear(1)
+                external = None
+                while not external:
+                    external = input("Please enter location of storage: ").rstrip().replace('"', '').replace("\\", "")  # noqa
+                    if not os.path.isdir(external):
+                        external = None
+                        Functions.clear(2, "Provided directory is not a directory")  # noqa
+                self._loadGames(external)
+                externalgame = Functions.check("Enter number of game to load (-1 to go back): ", self._loadGames, external, self._LoadRangeCheck, external).InputDigitCheck()  # noqa
+                if externalgame == -1:
                     self.__reset()
                 else:
-                    placed = False
-                    if os.path.exists("Saves/{}/{}/ships.txt".format(gameName, users[0])) and os.path.exists("Saves/{}/{}/ships.txt".format(gameName, users[1])):  # noqa
-                        placed = True
-                    self.__reset(None, True, gameName, users, placed)
+                    self._LoadGame(external, externalgame)  # noqa
+            else:
+                self._LoadGame("Saves", game)
+
         elif self.choice == 2:
-            self.name, self.users, self.Placed, self.saveLocation = Create.create().setup()
+            self.name, self.users, self.Placed, self.saveLocation = Create.create().setup()  # noqa
         elif self.choice == 0:
             # Quites
             sys.exit("Thank you for playing")
