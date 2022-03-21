@@ -28,11 +28,9 @@ class save:
         print("Loading network...")
         # Tries to write to server
         writeCheck = self._writeCheck()
-        time.sleep(1)
 
         # Tries to read from server
         readCheck = self._readCheck()
-        time.sleep(1)
 
         # Tries to remove excess files
         try:
@@ -43,7 +41,6 @@ class save:
         except FileNotFoundError:
             print("Failed to remove files created")
         self.newgame = None
-        time.sleep(1)
         print("\n\n")
 
         # Output results
@@ -65,14 +62,10 @@ class save:
         wc1 = self.makeFolder("Test")
         print("Write Check 1 -> {}         ".format(wc1))
 
-        time.sleep(1)
-
         print("Write Check 2 -> In progress", end="\r")
         localFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UploadFileTest.txt")  # noqa
         wc2 = self.copyFile("Test", localFile)
         print("Write Check 2 -> {}         ".format(wc2))
-
-        time.sleep(1)
 
         print("Write Check 3 -> In Progress", end="\r")
         wc3 = self.writeFile("Test", "grid", "H E L L O")

@@ -63,14 +63,14 @@ class game:
             for i in range(len(users)):
                 if users[i] != "win":
                     print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
-                    save.board.DisplayBoard(save.read(gameName, users[i]))  # noqa
+                    save.board.DisplayBoard(save.save(Path).readFile(os.path.join(gameName, users[i]), "grid"))  # noqa
                     print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
-                    save.board.DisplayBoard(save.read(gameName, users[i], "ships"))  # noqa
+                    save.board.DisplayBoard(save.save(Path).readFile(os.path.join(gameName, users[i]), "ships"))  # noqa
             input("Press enter when you are ready to continue.")
             self.__reset()
         else:
             placed = False
-            if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[0])) and os.path.exists("Saves/{}/{}/ships".format(gameName, users[1])):  # noqa
+            if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[0])) and os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[1])):  # noqa
                 placed = True
             self.__reset(None, True, gameName, users, placed, Path)
 
