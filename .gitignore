@@ -2,3 +2,7 @@ Saves
 __pycache__
 .DS_Store
 ApiFiles
+
+
+Tests/data.txt
+.pytest_cache
