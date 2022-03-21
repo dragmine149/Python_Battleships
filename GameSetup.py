@@ -29,6 +29,8 @@ class game:
         if external == "saves":
             print("0: Load from external area")
         games = os.listdir(external)
+
+        # Find a way to remove .files?
         for file in range(len(games)):
             if not games[file].startswith("."):
                 path = "{}: {}".format(file + 1, games[file])
