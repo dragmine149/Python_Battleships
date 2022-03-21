@@ -3,10 +3,6 @@
 
  Project made for fun, and also to learn things about neural networks (and ai)
 
-### Timmings
- These are aproximations of how long i spent working on each area of this project. </br>
- Creating the game: ~4 days (with breaks) ~4 - 12 hours (without breaks)
-
 # Features
  Battleships, Fully working game in python
  - Place Ships
@@ -19,13 +15,19 @@
 
  More features are planned to come
 
-# How to run locally
- 2 ways:
-  <!-- 1. Download the exectable file for your os -->
-  1. Download the source code and run `python Main.py`
+# How to run this program
+There are multiple ways that you can run this program, some require extra steps.
+## Local Install
+	1. Install python
+	2. Download the code
+	3. Run `Main.py`
+	This is the main and easy way to play battleships. Do Note not all the functionality will be alvalible. For Example: google drive api support, GUI support.
 
-<!-- # Create a local build
- Download the files and build. -->
+### Optional Install
+	1. Run `Setup.py`
+	2. Run `.env\Scripts\Activate`
+	3. Run `Main.py`
+	This is an alternate way to play battleships, This will automatically install all requirements modules (into a virtual enviroment) before running. As long as you run it in the virtual enviroment, all the modules will be initalised.
 
 # NOTE
  Please note not all IDLE will give you the full experience due to not being able to run the command. For the best experience, run this program in a terminal window (instead of an IDLE)
