@@ -1,8 +1,12 @@
-Saves
 __pycache__
 .DS_Store
+
+Saves
 ApiFiles
 
+DownloadFileTest.txt
+
+St8DiskStationhomesDaniel18.
 
 Tests/data.txt
 .pytest_cache
