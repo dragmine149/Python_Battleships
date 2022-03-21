@@ -5,14 +5,25 @@ import random
 import string
 import json
 import Functions
+import platform
 
 
 class save:
     # path = saves dir on network
     def __init__(self, path):
-        self.path = path.rstrip().replace("\\", "")
+        self.path = path.rstrip().replace('"', '')
+        if platform.system() != "Windows":
+            self.path.replace("\\", "")
+        if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":
+            # Load google api
+            import DriveApi
+            self.Api = DriveApi.Api(self.path)
         self.newgame = None
-        self.Test()
+        # Bypasses testing if local file.
+        print(self.path)
+        time.sleep(1)
+        if self.path != "Saves":
+            self.Test()
 
     def Test(self):
         os.system("clear")

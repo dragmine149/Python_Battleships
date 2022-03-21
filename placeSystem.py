@@ -7,21 +7,22 @@ import os
 
 
 class place:
-    def __init__(self, game, user):
+    def __init__(self, game, user, Location):
         self.game = game
         self.user = user
         self.rot = 0
         self.breaked = False
         self.placed = False
         print('init')
-        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        self.saveLocation = Location
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             os.path.sys('Failed to find folder, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
         print('load')
-        self.gameBoard = save.save("Saves").readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid.txt")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             os.path.sys('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -99,7 +100,8 @@ class place:
                     # get ship position
                     x, y = None, None
                     while x is None and y is None:
-                        x, y = Functions.LocationConvert(locInput).Convert()  # noqa
+                        # Change to make sure locInput is function
+                        x, y = Functions.LocationConvert(locInput()).Convert()  # noqa
                     if type(rot) != int:
                         self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
                     else:
@@ -150,4 +152,5 @@ class place:
             Functions.clear(0)
             save.board.DisplayBoard(self.gameBoard)
 
-        save.writeFile("Saves/{}/{}".format(self.game, self.user), "ships", gameBoard)  # noqa
+        save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships.txt", self.gameBoard)  # noqa
+        return 0 # pass check

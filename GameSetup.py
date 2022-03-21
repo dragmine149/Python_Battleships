@@ -82,7 +82,7 @@ class game:
                         placed = True
                     self.__reset(None, True, gameName, users, placed)
         elif self.choice == 2:
-            Create.create().setup()
+            self.name, self.users, self.Placed, self.saveLocation = Create.create().setup()
         elif self.choice == 0:
             # Quites
             sys.exit("Thank you for playing")
@@ -114,4 +114,4 @@ class game:
             # Process choice
             self._ProcessChoice()
             time.sleep(1)
-        return self.name, self.users, self.Placed
+        return self.name, self.users, self.Placed, self.saveLocation

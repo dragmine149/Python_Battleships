@@ -36,7 +36,7 @@ class create:
                 self.name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
 
             self.users = infoData[1]
-            create = save.save("Saves").saveCreation(GameBoard, self.name, self.users) # noqa
+            create = save.save(self.saveLocation).saveCreation(GameBoard, self.name, self.users) # noqa
             if create == "E":
                 create = None
                 name = True
@@ -50,8 +50,11 @@ class create:
                     str(input("Please enter player 2's name: ").replace(" ", ""))  # noqa
                 ]
             ]
+            self.saveLocation = input("Custom Save Location (blank = default, Id = google drive folder id): ")
+            if self.saveLocation == "":
+                self.saveLocation = "Saves"
         Functions.clear()
         # Process choice
         self._ProcessChoice(data, infoData)
         time.sleep(1)
-        return self.name, self.users, False
+        return self.name, self.users, False, self.saveLocation

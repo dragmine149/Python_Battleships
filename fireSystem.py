@@ -7,24 +7,25 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class fire:
     # Setup
-    def __init__(self, game, fireUser, targetUser):
+    def __init__(self, game, fireUser, targetUser, Location):
         self.game = game
         self.fireUser = fireUser
         self.targetUser = targetUser
         self.shotTaken = False
-        self.fireBoard = save.read(game, fireUser)
-        self.targetBoard = save.read(game, targetUser, "ships")
+        self.fireBoard = save.save(Location).readFile(os.path.join(game, fireUser), "grid.txt")
+        self.targetBoard = save.save(Location).readFile(os.path.join(game, targetUser), "ships.txt")
+        self.saveLocation = Location
 
     # Does multiple checks and fires at the other user
     def Fire(self):
         # Just in case another check fails.
-        if os.path.exists("Saves/{}/win.txt".format(self.game)):
+        if os.path.exists("{}/{}/win.txt".format(self.saveLocation, self.game)):
             return True
 
         # Keep shooting until shot is know to be completed.
         while not self.shotTaken:
             print("{}'s Turn to shoot\n".format(self.fireUser))
-            save.DisplayBoard(self.fireBoard)
+            save.board.DisplayBoard(self.fireBoard)
             # get shooting cooridnates
             x, y = None, None
             while x is None and y is None:
@@ -50,7 +51,7 @@ class fire:
 
                 # Update files.
                 self.shotTaken = True
-                save.UpdateFile(self.fireBoard, "Saves/{}/{}".format(self.game, self.fireUser), "grid")  # noqa
+                save.writeFile("{}/{}/{}".format(self.saveLocation, self.game, self.fireUser), "grid.txt", self.fireBoard)  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
@@ -81,6 +82,6 @@ class fire:
         if destroyedAmount == len(ships):
             Functions.clear()
             print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
-            save.UpdateFile(self.fireUser, "Saves/{}".format(self.game), "win")
+            save.writeFile("{}/{}".format(self.saveLocation, self.game), "win.txt", self.fireUser)
             return True
         Functions.clear(2, destroyedList)
