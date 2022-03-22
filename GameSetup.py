@@ -65,7 +65,11 @@ class game:
 
     def _LoadGame(self, gamesDir, Path="Saves", game=None):
         gameName = gamesDir[game - 1]
-        users = os.listdir("{}/{}".format(Path, gameName))
+        users = os.listdir(r"{}/{}".format(Path, gameName))
+        for user in users:
+            if not os.path.isdir(r'{}/{}/{}'.format(Path, gameName, user)):
+                index = users.index(user)
+                users.pop(index)
         if os.path.exists("{}/{}/win".format(Path, gameName)):
             Functions.clear()
             # change to a different layout
@@ -105,7 +109,6 @@ class game:
                 external = None
                 while not external:
                     external = input("Please enter location of storage: ").rstrip().replace('"', '')
-                    print(platform.system())
                     if platform.system() != "Windows":
                         external = external.replace("\\", "")  # noqa
                     if not os.path.isdir(external):
