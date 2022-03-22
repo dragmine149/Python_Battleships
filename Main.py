@@ -14,6 +14,9 @@ def getLocation():
     return input("Enter location to place ship: ")
 
 
+os.remove('Tests/Path.txt')  # removes old data at start
+
+
 while True:
     # Terminal setup ui
     gameName, users, Placed, Location = setup.game().setup()
