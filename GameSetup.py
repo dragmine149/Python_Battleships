@@ -4,6 +4,7 @@ import time
 import SaveSystem as save
 import Functions
 import boardCreate as Create
+import platform
 
 
 class game:
@@ -103,7 +104,10 @@ class game:
                 Functions.clear(1)
                 external = None
                 while not external:
-                    external = input("Please enter location of storage: ").rstrip().replace('"', '').replace("\\", "")  # noqa
+                    external = input("Please enter location of storage: ").rstrip().replace('"', '')
+                    print(platform.system())
+                    if platform.system() != "Windows":
+                        external = external.replace("\\", "")  # noqa
                     if not os.path.isdir(external):
                         external = None
                         Functions.clear(2, "Provided directory is not a directory")  # noqa

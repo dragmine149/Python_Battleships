@@ -6,12 +6,16 @@ import string
 import json
 import Functions
 import sys
+import platform
 
 
 class save:
     # path = saves dir on network
     def __init__(self, path):
-        self.path = path.rstrip().replace('"', '').replace("\\", "")
+        self.path = path.rstrip().replace('"', '')
+        print(platform.system())
+        if platform.system() != "Windows":
+            self.path = self.path.replace("\\", "")
         if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":  # noqa
             # Load google api
             import DriveApi
