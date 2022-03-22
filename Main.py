@@ -20,7 +20,7 @@ if os.path.exists('Tests/Path.txt'):
     os.remove('Tests/Path.txt')  # removes old data at start
 
 
-def waitSim(in):
+def waitSim(iN):
     try:
         # Waiting message
         print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
@@ -31,7 +31,7 @@ def waitSim(in):
         time.sleep(1)
         print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
         time.sleep(1)
-        return in
+        return iN
     except KeyboardInterrupt:
         return "Fake"
 
