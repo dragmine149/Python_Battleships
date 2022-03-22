@@ -65,11 +65,11 @@ class game:
 
     def _LoadGame(self, gamesDir, Path="Saves", game=None):
         gameName = gamesDir[game - 1]
-        users = os.listdir(r"{}/{}".format(Path, gameName))
-        for user in users:
-            if not os.path.isdir(r'{}/{}/{}'.format(Path, gameName, user)):
-                index = users.index(user)
-                users.pop(index)
+        oldUsers = os.listdir(r"{}/{}".format(Path, gameName))
+        users = []
+        for user in oldUsers:
+            if os.path.isdir(r'{}/{}/{}'.format(Path, gameName, user)):
+                users.append(user)
         if os.path.exists("{}/{}/win".format(Path, gameName)):
             Functions.clear()
             # change to a different layout
