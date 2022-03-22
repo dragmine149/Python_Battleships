@@ -13,7 +13,6 @@ class save:
     # path = saves dir on network
     def __init__(self, path):
         self.path = path.rstrip().replace('"', '')
-        print(platform.system())
         if platform.system() != "Windows":
             self.path = self.path.replace("\\", "")
         if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":  # noqa
@@ -40,7 +39,10 @@ class save:
         except FileNotFoundError:
             self._writeTestFile()
 
-        os.system("clear")
+        if platform.system() != "Windows":
+            os.system("clear")
+        else:
+            os.system("cls")
         print("Loading network...")
         # Tries to write to server
         writeCheck = self._writeCheck()
