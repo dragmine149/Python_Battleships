@@ -8,6 +8,7 @@ class create:
         self.name = None
         self.users = None
         self.Placed = None
+        self.twoPlayer = None
 
     @staticmethod
     def SizeRangeCheck(size):
@@ -36,7 +37,7 @@ class create:
                 self.name = input("Please enter a name for this game: ").replace(" ", "")  # noqa
 
             self.users = infoData[1]
-            create = save.save(self.saveLocation).saveCreation(GameBoard, self.name, self.users) # noqa
+            create = save.save(self.saveLocation).saveCreation(GameBoard, self.name, self.users, self.twoPlayer) # noqa
             if create == "E":
                 create = None
                 name = True
@@ -50,11 +51,17 @@ class create:
                     str(input("Please enter player 2's name: ").replace(" ", ""))  # noqa
                 ]
             ]
-            self.saveLocation = input("Custom Save Location (blank = default, Id = google drive folder id): ")
+            self.saveLocation = input("Custom Save Location (blank = default, Id = google drive folder id): ")  # noqa
             if self.saveLocation == "":
                 self.saveLocation = "Saves"
+            else:
+                while not self.twoPlayer:
+                    self.twoPlayer = input("Are you playing online? (y = yes, n = no): ")  # noqa
+                    if self.twoPlayer[0].lower() == "y":
+                        self.twoPlayer = infoData[1][0]
+
         Functions.clear()
         # Process choice
         self._ProcessChoice(data, infoData)
         time.sleep(1)
-        return self.name, self.users, False, self.saveLocation
+        return self.name, self.users, False, self.saveLocation, self.twoPlayer
