@@ -11,7 +11,7 @@ import platform
 
 class save:
     # path = saves dir on network
-    def __init__(self, path):
+    def __init__(self, path, json=True):
         self.path = path.rstrip().replace('"', '')
         if platform.system() != "Windows":
             self.path = self.path.replace("\\", "")
@@ -20,6 +20,7 @@ class save:
             import DriveApi
             self.Api = DriveApi.Api(self.path)
         self.newgame = None
+        self.json = json  # Json is not always needed to decode files and can break files somethimes
         # Bypasses testing if local file.
         time.sleep(1)
         if self.path != "Saves":
@@ -130,11 +131,17 @@ class save:
             if not self.newgame:
                 newPath = os.path.join(os.path.join(self.path, game), file)
                 with open(newPath, "w+") as gameData:  # noqa
-                    gameData.write(json.dumps(data))
+                    if self.json:
+                        gameData.write(json.dumps(data))
+                    else:
+                        gameData.write(data)
             else:
                 newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
                 with open(newPath, "w+") as file:
-                    file.write(json.dumps(data))
+                    if self.json:
+                        file.write(json.dumps(data))
+                    else:
+                        file.write(data)
         except FileNotFoundError:
             return "Folder to hold file was not found"
         return "Success"
@@ -156,11 +163,17 @@ class save:
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
-                    return json.loads(gameData.read())
+                    if self.json:
+                        return json.loads(gameData.read())
+                    else:
+                        return gameData.read()
             else:
                 newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
                 with open(newPath, "r") as file:
-                    return json.loads(file.read())
+                    if self.json:
+                        return json.loads(file.read())
+                    else:
+                        return file.read()
         except FileNotFoundError:
             return "Failed -> Folder not found"
 
