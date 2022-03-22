@@ -69,7 +69,7 @@ class place:
         self.placed = False
 
     # Function to palce ship
-    def Place(self, locInput, data=[True, None], rot=None):
+    def Place(self, locInput, data=[True, None], rot=None, owner=None):
         # TODO: change to allow mod support
         ships = [
             ship.Short(),
@@ -154,4 +154,5 @@ class place:
             save.board.DisplayBoard(self.gameBoard)
 
         save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships", self.gameBoard)  # noqa
+        save.save(self.saveLocation).writeFile("{}".format(self.game), "turn", owner)  # noqa
         return 0  # pass check
