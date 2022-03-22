@@ -8,5 +8,5 @@ DownloadFileTest.txt
 
 St8DiskStationhomesDaniel18.
 
-Tests/data.txt
+Tests/*.txt
 .pytest_cache
