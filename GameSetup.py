@@ -43,6 +43,7 @@ class game:
             if os.path.exists("{}/{}/win".format(external, games[file])):
                 path += " (finished)"
             print(path)
+        return games
 
     # The range check function for amount of saves
     def _LoadRangeCheck(self, value, path="Saves"):
@@ -60,8 +61,8 @@ class game:
             return True
         return False
 
-    def _LoadGame(self, Path="Saves", game=None):
-        gameName = os.listdir(Path)[game - 1]
+    def _LoadGame(self, gamesDir, Path="Saves", game=None):
+        gameName = gamesDir[game - 1]
         users = os.listdir("{}/{}".format(Path, gameName))
         if os.path.exists("{}/{}/win".format(Path, gameName)):
             Functions.clear()
@@ -102,14 +103,14 @@ class game:
                     if not os.path.isdir(external):
                         external = None
                         Functions.clear(2, "Provided directory is not a directory")  # noqa
-                self._loadGames(external)
+                games = self._loadGames(external)
                 externalgame = Functions.check("Enter number of game to load (-1 to go back): ", self._loadGames, external, self._LoadRangeCheck, external).InputDigitCheck()  # noqa
                 if externalgame == -1:
                     self.__reset()
                 else:
-                    self._LoadGame(external, externalgame)  # noqa
+                    self._LoadGame(games, external, externalgame)  # noqa
             else:
-                self._LoadGame("Saves", game)
+                self._LoadGame(os.listdir("Saves"), "Saves", game)
 
         elif self.choice == 2:
             self.name, self.users, self.Placed, self.saveLocation = Create.create().setup()  # noqa
