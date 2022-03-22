@@ -1,6 +1,6 @@
-import random
-import placeSystem as place
-import os
+# import random
+# import placeSystem as place
+# import os
 
 
 def rotationCheck():
