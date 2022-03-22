@@ -14,12 +14,13 @@ class game:
         self.Placed = None
 
     # Resets the game class for a new use
-    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None, Location=None):  # noqa
+    def __reset(self, message=None, choice=None, name=None, users=None, Placed=None, Location=None, Multi=None):  # noqa
         self.name = name
         self.users = users
         self.Placed = Placed
         self.choice = choice
         self.saveLocation = Location
+        self.twoPlayer = Multi
         if message:
             print(message)
 
@@ -77,9 +78,12 @@ class game:
             self.__reset()
         else:
             placed = False
-            if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[0])) and os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[1])):  # noqa
-                placed = True
-            self.__reset(None, True, gameName, users, placed, Path)
+            if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[0])):  # noqa
+                if os.path.exists("{}/{}/{}/ships".format(Path, gameName, users[1])):  # noqa
+                    placed = True
+                else:
+                    print("{} not placed".format(users[1]))
+            self.__reset(None, True, gameName, users, placed, Path, save.save(Path).readFile("{}".format(gameName), "multi"))  # noqa
 
     # Function to process user inputs
     def _ProcessChoice(self):
@@ -113,7 +117,7 @@ class game:
                 self._LoadGame(os.listdir("Saves"), "Saves", game)
 
         elif self.choice == 2:
-            self.name, self.users, self.Placed, self.saveLocation = Create.create().setup()  # noqa
+            self.name, self.users, self.Placed, self.saveLocation, self.twoPlayer = Create.create().setup()  # noqa
         elif self.choice == 0:
             # Quites
             sys.exit("Thank you for playing")
@@ -145,4 +149,4 @@ class game:
             # Process choice
             self._ProcessChoice()
             time.sleep(1)
-        return self.name, self.users, self.Placed, self.saveLocation
+        return self.name, self.users, self.Placed, self.saveLocation, self.twoPlayer  # noqa
