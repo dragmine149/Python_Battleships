@@ -93,26 +93,31 @@ while True:
         # Actual game
         if v == 0:
             # Waiting for other user to setup their ships
-            setup = False
-            while not setup:
+            userSetup = False
+            while not userSetup:
                 if os.path.exists(os.path.join(Location, gameName, other, "ships")):  # noqa
-                    setup = True
+                    userSetup = True
                 else:
-                    waitSim()
+                    v = waitSim()
+                    if v != 0:
+                        userSetup = "Stop"
 
-            # Actually playing the game
-            game = False
-            while not game:
-                try:
-                    if save.save(Location).readFile(gameName, "turn") == name:
-                        game = fire.fire(gameName, name, other, Location).Fire()  # noqa
-                    else:
-                        game = waitSim()
-                except KeyboardInterrupt:  # Probably shouldn't do this...
-                    game = "Fake"
-                    Functions.clear()
-            if game != "Fake":
-                Functions.clear(10)
-            gameName, users, Placed, multi = None, None, None, None
+            if v == 0:
+                # Actually playing the game
+                game = False
+                while not game:
+                    try:
+                        if save.save(Location).readFile(gameName, "turn") == name:
+                            game = fire.fire(gameName, name, other, Location).Fire()  # noqa
+                        else:
+                            game = waitSim()
+                    except KeyboardInterrupt:  # Probably shouldn't do this...
+                        game = "Fake"
+                        Functions.clear()
+                if game != "Fake":
+                    Functions.clear(10)
+                gameName, users, Placed, multi = None, None, None, None
+            else:
+                Functions.clear()
         else:
             Functions.clear()
