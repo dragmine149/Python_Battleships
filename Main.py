@@ -3,11 +3,13 @@
 import GameSetup as setup
 import placeSystem as place
 import fireSystem as fire
+import SaveSystem as save
 import Functions
 import os
+import time
 print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-gameName, users, Placed, Location = None, None, None, None
+gameName, users, Placed, Location, multi = None, None, None, None, None
 
 
 def getLocation():
@@ -20,30 +22,80 @@ if os.path.exists('Tests/Path.txt'):
 
 while True:
     # Terminal setup ui
-    gameName, users, Placed, Location = setup.game().setup()
+    gameName, users, Placed, Location, multi = setup.game().setup()
     Functions.clear()
-    # check to see if game has already been started
-    # and there are ships on the board.
-    v = 0
-    if not Placed:
-        # Placing ships on the borad
-        v = place.place(gameName, users[0], Location).Place(getLocation)  # noqa
-        Functions.clear()
-        if v == 0:
-            v = place.place(gameName, users[1], Location).Place(getLocation) # noqa
+    if not multi:
+        # check to see if game has already been started
+        # and there are ships on the board.
+        v = 0
+        if not Placed:
+            # Placing ships on the borad
+            v = place.place(gameName, users[0], Location).Place(getLocation)  # noqa
+            Functions.clear()
+            if v == 0 and not multi:
+                v = place.place(gameName, users[1], Location).Place(getLocation) # noqa
 
-    # Plays the game until stops or someone wins.
-    if v == 0:
-        Functions.clear()
-        game = False
-        while not game:
-            game = fire.fire(gameName, users[0], users[1], Location).Fire()
-            if not game:
-                game = fire.fire(gameName, users[1], users[0], Location).Fire()
-        if game != "Fake":
-            Functions.clear(10)
+        # Plays the game until stops or someone wins.
+        if v == 0:
+            Functions.clear()
+            game = False
+            while not game:
+                game = fire.fire(gameName, users[0], users[1], Location).Fire()
+                if not game:
+                    game = fire.fire(gameName, users[1], users[0], Location).Fire()  # noqa
+            if game != "Fake":
+                Functions.clear(10)
+            else:
+                Functions.clear()
         else:
             Functions.clear()
+        gameName, users, Placed = None, None, None
     else:
-        Functions.clear()
-    gameName, users, Placed = None, None, None
+        # Different function for multiplayer as more checks.
+
+        # get username.
+        name = None
+        other = None
+        while not name:
+            name = input("Please enter your username: ")
+            if users[0] != name and users[1] != name:
+                print(users[0])
+                print(users[1])
+                print(name)
+                name = None
+                print("Name not found in system (specate comming soon)")
+            elif users[0] == name:
+                other = users[1]
+            elif users[1] == name:
+                other = users[0]
+
+        # Place check (and place)
+        v = 0
+        if not Placed:
+            v = place.place(gameName, name, Location).Place(getLocation, save.save(Location).readFile(gameName, "multi"))  # noqa
+
+        # Actual game
+        if v == 0:
+            game = False
+            while not game:
+                if save.save(Location).readFile(gameName, "turn") == name:
+                    game = fire.fire(gameName, name, other, Location).Fire()
+                else:
+                    try:
+                        # Waiting message
+                        print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
+                        time.sleep(1)
+                        print("Waiting for opponent to take their turn.      (ctrl + c to go back)", end="\r")  # noqa
+                        time.sleep(1)
+                        print("Waiting for opponent to take their turn..     (ctrl + c to go back)", end="\r")  # noqa
+                        time.sleep(1)
+                        print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
+                        time.sleep(1)
+                    except KeyboardInterrupt:  # Probably shouldn't do this but best option.  # noqa
+                        game = "Fake"
+                        Functions.clear()
+            if game != "Fake":
+                Functions.clear(10)
+            gameName, users, Placed, multi = None, None, None, None
+        else:
+            Functions.clear()
