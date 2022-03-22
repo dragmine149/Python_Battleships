@@ -18,12 +18,24 @@ class save:
             self.Api = DriveApi.Api(self.path)
         self.newgame = None
         # Bypasses testing if local file.
-        print(self.path)
         time.sleep(1)
         if self.path != "Saves":
             self.Test()
 
+    def _writeTestFile(self):
+        with open('Tests/Path.txt', 'w+') as f:
+            f.write(self.path)
+
     def Test(self):
+        try:
+            with open('Tests/Path.txt', 'r+') as f:
+                if self.path == f.read():
+                    return True  # skip the test if that path has been tested recently  # noqa
+                else:
+                    self._writeTestFile()
+        except FileNotFoundError:
+            self._writeTestFile()
+
         os.system("clear")
         print("Loading network...")
         # Tries to write to server
