@@ -104,7 +104,7 @@ while True:
                 game = False
                 while not game:
                     try:
-                        if save.save(Location, False).readFile(gameName, "turn") == name:
+                        if save.save(Location).readFile(gameName, "turn") == name:
                             game = fire.fire(gameName, name, other, Location).Fire()  # noqa
                         else:
                             game = waitSim()
