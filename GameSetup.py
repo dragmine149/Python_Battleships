@@ -29,14 +29,20 @@ class game:
         if external == "saves":
             print("0: Load from external area")
         games = os.listdir(external)
+        for file in games:
+            """
+            Files that get removed:
+            - '.' files
+            - '__' files
+            """
+            if file.startswith(".") or file.startswith('__'):
+                games.pop(games.index(file))
 
-        # Find a way to remove .files?
         for file in range(len(games)):
-            if not games[file].startswith("."):
-                path = "{}: {}".format(file + 1, games[file])
-                if os.path.exists("{}/{}/win".format(external, games[file])):
-                    path += " (finished)"
-                print(path)
+            path = "{}: {}".format(file + 1, games[file])
+            if os.path.exists("{}/{}/win".format(external, games[file])):
+                path += " (finished)"
+            print(path)
 
     # The range check function for amount of saves
     def _LoadRangeCheck(self, value, path="Saves"):
