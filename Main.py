@@ -74,9 +74,6 @@ while True:
         while not name:
             name = input("Please enter your username: ")
             if users[0] != name and users[1] != name:
-                print(users[0])
-                print(users[1])
-                print(name)
                 name = None
                 print("Name not found in system (specate comming soon)")
             elif users[0] == name:
