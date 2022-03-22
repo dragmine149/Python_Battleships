@@ -104,6 +104,7 @@ while True:
                 # Actually playing the game
                 game = False
                 while not game:
+                    print("Current game: {} VS {}".format(gameName, other))
                     try:
                         if save.save(Location).readFile(gameName, "turn") == name:
                             game = fire.fire(gameName, name, other, Location).Fire(True)  # noqa
