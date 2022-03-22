@@ -52,6 +52,10 @@ class fire:
                 # Update files.
                 self.shotTaken = True
                 save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.fireUser), "grid", self.fireBoard)  # noqa
+
+                # Switch user when fired.
+                if Multi:
+                    save.save(self.saveLocation).writeFile("{}".format(self.game), "turn", self.targetUser)  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed

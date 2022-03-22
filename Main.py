@@ -106,7 +106,7 @@ while True:
                 while not game:
                     try:
                         if save.save(Location).readFile(gameName, "turn") == name:
-                            game = fire.fire(gameName, name, other, Location).Fire()  # noqa
+                            game = fire.fire(gameName, name, other, Location).Fire(True)  # noqa
                         else:
                             game = waitSim(game)
                     except KeyboardInterrupt:  # Probably shouldn't do this...
