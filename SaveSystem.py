@@ -158,7 +158,7 @@ class save:
         except FileNotFoundError:
             return "Failed -> Folder not found"
 
-    def saveCreation(self, data, name, users, twoPlayer=False):
+    def saveCreation(self, data, name, users, twoPlayer=None):
         Functions.clear(1)
         print("Saving data")
         if not os.path.exists(self.path):
@@ -177,8 +177,8 @@ class save:
                 print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))
                 if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
                     print(self.writeFile("{}/{}".format(name, users[1]), "grid", data))  # noqa
-                    if twoPlayer:
-                        self.writeFile("{}".format(name), "multi", users[0])
+                    if twoPlayer is not None:  # whose turn it is.
+                        print(self.writeFile("{}".format(name), "multi", users[0]))  # noqa
                     return True
                 else:
                     Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
