@@ -13,8 +13,9 @@ gameName, users, Placed, Location = None, None, None, None
 def getLocation():
     return input("Enter location to place ship: ")
 
+
 if os.path.exists('Tests/Path.txt'):
-	os.remove('Tests/Path.txt')  # removes old data at start
+    os.remove('Tests/Path.txt')  # removes old data at start
 
 
 while True:
