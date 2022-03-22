@@ -17,7 +17,7 @@ class fire:
         self.saveLocation = Location
 
     # Does multiple checks and fires at the other user
-    def Fire(self):
+    def Fire(self, Multi=False):
         # Just in case another check fails.
         if os.path.exists("{}/{}/win".format(self.saveLocation, self.game)):
             return True
