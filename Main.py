@@ -72,16 +72,17 @@ while True:
         # Place check (and place)
         v = 0
         if not Placed:
-            v = place.place(gameName, name, Location).Place(getLocation, save.save(Location).readFile(gameName, "multi"))  # noqa
+            if not os.path.exists(os.path.join(Location, gameName, name, "ships")):  # noqa
+                v = place.place(gameName, name, Location).Place(getLocation, save.save(Location).readFile(gameName, "multi"))  # noqa
 
         # Actual game
         if v == 0:
             game = False
             while not game:
-                if save.save(Location).readFile(gameName, "turn") == name:
-                    game = fire.fire(gameName, name, other, Location).Fire()
-                else:
-                    try:
+                try:
+                    if save.save(Location).readFile(gameName, "turn") == name:
+                        game = fire.fire(gameName, name, other, Location).Fire()  # noqa
+                    else:
                         # Waiting message
                         print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
                         time.sleep(1)
@@ -91,9 +92,9 @@ while True:
                         time.sleep(1)
                         print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
                         time.sleep(1)
-                    except KeyboardInterrupt:  # Probably shouldn't do this but best option.  # noqa
-                        game = "Fake"
-                        Functions.clear()
+                except KeyboardInterrupt:  # Probably shouldn't do this...
+                    game = "Fake"
+                    Functions.clear()
             if game != "Fake":
                 Functions.clear(10)
             gameName, users, Placed, multi = None, None, None, None
