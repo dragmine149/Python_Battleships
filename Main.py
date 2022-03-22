@@ -20,6 +20,21 @@ if os.path.exists('Tests/Path.txt'):
     os.remove('Tests/Path.txt')  # removes old data at start
 
 
+def waitSim():
+    try:
+        # Waiting message
+        print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
+        time.sleep(1)
+        print("Waiting for opponent to take their turn.      (ctrl + c to go back)", end="\r")  # noqa
+        time.sleep(1)
+        print("Waiting for opponent to take their turn..     (ctrl + c to go back)", end="\r")  # noqa
+        time.sleep(1)
+        print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
+        time.sleep(1)
+    except KeyboardInterrupt:
+        return "Fake"
+
+
 while True:
     # Terminal setup ui
     gameName, users, Placed, Location, multi = setup.game().setup()
@@ -73,25 +88,26 @@ while True:
         v = 0
         if not Placed:
             if not os.path.exists(os.path.join(Location, gameName, name, "ships")):  # noqa
-                v = place.place(gameName, name, Location).Place(getLocation, save.save(Location).readFile(gameName, "multi"))  # noqa
+                v = place.place(gameName, name, Location).Place(getLocation, save.save(Location).readFile(gameName, "multi"), users[0])  # noqa
 
         # Actual game
         if v == 0:
+            # Waiting for other user to setup their ships
+            setup = False
+            while not setup:
+                if os.path.exists(os.path.join(Location, gameName, other, "ships")):  # noqa
+                    setup = True
+                else:
+                    waitSim()
+
+            # Actually playing the game
             game = False
             while not game:
                 try:
                     if save.save(Location).readFile(gameName, "turn") == name:
                         game = fire.fire(gameName, name, other, Location).Fire()  # noqa
                     else:
-                        # Waiting message
-                        print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
-                        time.sleep(1)
-                        print("Waiting for opponent to take their turn.      (ctrl + c to go back)", end="\r")  # noqa
-                        time.sleep(1)
-                        print("Waiting for opponent to take their turn..     (ctrl + c to go back)", end="\r")  # noqa
-                        time.sleep(1)
-                        print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
-                        time.sleep(1)
+                        game = waitSim()
                 except KeyboardInterrupt:  # Probably shouldn't do this...
                     game = "Fake"
                     Functions.clear()
