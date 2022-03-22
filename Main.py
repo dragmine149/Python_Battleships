@@ -20,7 +20,7 @@ if os.path.exists('Tests/Path.txt'):
     os.remove('Tests/Path.txt')  # removes old data at start
 
 
-def waitSim():
+def waitSim(in):
     try:
         # Waiting message
         print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
@@ -31,6 +31,7 @@ def waitSim():
         time.sleep(1)
         print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
         time.sleep(1)
+        return in
     except KeyboardInterrupt:
         return "Fake"
 
@@ -95,7 +96,7 @@ while True:
                 if os.path.exists(os.path.join(Location, gameName, other, "ships")):  # noqa
                     userSetup = True
                 else:
-                    v = waitSim()
+                    v = waitSim(v)
                     if v != 0:
                         userSetup = "Stop"
 
@@ -107,7 +108,7 @@ while True:
                         if save.save(Location).readFile(gameName, "turn") == name:
                             game = fire.fire(gameName, name, other, Location).Fire()  # noqa
                         else:
-                            game = waitSim()
+                            game = waitSim(game)
                     except KeyboardInterrupt:  # Probably shouldn't do this...
                         game = "Fake"
                         Functions.clear()
