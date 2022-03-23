@@ -55,7 +55,7 @@ class fire:
 
                 # Switch user when fired.
                 if Multi:
-                    save.save(self.saveLocation).writeFile("{}".format(self.game), "turn", self.targetUser)  # noqa
+                    save.save(self.saveLocation).writeFile(self.game, "turn", self.targetUser)  # noqa
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
@@ -86,6 +86,6 @@ class fire:
         if destroyedAmount == len(ships):
             Functions.clear()
             print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
-            save.save(self.saveLocation).writeFile("{}".format(self.game), "win", self.fireUser)  # noqa
+            save.save(self.saveLocation, True).writeFile(self.game, "win", self.fireUser)  # noqa
             return True
         Functions.clear(2, destroyedList)
