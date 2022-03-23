@@ -7,6 +7,7 @@ import json
 import Functions
 import sys
 import platform
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class save:
@@ -15,10 +16,17 @@ class save:
         self.path = path.rstrip().replace('"', '')
         if platform.system() != "Windows":
             self.path = self.path.replace("\\", "")
+        self.Api = None
         if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":  # noqa
             # Load google api
-            import DriveApi
-            self.Api = DriveApi.Api(self.path)
+            try:
+                import DriveApi
+                self.Api = DriveApi.Api(self.path)
+                if not self.Api.Test():
+                    sys.exit("Something failed in the google drive api test...")  # noqa
+                self.Folder = None
+            except ModuleNotFoundError:
+                sys.exit("Google drive api not installed. Please install...")
         self.newgame = None
         # Json is not always needed to decode files
         # and can break files somethimes
@@ -83,10 +91,11 @@ class save:
         wc1 = self.makeFolder("Test")
         print("Write Check 1 -> {}         ".format(wc1))
 
-        print("Write Check 2 -> In progress", end="\r")
-        localFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UploadFileTest.txt")  # noqa
-        wc2 = self.copyFile("Test", localFile)
-        print("Write Check 2 -> {}         ".format(wc2))
+        if self.Api is None:
+            print("Write Check 2 -> In progress", end="\r")
+            localFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "UploadFileTest.txt")  # noqa
+            wc2 = self.copyFile("Test", localFile)
+            print("Write Check 2 -> {}         ".format(wc2))
 
         print("Write Check 3 -> In Progress", end="\r")
         wc3 = self.writeFile("Test", "grid", "H E L L O")
@@ -103,15 +112,20 @@ class save:
             print("Error whilst completing a task, Please try again")
 
     def makeFolder(self, game):
-        path = os.path.join(self.path, game)
-        if os.path.exists(path):
-            self.newgame = game + '-' + ''.join(random.choice(string.ascii_letters) for _ in range(10))  # noqa
-            path = os.path.join(self.path, self.newgame)
-        try:
-            os.mkdir(path)
-            return "Success"
-        except FileNotFoundError:
-            return "Failed"
+        if self.Api:
+            self.Folder = self.Api.UploadData({
+                "name": game,
+            }, True)
+        else:
+            path = os.path.join(self.path, game)
+            if os.path.exists(path):
+                self.newgame = game + '-' + ''.join(random.choice(string.ascii_letters) for _ in range(10))  # noqa
+                path = os.path.join(self.path, self.newgame)
+            try:
+                os.mkdir(path)
+                return "Success"
+            except FileNotFoundError:
+                return "Failed"
 
     def copyFile(self, game, file):
         if os.path.isfile(file):
@@ -129,23 +143,33 @@ class save:
             return "Game file given is not a file"
 
     def writeFile(self, game, file, data):
-        try:
-            if not self.newgame:
-                newPath = os.path.join(os.path.join(self.path, game), file)
-                with open(newPath, "w+") as gameData:  # noqa
-                    if self.json:
-                        gameData.write(json.dumps(data))
-                    else:
-                        gameData.write(data)
-            else:
-                newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
-                with open(newPath, "w+") as file:
-                    if self.json:
-                        file.write(json.dumps(data))
-                    else:
-                        file.write(data)
-        except FileNotFoundError:
-            return "Folder to hold file was not found"
+        if self.Api:
+            id = self.Api.UploadData({
+                "name": file,
+                "path": os.path.join(self.path, game),
+                "folder": self.Folder
+            })
+            os.mkdir("GoogleApi")
+            with open("Saves/GoogleApi/{}".format(game + file), "w+") as write:
+                write.write(str(id))
+        else:
+            try:
+                if not self.newgame:
+                    newPath = os.path.join(os.path.join(self.path, game), file)
+                    with open(newPath, "w+") as gameData:  # noqa
+                        if self.json:
+                            gameData.write(json.dumps(data))
+                        else:
+                            gameData.write(data)
+                else:
+                    newPath = os.path.join(self.path, os.path.join(self.newgame, file))  # noqa
+                    with open(newPath, "w+") as file:
+                        if self.json:
+                            file.write(json.dumps(data))
+                        else:
+                            file.write(data)
+            except FileNotFoundError:
+                return "Folder to hold file was not found"
         return "Success"
 
     def _readCheck(self):
@@ -162,6 +186,16 @@ class save:
             print("Error whilst completing a task, Please try again")
 
     def readFile(self, game, file):
+        if self.Api:
+            id = None
+            with open("Saves/GoogleApi/{}".format(game + file)) as f:
+                id = f.read()
+            self.Api.DownlaodData({
+                'name': id,
+                'path': 'Saves/GoogleApi/{}/{}'.format(game + file, file)
+            })
+            with open("Saves/GoogleApi/{}/{}".format(game + file, file)) as downlaoded:  # noqa
+                return downlaoded.read()
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
@@ -232,4 +266,4 @@ class board:
 
 
 if __name__ == "__main__":
-    n = save(input("Path of files: "))
+    n = save("1jgyfEG0R76adWlnyzqDU030ps-mk4M20")

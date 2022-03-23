@@ -108,6 +108,7 @@ class Api:
         time.sleep(5)  # updates
         DelLocal()
         DelServer(file['id'], folder['id'])
+        return True
 
     # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
@@ -115,7 +116,7 @@ class Api:
         media = None
         if data['folder']:
             self.folder = data['folder']
-        if folder:
+        if folder:  # makes folder
             metadata = {
                 'name': data['name'],
                 'mimeType': 'application/vnd.google-apps.folder',
