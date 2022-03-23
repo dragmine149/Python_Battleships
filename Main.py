@@ -103,8 +103,8 @@ while True:
             if v == 0:
                 # Actually playing the game
                 game = False
+                print("Current game: {}.\nOpponent: {}".format(gameName, other))
                 while not game:
-                    print("Current game: {} VS {}".format(gameName, other))
                     try:
                         if save.save(Location).readFile(gameName, "turn") == name:
                             game = fire.fire(gameName, name, other, Location).Fire(True)  # noqa
@@ -113,6 +113,7 @@ while True:
                     except KeyboardInterrupt:  # Probably shouldn't do this...
                         game = "Fake"
                         Functions.clear()
+                        print("Current game: {}.\nOpponent: {}".format(gameName, other))
                 if game != "Fake":
                     Functions.clear(10)
                 gameName, users, Placed, multi = None, None, None, None
