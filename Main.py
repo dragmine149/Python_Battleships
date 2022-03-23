@@ -7,6 +7,7 @@ import SaveSystem as save
 import Functions
 import os
 import time
+import platform
 print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 gameName, users, Placed, Location, multi = None, None, None, None, None
@@ -20,16 +21,17 @@ if os.path.exists('Tests/Path.txt'):
     os.remove('Tests/Path.txt')  # removes old data at start
 
 
-def waitSim(iN):
+def waitSim(iN, message):
     try:
         # Waiting message
-        print("Waiting for opponent to take their turn       (ctrl + c to go back)", end="\r")  # noqa
+        back = "(ctrl + c to go back)"
+        print("{}       {}".format(message, back), end="\r")
         time.sleep(1)
-        print("Waiting for opponent to take their turn.      (ctrl + c to go back)", end="\r")  # noqa
+        print("{}.      {}".format(message, back), end="\r")
         time.sleep(1)
-        print("Waiting for opponent to take their turn..     (ctrl + c to go back)", end="\r")  # noqa
+        print("{}..     {}".format(message, back), end="\r")
         time.sleep(1)
-        print("Waiting for opponent to take their turn...    (ctrl + c to go back)", end="\r")  # noqa
+        print("{}...    {}".format(message, back), end="\r")
         time.sleep(1)
         return iN
     except KeyboardInterrupt:
@@ -92,11 +94,14 @@ while True:
         if v == 0:
             # Waiting for other user to setup their ships
             userSetup = False
+            pathLocation = Location.rstrip().replace('"', '')
+            if platform.system() != "Windows":
+                pathLocation = pathLocation.replace("\\", "")
             while not userSetup:
-                if os.path.exists(os.path.join(Location, gameName, other, "ships")):  # noqa
+                if os.path.exists(os.path.join(pathLocation, gameName, other, "ships")):  # noqa
                     userSetup = True
                 else:
-                    v = waitSim(v)
+                    v = waitSim(v, "Waiting for opponent to place their ships")
                     if v != 0:
                         userSetup = "Stop"
 
@@ -110,7 +115,7 @@ while True:
                             game = fire.fire(gameName, name, other, Location).Fire(True)  # noqa
                             print("Current game: {}\nOpponent: {}".format(gameName, other))  # noqa
                         else:
-                            game = waitSim(game)
+                            game = waitSim(game, "Waiting for opponent to take a shot")  # noqa
                     except KeyboardInterrupt:  # Probably shouldn't do this...
                         game = "Fake"
                         Functions.clear()
