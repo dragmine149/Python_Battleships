@@ -108,7 +108,7 @@ class game:
                 Functions.clear(1)
                 external = None
                 while not external:
-                    external = input("Please enter location of storage: ").rstrip().replace('"', '')
+                    external = input("Please enter location of storage: ").rstrip().replace('"', '')  # noqa
                     if platform.system() != "Windows":
                         external = external.replace("\\", "")  # noqa
                     if not os.path.isdir(external):

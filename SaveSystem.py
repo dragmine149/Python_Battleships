@@ -20,7 +20,9 @@ class save:
             import DriveApi
             self.Api = DriveApi.Api(self.path)
         self.newgame = None
-        self.json = json  # Json is not always needed to decode files and can break files somethimes
+        # Json is not always needed to decode files
+        # and can break files somethimes
+        self.json = json
         # Bypasses testing if local file.
         time.sleep(1)
         if self.path != "Saves":
