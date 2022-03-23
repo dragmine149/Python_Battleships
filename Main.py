@@ -103,7 +103,7 @@ while True:
             if v == 0:
                 # Actually playing the game
                 game = False
-                print("Current game: {}.\nOpponent: {}".format(gameName, other))
+                print("Current game: {}\nOpponent: {}".format(gameName, other))
                 while not game:
                     try:
                         if save.save(Location).readFile(gameName, "turn") == name:
