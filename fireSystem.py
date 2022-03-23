@@ -56,10 +56,10 @@ class fire:
                 # Switch user when fired.
                 if Multi:
                     save.save(self.saveLocation).writeFile(self.game, "turn", self.targetUser)  # noqa
-                return self._DestroyedCheck()
+                return self._DestroyedCheck(Multi)
 
     # Compares both boards to check if any has been destroyed
-    def _DestroyedCheck(self):
+    def _DestroyedCheck(self, Multi):
         # Change ships to take the ammount from file instead of in list.
         # Mod support bascially.
         ships = [
@@ -85,7 +85,8 @@ class fire:
         # game over check
         if destroyedAmount == len(ships):
             Functions.clear()
-            print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
+            if not Multi:
+                print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
             save.save(self.saveLocation, True).writeFile(self.game, "win", self.fireUser)  # noqa
             return True
         Functions.clear(2, destroyedList)

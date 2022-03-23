@@ -113,7 +113,8 @@ while True:
                     try:
                         if save.save(Location).readFile(gameName, "turn") == name:  # noqa
                             game = fire.fire(gameName, name, other, Location).Fire(True)  # noqa
-                            print("Current game: {}\nOpponent: {}".format(gameName, other))  # noqa
+                            if not game:
+                                print("Current game: {}\nOpponent: {}".format(gameName, other))  # noqa
                         else:
                             game = waitSim(game, "Waiting for opponent to take a shot")  # noqa
                     except KeyboardInterrupt:  # Probably shouldn't do this...
@@ -121,6 +122,13 @@ while True:
                         Functions.clear()
                         print("Current game: {}.\nOpponent: {}".format(gameName, other))  # noqa
                 if game != "Fake":
+                    print("\n")
+                    if game:
+                        winner = save.save(Location, True).readFile(gameName, "win")  # noqa
+                        looser = name
+                        if winner == name:
+                            looser = other
+                        print("GG!\n{} has beaten {}".format(winner, looser))
                     Functions.clear(10)
                 gameName, users, Placed, multi = None, None, None, None
             else:
