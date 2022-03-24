@@ -63,10 +63,13 @@ class save:
 
         # Tries to remove excess files
         try:
-            if self.newgame:
-                shutil.rmtree(os.path.join(self.path, self.newgame))
+            if not self.Api:
+                if self.newgame:
+                    shutil.rmtree(os.path.join(self.path, self.newgame))
+                else:
+                    shutil.rmtree(os.path.join(self.path, "Test"))
             else:
-                shutil.rmtree(os.path.join(self.path, "Test"))
+                shutil.rmtree("ApiFiles/Google/Test")
         except FileNotFoundError:
             print("Failed to remove files created")
         self.newgame = None
@@ -101,21 +104,35 @@ class save:
         wc3 = self.writeFile("Test", "grid", "H E L L O")
         print("Write Check 3 -> {}         ".format(wc3))
 
-        complete = [
-            wc1 == "Success",
-            wc2 == "Success",
-            wc3 == "Success"
-        ]
-        if complete[0] and complete[1] and complete[2]:
-            return True
+        if self.Api is None:
+            complete = [
+                wc1 == "Success",
+                wc2 == "Success",
+                wc3 == "Success"
+            ]
+            if complete[0] and complete[1] and complete[2]:
+                return True
+            else:
+                print("Error whilst completing a task, Please try again")
         else:
-            print("Error whilst completing a task, Please try again")
+            complete = [
+                wc1 == "Success",
+                wc3 == "Success"
+            ]
+            if complete[0] and complete[1]:
+                return True
+            else:
+                print("Error whilst completing a task, Please try again")
 
     def makeFolder(self, game):
         if self.Api:
             self.Folder = self.Api.UploadData({
                 "name": game,
             }, True)
+            if self.Folder:
+                return "Success"
+            else:
+                return "Failed to create folder"
         else:
             path = os.path.join(self.path, game)
             if os.path.exists(path):
@@ -143,17 +160,19 @@ class save:
             return "Game file given is not a file"
 
     def writeFile(self, game, file, data):
-        print(self.Api)
         if self.Api:
-            print("api")
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), game), "w+") as f:  # noqa
+                f.write(data)
             id = self.Api.UploadData({
                 'name': file,
-                'path': os.path.join(self.path, game),
+                'path': game,
                 'folder': self.Folder
             })
-            print(id)
-            os.mkdir("GoogleApi")
-            with open("Saves/GoogleApi/{}".format(game + file), "w+") as write:
+            if not os.path.exists("ApiFiles/Google"):
+                os.mkdir("ApiFiles/Google")
+            if not os.path.exists("ApiFiles/Google/{}".format(game)):
+                os.mkdir("ApiFiles/Google/{}".format(game))
+            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "w+") as write:  # noqa
                 write.write(str(id))
         else:
             try:
@@ -191,13 +210,13 @@ class save:
     def readFile(self, game, file):
         if self.Api:
             id = None
-            with open("Saves/GoogleApi/{}".format(game + file)) as f:
+            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as f:  # noqa
                 id = f.read()
             self.Api.DownloadData({
                 'name': id,
-                'path': 'Saves/GoogleApi/{}/{}'.format(game + file, file)
+                'path': "ApiFiles/Google/{}".format(os.path.join(game, file))
             })
-            with open("Saves/GoogleApi/{}/{}".format(game + file, file)) as downlaoded:  # noqa
+            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
                 return downlaoded.read()
         try:
             if not self.newgame:
@@ -269,4 +288,5 @@ class board:
 
 
 if __name__ == "__main__":
+    os.system('rm Tests/Path.txt')
     n = save("1jgyfEG0R76adWlnyzqDU030ps-mk4M20")
