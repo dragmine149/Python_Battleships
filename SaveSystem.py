@@ -17,7 +17,7 @@ class save:
         if platform.system() != "Windows":
             self.path = self.path.replace("\\", "")
         self.Api = None
-        if not self.path.find('/') and not self.path.find("\\") and not self.path == "Saves":  # noqa
+        if self.path.find('/') == -1 and self.path.find("\\") == -1 and not self.path == "Saves":  # noqa
             # Load google api
             try:
                 import DriveApi
@@ -143,12 +143,15 @@ class save:
             return "Game file given is not a file"
 
     def writeFile(self, game, file, data):
+        print(self.Api)
         if self.Api:
+            print("api")
             id = self.Api.UploadData({
-                "name": file,
-                "path": os.path.join(self.path, game),
-                "folder": self.Folder
+                'name': file,
+                'path': os.path.join(self.path, game),
+                'folder': self.Folder
             })
+            print(id)
             os.mkdir("GoogleApi")
             with open("Saves/GoogleApi/{}".format(game + file), "w+") as write:
                 write.write(str(id))
@@ -190,7 +193,7 @@ class save:
             id = None
             with open("Saves/GoogleApi/{}".format(game + file)) as f:
                 id = f.read()
-            self.Api.DownlaodData({
+            self.Api.DownloadData({
                 'name': id,
                 'path': 'Saves/GoogleApi/{}/{}'.format(game + file, file)
             })

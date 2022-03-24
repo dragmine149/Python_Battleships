@@ -112,10 +112,14 @@ class Api:
 
     # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
+        print("Uploading... {}\nFolder:{}".format(data, folder))
         metadata = {}
         media = None
-        if data['folder']:
-            self.folder = data['folder']
+        try:
+            if data['folder']:
+                self.folder = data['folder']
+        except KeyError:
+            self.folder = self.folder
         if folder:  # makes folder
             metadata = {
                 'name': data['name'],
@@ -140,7 +144,7 @@ class Api:
                                                fields='id').execute()
 
     # Download data from fileid. (Change to file name?)
-    def DownlaodData(self, data={'name': 'error', 'path': 'Saves'}):
+    def DownloadData(self, data={'name': 'error', 'path': 'Saves'}):
         try:
             request = self.service.files().get_media(fileId=data['name'])
             fileHandler = io.BytesIO()
@@ -165,4 +169,4 @@ if __name__ == "__main__":
     print(result)
     file = api.UploadData({'name': 'FileTest', 'path': 'UploadFileTest.txt', 'folder': result['id']}, False)  # noqa
     print(file)
-    api.DownlaodData({'name': file['id'], 'path': 'Download'})
+    api.DownloadData({'name': file['id'], 'path': 'Download'})
