@@ -24,11 +24,13 @@ class fire:
 
         # Keep shooting until shot is know to be completed.
         while not self.shotTaken:
-            print("{}'s Turn to shoot\n".format(self.fireUser))
-            save.board.DisplayBoard(self.fireBoard)
             # get shooting cooridnates
             x, y = None, None
             while x is None and y is None:
+            	# Output
+                print("{}'s Turn to shoot\n".format(self.fireUser))
+                save.board.DisplayBoard(self.fireBoard)
+                
                 shotPos = input("Enter position to shoot at (-1 to quit game for now): ")  # noqa
                 if shotPos != "-1":
                     x, y = Functions.LocationConvert(shotPos).Convert()  # noqa
