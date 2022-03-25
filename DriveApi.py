@@ -26,22 +26,26 @@ class Api:
 
     # Loads the api for use later.
     def __LoadAPI__(self):
-        creds = None
-        if os.path.exists('ApiFiles/token.json'):  # noqa
-            creds = Credentials.from_authorized_user_file('ApiFiles/token.json', SCOPES)  # noqa
-        # If there are no (valid) credentials available, let the user login
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    'ApiFiles/credentials.json', SCOPES)
-                creds = flow.run_local_server(port=0)
-            # Save the credentials for the next run
-            with open('ApiFiles/token.json', 'w') as token:  # noqa
-                token.write(creds.to_json())
+        try:
+            creds = None
+            if os.path.exists('ApiFiles/token.json'):  # noqa
+                creds = Credentials.from_authorized_user_file('ApiFiles/token.json', SCOPES)  # noqa
+            # If there are no (valid) credentials available, let the user login
+            if not creds or not creds.valid:
+                if creds and creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+                else:
+                    flow = InstalledAppFlow.from_client_secrets_file(
+                        'ApiFiles/credentials.json', SCOPES)
+                    creds = flow.run_local_server(port=0)
+                # Save the credentials for the next run
+                with open('ApiFiles/token.json', 'w') as token:  # noqa
+                    token.write(creds.to_json())
 
-        return build('drive', 'v3', credentials=creds)
+            return build('drive', 'v3', credentials=creds)
+        except:  # noqa  Try and find error handle 'RefreshError'
+            os.system('rm ApiFiles/token.json')
+            self.__LoadAPI__()
 
     # Runs a series of tests to make sure the client has all correct permission
     def Test(self):
@@ -161,6 +165,19 @@ class Api:
         except HttpError as error:
             print("Error occured!: {}".format(error.reason))
             return False
+
+    def ListFolder(self):
+        try:
+            results = self.service.files().list(
+                pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            items = results.get('files', [])
+
+            if not items:
+                print('No files found.')
+                return
+            return items
+        except HttpError as error:
+            print(f'An error occurred: {error}')
 
 
 if __name__ == "__main__":
