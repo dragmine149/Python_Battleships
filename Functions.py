@@ -33,7 +33,9 @@ class LocationConvert:
                     self.y += v
                 else:
                     self.letters += v
-
+            if self.letters == self.input:
+                clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
+                return None, None
             # convert letters into numbers
             return self._decode(self.letters) - 1, (int(self.y) - 1)
         else:
@@ -131,10 +133,13 @@ class check:
             if Input:
                 self.Id = input("{}".format(self.request))  # get input
                 if len(self.Id) >= 2:  # check
-                    if not self.Id[1:].isdigit():
-                        self._FailCheck()
+                    if self.Id[0] == '-':  # Negative Number Check
+                        if not self.Id[0:].isdigit():
+                            self._FailCheck()
+                        else:
+                            return self._PassCheck()
                     else:
-                        return self._PassCheck()
+                    	self._FailCheck()
                 elif not self.Id.isdigit():
                     self._FailCheck()
                 else:
