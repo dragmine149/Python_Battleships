@@ -1,5 +1,0 @@
-# Used for testing. Might delete
-
-import os
-
-os.system("rm -rf Saves")
