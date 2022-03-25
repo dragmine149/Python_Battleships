@@ -10,8 +10,7 @@ class create:
         self.Placed = None
         self.twoPlayer = None
 
-    @staticmethod
-    def SizeRangeCheck(size):
+    def _SizeRangeCheck(self, size):
         # replace with amount of ships in game.
         if size >= 5:  # got to be big enough to hold all ships
             return True
@@ -23,9 +22,9 @@ class create:
         # get the size
         x, y = None, None
         while x is None:
-            x = Functions.check("Please enter X size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck(data[0], data[1])  # noqa
+            x = Functions.check("Please enter X size (length): ", None, None, self._SizeRangeCheck).InputDigitCheck(data[0], data[1])  # noqa
         while y is None:
-            y = Functions.check("Please enter Y size (length): ", None, None, self.SizeRangeCheck).InputDigitCheck(data[0], data[1])  # noqa
+            y = Functions.check("Please enter Y size (length): ", None, None, self._SizeRangeCheck).InputDigitCheck(data[0], data[1])  # noqa
         GameBoard = save.board.CreateBoard([x, y])  # creates a board
         create = None
         name = False

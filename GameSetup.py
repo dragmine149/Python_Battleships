@@ -56,13 +56,6 @@ class game:
             return True
         return False
 
-    @staticmethod
-    def SizeRangeCheck(size):
-        # replace with amount of ships in game.
-        if size >= 5:  # got to be big enough to hold all ships
-            return True
-        return False
-
     def _LoadGame(self, gamesDir, Path="Saves", game=None):
         gameName = gamesDir[game - 1]
         oldUsers = os.listdir(r"{}/{}".format(Path, gameName))
