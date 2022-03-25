@@ -14,7 +14,6 @@ class place:
         self.rot = 0
         self.breaked = False
         self.placed = False
-        print('init')
         self.saveLocation = Location
         self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
@@ -22,7 +21,6 @@ class place:
 
     # Get the board saved.
     def _LoadBoard(self):
-        print('load')
         self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
@@ -67,6 +65,9 @@ class place:
         self.rot = 0
         self.breaked = False
         self.placed = False
+
+    def _ShipError(self):
+        self.gameBoard[len(self.gameBoard) + 1][len(self.gameBoard[0]) + 1] = "+++"
 
     # Function to palce ship
     def Place(self, locInput, owner=None, data=[True, None], rot=None):
@@ -115,13 +116,26 @@ class place:
                         for i in range(ships[place].Length):
                             squareId = [0, 0]
                             if self.rot == 0:
-                                squareId = [y - i, x]
+                                if y - i >= 0:
+                                    squareId = [y - i, x]
+                                else:
+                                    # Error, doesn't fit on board
+                                    self._ShipError()
                             elif self.rot == 90:
-                                squareId = [y, x + i]
+                                if x + i >= 0:
+                                    squareId = [y, x + i]
+                                else:
+                                    self._ShipError()
                             elif self.rot == 180:
-                                squareId = [y + i, x]
+                                if y + i >= 0:
+                                    squareId = [y + i, x]
+                                else:
+                                    self._ShipError()
                             elif self.rot == 270:
-                                squareId = [y, x - i]
+                                 if x - i >= 0:
+                                     squareId = [y, x - i]
+                                 else:
+                                     self._ShipError()
                             else:  # Fail safe check.
                                 Functions.clear(1, "Error in placing ship, Please try again")  # noqa
                                 self.placed = False
