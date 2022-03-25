@@ -1,18 +1,5 @@
-# Battleships
- Normal battleships made in a python terminal... or is it?
 
- Project made for fun, and also to learn things about neural networks (and ai)
 
-# Features
- Battleships, Fully working game in python
- - Place Ships
- - Fire at opponents
- - Automatic win checking
- - Automatic destroyed checking
- - Orginised folders for viewing of save file (ifw)
- - Multiple folders to have multiple games
- - Load games
- 
 
  More features are planned to come
 
