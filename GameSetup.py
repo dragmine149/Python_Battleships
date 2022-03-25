@@ -81,7 +81,10 @@ class game:
                     placed = True
                 else:
                     print("{} not placed".format(users[1]))
-            self.__reset(None, True, gameName, users, placed, Path, save.save(Path).readFile("{}".format(gameName), "multi"))  # noqa
+            Multi = False
+            if os.path.exists(os.path.join("{}".format(gameName), "multi")):
+            	Multi = True
+            self.__reset(None, True, gameName, users, placed, Path, Multi)  # noqa
 
     # Function to process user inputs
     def _ProcessChoice(self):
