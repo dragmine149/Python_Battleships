@@ -259,12 +259,21 @@ class save:
                     return True
                 else:
                     Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
-                    shutil.rmtree("rm -d -r {}/{}".format(self.path, name))
+                    shutil.rmtree("{}/{}".format(self.path, name))
                     return False
             else:
                 Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
-                shutil.rmtree("rm -d -r {}/{}".format(self.path, name))
+                shutil.rmtree("{}/{}".format(self.path, name))
                 return False
+
+    def ListDirectory(self, path=None):
+        if self.Api:
+            return self.Api.ListFolder()
+        else:
+            if path:
+                return os.listdir(path)
+            else:
+                return os.listdir(self.Path)
 
 
 class board:
@@ -290,3 +299,4 @@ class board:
 if __name__ == "__main__":
     os.system('rm Tests/Path.txt')
     n = save("1jgyfEG0R76adWlnyzqDU030ps-mk4M20")
+    n.ListDirectory()
