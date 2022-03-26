@@ -9,6 +9,7 @@ import os
 import time
 import platform
 print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
+time.sleep(1)
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 gameName, users, Placed, Location, multi = None, None, None, None, None
 

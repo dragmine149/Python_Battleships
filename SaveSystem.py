@@ -70,6 +70,9 @@ class save:
                     shutil.rmtree(os.path.join(self.path, "Test"))
             else:
                 shutil.rmtree("ApiFiles/Google/Test")
+                # Delete Data.
+            if os.path.exists('Test'):
+                os.system('rm Test')
         except FileNotFoundError:
             print("Failed to remove files created")
         self.newgame = None
@@ -173,7 +176,7 @@ class save:
             if not os.path.exists("ApiFiles/Google/{}".format(game)):
                 os.mkdir("ApiFiles/Google/{}".format(game))
             with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "w+") as write:  # noqa
-                write.write(str(id))
+                write.write(str(id['id']))
         else:
             try:
                 if not self.newgame:
@@ -212,12 +215,15 @@ class save:
             id = None
             with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as f:  # noqa
                 id = f.read()
-            self.Api.DownloadData({
+            result = self.Api.DownloadData({
                 'name': id,
                 'path': "ApiFiles/Google/{}".format(os.path.join(game, file))
             })
-            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
-                return downlaoded.read()
+            if result:
+                with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
+                    return downlaoded.read()
+            else:
+                return "Failed -> Folder not found"
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
@@ -237,34 +243,45 @@ class save:
 
     def saveCreation(self, data, name, users, twoPlayer=None):
         Functions.clear(1)
-        print("Saving data")
-        if not os.path.exists(self.path):
-            os.mkdir(self.path)
-        if os.path.exists("{}/{}".format(self.path, name)):
-            print("Please enter a name that has not already been used.")
-            Functions.clear(1)
-            return "E"
-        else:
-            os.mkdir("{}/{}".format(self.path, name))
-            os.mkdir("{}/{}/{}".format(self.path, name, users[0]))
-            print("Made dir -> {}/{}/{}".format(self.path, name, users[0]))
-            if os.path.exists("{}/{}/{}".format(self.path, name, users[0])):
-                print(self.writeFile("{}/{}".format(name, users[0]), "grid", data)) # noqa
-                os.mkdir("{}/{}/{}".format(self.path, name, users[1]))
-                print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))
-                if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
-                    print(self.writeFile("{}/{}".format(name, users[1]), "grid", data))  # noqa
-                    if twoPlayer is not None:  # whose turn it is.
-                        print(self.writeFile("{}".format(name), "multi", users[0]))  # noqa
-                    return True
+        if not self.Api:
+            print("Saving data")
+            if not os.path.exists(self.path):
+                os.mkdir(self.path)
+            if os.path.exists("{}/{}".format(self.path, name)):
+                print("Please enter a name that has not already been used.")
+                Functions.clear(1)
+                return "E"
+            else:
+                os.mkdir("{}/{}".format(self.path, name))
+                os.mkdir("{}/{}/{}".format(self.path, name, users[0]))
+                print("Made dir -> {}/{}/{}".format(self.path, name, users[0]))
+                if os.path.exists("{}/{}/{}".format(self.path, name, users[0])):  # noqa
+                    print(self.writeFile("{}/{}".format(name, users[0]), "grid", data)) # noqa
+                    os.mkdir("{}/{}/{}".format(self.path, name, users[1]))
+                    print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))  # noqa
+                    if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
+                        print(self.writeFile("{}/{}".format(name, users[1]), "grid", data))  # noqa
+                        if twoPlayer is not None:  # whose turn it is.
+                            print(self.writeFile("{}".format(name), "multi", users[0]))  # noqa
+                        return True
+                    else:
+                        Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
+                        shutil.rmtree("{}/{}".format(self.path, name))
+                        return False
                 else:
-                    Functions.clear(1, "(2) Error in path creation... (invalid characters?)")  # noqa
+                    Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
                     shutil.rmtree("{}/{}".format(self.path, name))
                     return False
-            else:
-                Functions.clear(1, "(1) Error in path creation... (invalid characters?)")  # noqa
-                shutil.rmtree("{}/{}".format(self.path, name))
-                return False
+        else:
+            with open("Temp-txt", "w+") as f:
+                f.write(json.dumps(data))
+            mainFolder = self.Api.UploadData({'name': name, 'path':'', 'folder': None}, True)  # noqa
+            user1 = self.Api.UploadData({'name': users[0], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
+            user2 = self.Api.UploadData({'name': users[1], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
+            self.Api.UploadData({'name': 'grid', 'path': 'Temp-txt', 'folder': user1['id']}, False)  # noqa
+            self.Api.UploadData({'name': 'grid', 'path': 'Temp-txt', 'folder': user2['id']}, False)  # noqa
+            os.system('rm Temp-txt')
+            return True
 
     def ListDirectory(self, path=None):
         if self.Api:
@@ -273,7 +290,7 @@ class save:
             if path:
                 return os.listdir(path)
             else:
-                return os.listdir(self.Path)
+                return os.listdir(self.path)
 
 
 class board:

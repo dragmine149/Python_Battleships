@@ -95,7 +95,10 @@ class check:
                 if self.rangeCheckValue is None:
                     self.check = self.rangeCheck(self.Id)
                 else:
-                    self.check = self.rangeCheck(self.Id, self.rangeCheckValue)
+                    if callable(self.rangeCheckValue):
+                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue())  # noqa
+                    else:
+                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue)  # noqa
 
                 if self.check:
                     return self.Id
@@ -103,7 +106,6 @@ class check:
                     if self.Id == -1:
                         return self.Id
                     clear(1, "Out of range.")
-                    self._CallExtra()
                     self.Id = None
                     return None
             else:
@@ -115,7 +117,6 @@ class check:
     def _FailCheck(self):
         # user notification
         clear(1, "Please enter a valid input")
-        self._CallExtra()
         self.Id = None
 
     def _CallExtra(self):  # repeats any information the user needs to know
@@ -128,22 +129,12 @@ class check:
             else:
                 print(self.extra)
 
-    def InputDigitCheck(self, Input=True, idIn=0):  # noqa
+    def InputDigitCheck(self):  # noqa
         while not self.Id:
-            if Input:
-                self.Id = input("{}".format(self.request))  # get input
-                if len(self.Id) >= 2:  # check
-                    if self.Id[0] == '-':  # Negative Number Check
-                        if not self.Id[0:].isdigit():
-                            self._FailCheck()
-                        else:
-                            return self._PassCheck()
-                    else:
-                    	self._FailCheck()
-                elif not self.Id.isdigit():
-                    self._FailCheck()
-                else:
-                    return self._PassCheck()
-            else:
-                self.Id = idIn
+            self._CallExtra()
+            self.Id = input("{}".format(self.request))  # get input
+            try:
+                int(self.Id)
                 return self._PassCheck()
+            except ValueError:
+                self._FailCheck()

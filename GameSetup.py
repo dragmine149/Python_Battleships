@@ -83,7 +83,7 @@ class game:
                     print("{} not placed".format(users[1]))
             Multi = False
             if os.path.exists(os.path.join("{}".format(gameName), "multi")):
-            	Multi = True
+                Multi = True
             self.__reset(None, True, gameName, users, placed, Path, Multi)  # noqa
 
     # Function to process user inputs

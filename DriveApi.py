@@ -114,6 +114,9 @@ class Api:
         DelServer(file['id'], folder['id'])
         return True
 
+    def DeleteData(self, id):
+        self.service.files().delete(fileId=id).execute()
+
     # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
         print("Uploading... {}\nFolder:{}".format(data, folder))
@@ -168,7 +171,9 @@ class Api:
 
     def ListFolder(self):
         try:
+            # Going directly from SaveSystem.py doesn't work. From anything else works.
             results = self.service.files().list(
+                q="'{}' in parents".format(self.folder),
                 pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
 
@@ -178,12 +183,14 @@ class Api:
             return items
         except HttpError as error:
             print(f'An error occurred: {error}')
+            return "Error"
 
 
 if __name__ == "__main__":
     api = Api(input("Folder id: "))
-    result = api.UploadData({'name': 'FolderTest', 'path': '', 'folder': None}, True)  # noqa
-    print(result)
-    file = api.UploadData({'name': 'FileTest', 'path': 'UploadFileTest.txt', 'folder': result['id']}, False)  # noqa
-    print(file)
-    api.DownloadData({'name': file['id'], 'path': 'Download'})
+    print(api.ListFolder())
+    # result = api.UploadData({'name': 'FolderTest', 'path': '', 'folder': None}, True)  # noqa
+    # print(result)
+    # file = api.UploadData({'name': 'FileTest', 'path': 'UploadFileTest.txt', 'folder': result['id']}, False)  # noqa
+    # print(file)
+    # api.DownloadData({'name': file['id'], 'path': 'Download'})
