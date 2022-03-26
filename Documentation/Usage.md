@@ -1,12 +1,7 @@
-# Usage
- Need help? Hopefully this file explains everything
+COMMING SOON
 
-# Setup
- No setup is required, all that is needed is python.
- Run `Main.py` to play
+<!-- # Usage
+  So, after you [installed][Installation.md] how exactly do you use it?
+  Below are all the possible options. But there is also a help feature at every step. (wip)
 
-# Ship Information
- [ShipInfo](ShipInfo.py) already contains the required information to know about all the ships.
-
-# Other Information
- More comming soon when game is more advanced.
+## TODO -->
