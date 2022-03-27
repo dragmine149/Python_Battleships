@@ -112,7 +112,9 @@ Other Options:
         while not self.choice:
             Functions.clear()
             self.choice = Functions.check("Your Choice (number): ", self.OptionsRead, None, Functions.NumberRangeCheck, 3).InputDigitCheck()  # noqa
-            return self.ProcessChoice()
+            result = self.ProcessChoice()
+            if self.choice is not None:
+                return result
 
     def OptionsRead(self):
         with open("Options.txt", "r") as options:
