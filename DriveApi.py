@@ -171,7 +171,7 @@ class Api:
 
     def ListFolder(self):
         try:
-            # Going directly from SaveSystem.py doesn't work. From anything else works.
+            # Some things don't work...
             results = self.service.files().list(
                 q="'{}' in parents".format(self.folder),
                 pageSize=10, fields="nextPageToken, files(id, name)").execute()
