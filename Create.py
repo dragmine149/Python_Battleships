@@ -67,7 +67,7 @@ class create:
 
         online = None
         if Location != "Saves":
-            while online is not None:
+            while online is None:
                 online = input("Are you playing online? (y = yes, n = no): ")
                 if online.lower()[0] == "y":
                     online = True
