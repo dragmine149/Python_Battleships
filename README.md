@@ -13,4 +13,4 @@
  Depending on the request and what it does, depends on if it will get accepted.
 
 # Other information
- [Documentation/Usage][How to use]
+  [How to use][Documentation/Usage]
