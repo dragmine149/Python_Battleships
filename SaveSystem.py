@@ -41,6 +41,8 @@ class save:
             f.write(self.path)
 
     def Test(self):
+        if self.Api:
+            self.TestDriverFiles = []
         try:
             with open('Tests/Path.txt', 'r+') as f:
                 if self.path == f.read():
@@ -62,6 +64,7 @@ class save:
         readCheck = self._readCheck()
 
         # Tries to remove excess files
+        print("Removing files")
         try:
             if not self.Api:
                 if self.newgame:
@@ -70,6 +73,9 @@ class save:
                     shutil.rmtree(os.path.join(self.path, "Test"))
             else:
                 shutil.rmtree("ApiFiles/Google/Test")
+                print(self.TestDriverFiles)
+                for file in self.TestDriverFiles:
+                    self.Api.DeleteData(file)
                 # Delete Data.
             if os.path.exists('Test'):
                 os.system('rm Test')
@@ -131,7 +137,9 @@ class save:
         if self.Api:
             self.Folder = self.Api.UploadData({
                 "name": game,
-            }, True)
+            }, True)['id']
+            if isinstance(self.TestDriverFiles, list):
+                self.TestDriverFiles.append(self.Folder)
             if self.Folder:
                 return "Success"
             else:
@@ -170,13 +178,15 @@ class save:
                 'name': file,
                 'path': game,
                 'folder': self.Folder
-            })
+            })['id']
+            if isinstance(self.TestDriverFiles, list):
+                self.TestDriverFiles.append(id)
             if not os.path.exists("ApiFiles/Google"):
                 os.mkdir("ApiFiles/Google")
             if not os.path.exists("ApiFiles/Google/{}".format(game)):
                 os.mkdir("ApiFiles/Google/{}".format(game))
             with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "w+") as write:  # noqa
-                write.write(str(id['id']))
+                write.write(str(id))
         else:
             try:
                 if not self.newgame:
@@ -275,7 +285,7 @@ class save:
         else:
             with open("Temp-txt", "w+") as f:
                 f.write(json.dumps(data))
-            mainFolder = self.Api.UploadData({'name': name, 'path':'', 'folder': None}, True)  # noqa
+            mainFolder = self.Api.UploadData({'name': name, 'path':'', 'folder': self.path}, True)  # noqa
             user1 = self.Api.UploadData({'name': users[0], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
             user2 = self.Api.UploadData({'name': users[1], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
             self.Api.UploadData({'name': 'grid', 'path': 'Temp-txt', 'folder': user1['id']}, False)  # noqa
