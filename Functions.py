@@ -43,6 +43,33 @@ class LocationConvert:
             return None, None
 
 
+# Remove games that begin with '.' or '__' or are not directoies at all.
+def RemoveNonGames(path="Saves"):
+    games = None
+    api = False
+    if isinstance(path, list):
+        api = True
+        games = path
+    else:
+        games = os.listdir(path)
+
+    newlist = []
+    for folder in games:
+        # Removes non directories
+        if not api:
+            if os.path.isdir(os.path.join(path, folder)):
+                if not folder.startswith(".") and not folder.startswith("__"):
+                    if folder != "Google":  # Remove google files
+                        newlist.append(folder)
+        else:
+            folder = folder['name']
+            if not folder.startswith(".") and not folder.startswith("__"):
+                # Get more information from google Better check.
+                if not folder == "multi" and not folder == "turn" and not folder == "win":  # noqa
+                    newlist.append(folder)
+    return newlist
+
+
 # Checks if a number is within 0 and another value.
 def NumberRangeCheck(value, x):
     if value >= 0 and value <= x:
