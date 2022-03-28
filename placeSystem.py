@@ -1,9 +1,11 @@
 import SaveSystem as save
+import DriveApi as drive
 import ShipInfo as ship
 import Functions
 import copy
 import os
 import sys
+import shutil
 
 
 class place:
@@ -14,14 +16,26 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
-        print(Location)
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid", self.saveLocation)  # noqa
+        self.gameBoard = self.getBoard()
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
 
+    def getBoard(self):
+        directory = self.getUserFolder()
+        files = drive.Api(directory['id']).ListFolder()
+        for file in files:
+            if file['name'] == "grid":
+                return save.save(directory['id']).readFile(os.path.join(self.game, self.user), "grid", file['id'])  # noqa
+
+    def getUserFolder(self):
+        dir = drive.Api(self.saveLocation).ListFolder()
+        for directory in dir:
+            if directory['name'] == self.user:
+                return directory
+
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid", self.saveLocation)  # noqa
+        self.gameBoard = self.getBoard()
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -71,6 +85,7 @@ class place:
 
     # Function to palce ship
     def Place(self, locInput, owner=None):
+        Functions.clear()
         # TODO: change to allow mod support
         ships = [
             ship.Short(),
@@ -88,6 +103,7 @@ class place:
                 # Test code support.
                 place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
+                    shutil.rmtree(os.path.join("Saves/Google", self.game))
                     return -1
                 if place is not None:
                     place -= 1
@@ -157,6 +173,7 @@ class place:
             Functions.clear(0)
             save.board.DisplayBoard(self.gameBoard)
 
-        save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships", self.gameBoard)  # noqa
-        save.save(self.saveLocation).writeFile("{}".format(self.game), "turn", owner)  # noqa
+        save.save(self.saveLocation).writeFile(self.game, "ships", self.gameBoard, self.getUserFolder()['id'])  # noqa
+        save.save(self.saveLocation).writeFile(self.saveLocation, "turn", owner)  # noqa
+        shutil.rmtree(os.path.join("Saves/google/", self.game))
         return 0  # pass check

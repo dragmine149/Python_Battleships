@@ -38,7 +38,9 @@ class save:
         # Bypasses testing if local file.
         time.sleep(1)
         if self.path != "Saves":
+            self.json = False
             self.Test()
+            self.json = True
 
     def _writeTestFile(self):
         with open('Tests/Path.txt', 'w+') as f:
@@ -178,24 +180,23 @@ class save:
         else:
             return "Game file given is not a file"
 
-    def writeFile(self, game, file, data):
+    def writeFile(self, game, file, data, folder=None):
         if self.Api:
-            with open(game, "w+") as f:  # noqa
-                f.write(data)
+            if folder is None:
+                folder = self.Folder
+            with open(game, "w+") as f:
+                if json:
+                    f.write(json.dumps(data))
+                else:
+                    f.write(data)
             id = self.Api.UploadData({
                 'name': file,
                 'path': game,
-                'folder': self.Folder
+                'folder': folder
             })['id']
             if isinstance(self.TestDriverFiles, list):
                 self.TestDriverFiles.append(id)
             self.last = id
-            if not os.path.exists("ApiFiles/Google"):
-                os.mkdir("ApiFiles/Google")
-            if not os.path.exists("ApiFiles/Google/{}".format(game)):
-                os.mkdir("ApiFiles/Google/{}".format(game))
-            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "w+") as write:  # noqa
-                write.write(str(id))
         else:
             try:
                 if not self.newgame:
@@ -231,29 +232,22 @@ class save:
 
     def readFile(self, game=None, file=None, id=None):
         if self.Api:
-            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
-                return downlaoded.read()
-
-            print(game)
             splitGame = game.split("/")
-            print(splitGame)
-            for split in range(len(splitGame)):
-                print(split)
-                if split != len(splitGame):
-                    path = None
-                    if split > 0:
-                        path = splitGame[:split-1] + splitGame[split]
+            path = "Saves/Google"
+            for miniGame in splitGame:
+                path = os.path.join(path, miniGame)
+                if not os.path.exists(path):
+                    os.mkdir(path)
 
-                    if os.path.exists("Saves/Google/{}".format(path)):
-                        os.mkdir(path)
-            if not os.path.exists("Saves/Google/{}".format(game)):
-                os.mkdir("Saves/Google/{}".format(game))
+            print(id)
             result = self.Api.DownloadData({
                 'name': id,
                 'path': "Saves/Google/{}".format(os.path.join(game, file))
             }, False)
             if result:
                 with open("Saves/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
+                    if self.json:
+                        return json.loads(downlaoded.read())
                     return downlaoded.read()
             else:
                 return "Failed -> Folder not found"
@@ -308,9 +302,15 @@ class save:
                     return False
         else:
             with open("Temp-txt", "w+") as f:
-                f.write(json.dumps(data))
+                if self.json:
+                    f.write(json.dumps(data))
+                else:
+                    f.write(data)
             with open("Temp-multi-txt", "w+") as f:
-                f.write(users[0])
+                if self.json:
+                    f.write(json.dumps(users[0]))
+                else:
+                    f.write(users[0])
             mainFolder = self.Api.UploadData({'name': name, 'path':'', 'folder': self.path}, True)  # noqa
             user1 = self.Api.UploadData({'name': users[0], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
             user2 = self.Api.UploadData({'name': users[1], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
