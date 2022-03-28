@@ -62,8 +62,7 @@ class create:
             Location = input("Custom save location (blank = default, Supports google drive files): ")  # noqa
             if Location == "":
                 Location = "Saves"
-            else:
-                self.save = save.save(Location)
+            self.save = save.save(Location)
 
         online = None
         if Location != "Saves":
