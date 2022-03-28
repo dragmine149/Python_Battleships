@@ -2,7 +2,6 @@ import SaveSystem as save
 import ShipInfo as ship
 import Functions
 import copy
-import random
 import os
 import sys
 
@@ -15,13 +14,14 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        print(Location)
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid", self.saveLocation)  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid", self.saveLocation)  # noqa
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -67,10 +67,10 @@ class place:
         self.placed = False
 
     def _ShipError(self):
-        self.gameBoard[len(self.gameBoard) + 1][len(self.gameBoard[0]) + 1] = "+++"
+        self.gameBoard[len(self.gameBoard) + 1][len(self.gameBoard[0]) + 1] = "+++"  # noqa
 
     # Function to palce ship
-    def Place(self, locInput, owner=None, data=[True, None], rot=None):
+    def Place(self, locInput, owner=None):
         # TODO: change to allow mod support
         ships = [
             ship.Short(),
@@ -82,14 +82,11 @@ class place:
         while len(ships) > 0:
             self._Reset()
             print("{}'s Turn to place ships\n".format(self.user))
-            self._ShowShips(ships)
             place = None
             testTemp = 0
             while place is None:
                 # Test code support.
-                if testTemp >= 1 and data[1] is not None:
-                    data[1] = str(random.randint(1, 11))
-                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck(data[0], data[1]) # noqa
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
                     return -1
                 if place is not None:
@@ -104,10 +101,7 @@ class place:
                     while x is None and y is None:
                         # Change to make sure locInput is function
                         x, y = Functions.LocationConvert(locInput()).Convert()  # noqa
-                    if type(rot) != int:
                         self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
-                    else:
-                        self.rot = rot
 
                     # Attempts to place the ship at the desiered location
                     # with rotation.
@@ -132,10 +126,10 @@ class place:
                                 else:
                                     self._ShipError()
                             elif self.rot == 270:
-                                 if x - i >= 0:
-                                     squareId = [y, x - i]
-                                 else:
-                                     self._ShipError()
+                                if x - i >= 0:
+                                    squareId = [y, x - i]
+                                else:
+                                    self._ShipError()
                             else:  # Fail safe check.
                                 Functions.clear(1, "Error in placing ship, Please try again")  # noqa
                                 self.placed = False
@@ -156,10 +150,6 @@ class place:
                         self._Error("Ship does not fit on board")
                         self.gameBoard = deep
                         self.placed = False
-                        if not data[0]:
-                            data[1] = str(random.randint(0, 10))
-                            self.rot = rot
-                            locInput = chr(random.randint(ord('a'), ord('j'))) + str(random.randint(1, 11))  # noqa
 
                 ships.pop(place)  # removed placed ship
             else:
