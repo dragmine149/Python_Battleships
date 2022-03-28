@@ -115,7 +115,10 @@ class Api:
         return True
 
     def DeleteData(self, id):
-        self.service.files().delete(fileId=id).execute()
+        try:
+            self.service.files().delete(fileId=id).execute()
+        except HttpError:
+            return "Not found"
 
     # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
@@ -151,7 +154,7 @@ class Api:
                                                fields='id').execute()
 
     # Download data from fileid. (Change to file name?)
-    def DownloadData(self, data={'name': 'error', 'path': 'Saves'}):
+    def DownloadData(self, data={'name': 'error', 'path': 'Saves'}, End=True):
         try:
             request = self.service.files().get_media(fileId=data['name'])
             fileHandler = io.BytesIO()
@@ -162,7 +165,11 @@ class Api:
                 print("Downloaded {}%".format(int(status.progress()) * 100))
             html = fileHandler.getvalue()
 
-            with open("{}.txt".format(data['path']), 'wb') as f:
+            fileEnd = ".txt"
+            if not End:
+                fileEnd = ""
+
+            with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
                 f.write(html)
             return True
         except HttpError as error:
