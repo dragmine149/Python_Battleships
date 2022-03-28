@@ -9,21 +9,20 @@ class Process:
     def __init__(self):
         print("Loading")
 
-    # def winView(self, Path, external=False):
-    #     Functions.clear()
-    #     # change to a different layout
-    #     aPath = Path
-    #     name = Path
-    #     if external:
-    #         aPath = Path['id']
-    #         name = Path['name']
-    #     for i in range(len(users)):
-    #         if users[i] != "win":
-    #             print("{} data\ngrid (where they shot)".format(users[i]))  # noqa
-    #             save.board.DisplayBoard(save.save(aPath, external).readFile(name, "grid"))  # noqa
-    #             print("{} data\nships (The ship layout they had)".format(users[i]))  # noqa
-    #             save.board.DisplayBoard(save.save(aPath, external).readFile(name, "ships"))  # noqa
-    #     input("Press enter when you are ready to continue.")
+    def winView(self, path, name=None, external=False):
+        if not external:
+            users = Functions.RemoveNonGames(os.path.join(path, name))
+            for user in users:
+                sS = save.save(path)
+                sSpath = os.path.join(name, user)
+
+                print("{}'s' grid\n(where they shot)".format(user))
+                save.board.DisplayBoard(sS.readFile(sSpath, "grid"))
+                print("{}'s' ships\n(The ship layout they had)".format(user))
+                save.board.DisplayBoard(sS.readFile(sSpath, "ships"))
+            print("{} won this game.".format(sS.readFile(name, "win")))
+            input("Press enter when you are ready to continue.")
+            return None
 
     def Inputs(self, path, name=None, external=False, create=False):
         if create:
@@ -34,7 +33,7 @@ class Process:
             err_Msg = "Failed -> Folder not found"
             win = save.save(path, False).readFile(name, "win")
             if win != err_Msg:  # change msg
-                self.winView()
+                return self.winView(path, name)
             else:
                 users = save.save(path, False).ListDirectory(os.path.join(path, name))  # noqa
                 placed = False
@@ -50,5 +49,37 @@ class Process:
         else:
             # Path, name (id, name)
             # Path usless
-            users = Drive.Api(name['id']).ListFolder()
+            for item in path:
+                if item['name'] == name:
+                    name = item
+                    break
+            print(name['id'])
+            usersInfo = Drive.Api(name['id']).ListFolder()
+            multiPlayerId = None
+            for user in usersInfo:
+                if user['name'] == "multi":
+                    multiPlayerId = user['id']
+            users = Functions.RemoveNonGames(usersInfo)
             print(users)
+            print(multiPlayerId)
+            placed = [False, False]
+            for user in range(len(usersInfo)):
+                if usersInfo[user] in users:
+                    print(usersInfo[user])
+                    Files = Drive.Api(usersInfo[user]['id']).ListFolder()
+                    for file in Files:
+                        if file['name'] == "ships":
+                            placed[user] = True
+                            break
+            multi = False
+            if multiPlayerId is not None:
+                multi = Drive.Api(name['id']).DownloadData({
+                    'name': multiPlayerId,
+                    'path': 'multiPlayer.temo'
+                })
+                if multi:
+                    with open('multiPlayer.temo.txt', 'r') as mp:
+                        multi = mp.read()
+                    os.system('rm multiPlayer.temo.txt')
+
+            return name['name'], users, placed[0] and placed[1], name['id'], multi  # noqa
