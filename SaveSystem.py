@@ -21,6 +21,9 @@ class save:
             # Load google api
             try:
                 import DriveApi
+                if not os.path.exists("Saves/Google"):
+                    os.mkdir("Saves/Google")
+
                 self.Api = DriveApi.Api(self.path)
                 if not self.Api.Test():
                     sys.exit("Something failed in the google drive api test...")  # noqa
@@ -28,6 +31,7 @@ class save:
             except ModuleNotFoundError:
                 sys.exit("Google drive api not installed. Please install...")
         self.newgame = None
+        self.last = None
         # Json is not always needed to decode files
         # and can break files somethimes
         self.json = json
@@ -72,13 +76,17 @@ class save:
                 else:
                     shutil.rmtree(os.path.join(self.path, "Test"))
             else:
-                shutil.rmtree("ApiFiles/Google/Test")
+
+                shutil.rmtree("Saves/Google/Test")
                 print(self.TestDriverFiles)
                 for file in self.TestDriverFiles:
                     self.Api.DeleteData(file)
                 # Delete Data.
+
+            print(os.path.exists('Test'))
             if os.path.exists('Test'):
                 os.system('rm Test')
+
         except FileNotFoundError:
             print("Failed to remove files created")
         self.newgame = None
@@ -172,7 +180,7 @@ class save:
 
     def writeFile(self, game, file, data):
         if self.Api:
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), game), "w+") as f:  # noqa
+            with open(game, "w+") as f:  # noqa
                 f.write(data)
             id = self.Api.UploadData({
                 'name': file,
@@ -181,6 +189,7 @@ class save:
             })['id']
             if isinstance(self.TestDriverFiles, list):
                 self.TestDriverFiles.append(id)
+            self.last = id
             if not os.path.exists("ApiFiles/Google"):
                 os.mkdir("ApiFiles/Google")
             if not os.path.exists("ApiFiles/Google/{}".format(game)):
@@ -209,7 +218,7 @@ class save:
 
     def _readCheck(self):
         print("Read Check 1 -> In Progress      ", end="\r")
-        rc1 = self.readFile("Test", "grid")
+        rc1 = self.readFile("Test", "grid", self.last)
         print("Read Check 1 -> {}         ".format(rc1))
 
         complete = [
@@ -220,20 +229,35 @@ class save:
         else:
             print("Error whilst completing a task, Please try again")
 
-    def readFile(self, game, file):
+    def readFile(self, game=None, file=None, id=None):
         if self.Api:
-            id = None
-            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as f:  # noqa
-                id = f.read()
+            with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
+                return downlaoded.read()
+
+            print(game)
+            splitGame = game.split("/")
+            print(splitGame)
+            for split in range(len(splitGame)):
+                print(split)
+                if split != len(splitGame):
+                    path = None
+                    if split > 0:
+                        path = splitGame[:split-1] + splitGame[split]
+
+                    if os.path.exists("Saves/Google/{}".format(path)):
+                        os.mkdir(path)
+            if not os.path.exists("Saves/Google/{}".format(game)):
+                os.mkdir("Saves/Google/{}".format(game))
             result = self.Api.DownloadData({
                 'name': id,
-                'path': "ApiFiles/Google/{}".format(os.path.join(game, file))
-            })
+                'path': "Saves/Google/{}".format(os.path.join(game, file))
+            }, False)
             if result:
-                with open("ApiFiles/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
+                with open("Saves/Google/{}".format(os.path.join(game, file)), "r") as downlaoded:  # noqa
                     return downlaoded.read()
             else:
                 return "Failed -> Folder not found"
+
         try:
             if not self.newgame:
                 with open(os.path.join(os.path.join(self.path, game), file), "r") as gameData:  # noqa
@@ -271,7 +295,7 @@ class save:
                     print("Made dir -> {}/{}/{}".format(self.path, name, users[1]))  # noqa
                     if os.path.exists("{}/{}/{}".format(self.path, name, users[1])):  # noqa
                         print(self.writeFile("{}/{}".format(name, users[1]), "grid", data))  # noqa
-                        if twoPlayer is not None:  # whose turn it is.
+                        if twoPlayer:  # whose turn it is.
                             print(self.writeFile("{}".format(name), "multi", users[0]))  # noqa
                         return True
                     else:
@@ -285,12 +309,17 @@ class save:
         else:
             with open("Temp-txt", "w+") as f:
                 f.write(json.dumps(data))
+            with open("Temp-multi-txt", "w+") as f:
+                f.write(users[0])
             mainFolder = self.Api.UploadData({'name': name, 'path':'', 'folder': self.path}, True)  # noqa
             user1 = self.Api.UploadData({'name': users[0], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
             user2 = self.Api.UploadData({'name': users[1], 'path': '', 'folder': mainFolder['id']}, True)  # noqa
+            if twoPlayer:
+                self.Api.UploadData({'name': 'multi', 'path': 'Temp-multi-txt', 'folder': mainFolder['id']}, False)  # noqa
             self.Api.UploadData({'name': 'grid', 'path': 'Temp-txt', 'folder': user1['id']}, False)  # noqa
             self.Api.UploadData({'name': 'grid', 'path': 'Temp-txt', 'folder': user2['id']}, False)  # noqa
             os.system('rm Temp-txt')
+            os.system('rm Temp-multi-txt')
             return True
 
     def ListDirectory(self, path=None):
