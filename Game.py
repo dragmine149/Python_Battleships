@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import Functions
 import ProcessInput as pi
 import platform
@@ -15,36 +14,13 @@ class game:
         self.game = None
         self.path = "Saves"
 
-    def RemoveNonGames(self, path="Saves"):
-        games = None
-        api = False
-        if isinstance(path, list):
-            api = True
-            games = path
-        else:
-            games = os.listdir(path)
-
-        for folder in games:
-            # Removes non directories
-            if not api:
-                if not os.path.isdir(os.path.join(path, folder)):
-                    games.pop(games.index(folder))
-
-            # Removes all hidden files.
-            if api:
-                folder = folder['name']
-
-            if folder.startswith("."):
-                games.pop(games.index(folder))
-        return games
-
     def LoadGames(self, path):
         message = "Games found on disk: "
         if isinstance(path, list):
             message = "Games found on external location: "
         print(message)
 
-        newList = self.RemoveNonGames(path)
+        newList = Functions.RemoveNonGames(path)
         for game in range(len(newList)):
             print("{}: {}".format(game + 1, newList[game]))
         # Cannot indent otherwise formating is broken
@@ -67,7 +43,7 @@ Other Options:
             apiExternal = False
             while not self.game:
                 Functions.clear()
-                self.game = Functions.check("Enter game number to load: ", self.LoadGames, self.path, self.GameRangeCheck, self.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
+                self.game = Functions.check("Enter game number to load: ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
                 if self.game == -1:
                     self.choice = None
                     self.game = None
@@ -102,7 +78,7 @@ Other Options:
                         else:
                             external = self.path
                             self.path = "Saves"
-            return pi.Process().Inputs(self.path, name=self.RemoveNonGames(self.path)[self.game - 1], external=apiExternal)  # noqa
+            return pi.Process().Inputs(self.path, name=Functions.RemoveNonGames(self.path)[self.game - 1], external=apiExternal)  # noqa
         if self.choice == 2:
             return pi.Process().Inputs(self.game, create=True)
         if self.choice == 3:
@@ -113,6 +89,8 @@ Other Options:
             Functions.clear()
             self.choice = Functions.check("Your Choice (number): ", self.OptionsRead, None, Functions.NumberRangeCheck, 3).InputDigitCheck()  # noqa
             result = self.ProcessChoice()
+            if result is None:
+                self.choice = None
             if self.choice is not None:
                 return result
 
