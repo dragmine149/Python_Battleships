@@ -194,6 +194,7 @@ class save:
                 'path': game,
                 'folder': folder
             })['id']
+            os.system("rm {}".format(game))  # Temprary game file. Remove after used.  # noqa
             if isinstance(self.TestDriverFiles, list):
                 self.TestDriverFiles.append(id)
             self.last = id
