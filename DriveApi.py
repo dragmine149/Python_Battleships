@@ -181,7 +181,7 @@ class Api:
 
             with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
                 f.write(html)
-            return True
+            return "{}{}".format(data['path'], fileEnd)
         except HttpError as error:
             print("Error occured!: {}".format(error.reason))
             return False

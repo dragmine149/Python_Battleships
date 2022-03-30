@@ -1,4 +1,4 @@
-import SaveSystem as save
+import Save as save
 import Functions
 
 
@@ -63,7 +63,28 @@ class create:
             if Location == "":
                 Location = "Saves"
             # Check for HttpError without putting google files into this file..
-            self.save = save.save(Location)
+            userSave = []
+            for user in users:
+                saveItem = False
+                while not saveItem:
+                    saveItem = save.save(Location, data={
+                        'name': name,
+                        'file': user
+                    })
+                    if isinstance(saveItem, str):
+                        if saveItem.startswith('GD'):
+                            Functions.clear(2, "Google Drive not installed. Please rerun this program with it installed or user a different directory.")
+                            Location = None
+                            saveItem = True
+                            break
+    
+                        if saveItem.startswith('No'):
+                            Location = None
+                            saveItem = True
+                            Functions.clear(2, "Client doesn't have access to that folder id. Please make sure you have internet connect and can read and write into the folder specified!")
+                            break   
+
+                userSave.append(saveItem)
 
         online = None
         if Location != "Saves":
@@ -77,9 +98,21 @@ class create:
                 else:
                     online = False
 
-        gameBoard = save.board.CreateBoard(size)
+        gameBoard = Functions.board.CreateBoard(size)
         game = None
         while game is None:
+            for user in userSave:
+                info = user.makeFolder(str(user))
+                file = user.writeFile({
+                    'data': gameBoard,
+                    'folder': info
+                },
+                'grid')
+            save.save(Location, {
+                'name': name
+            }).writeFile({
+                'data': online
+            })
             game = self.save.saveCreation(gameBoard, name, users, online)  # noqa
             if game == "E":
                 name = self.strCheck("Please enter a name for this game: ", "Game Name")  # noqa

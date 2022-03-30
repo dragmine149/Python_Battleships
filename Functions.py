@@ -165,3 +165,20 @@ class check:
                 return self._PassCheck()
             except ValueError:
                 self._FailCheck()
+
+# Everything to do with the board. Prints it and creates it.
+class board:
+    def CreateBoard(size):
+        board = []
+        for _ in range(size[1]):  # Y size (height)
+            x = []
+            for _ in range(size[0]):  # X size (width)
+                x.append('-')
+            board.append(x)
+        return board
+    
+    def DisplayBoard(board):
+        for y in board:
+            for x in y:
+                print(x, end="")
+            print()
