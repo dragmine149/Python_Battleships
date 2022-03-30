@@ -23,6 +23,7 @@ class Api:
             os.mkdir("ApiFiles")
         self.service = self.__LoadAPI__()
         self.folder = folderId
+        self.Test()  # change to not testing every time.
 
     # Loads the api for use later.
     def __LoadAPI__(self):
@@ -49,76 +50,80 @@ class Api:
 
     # Runs a series of tests to make sure the client has all correct permission
     def Test(self):
-        # Makes test folder
-        def makeFolder(folderId):
-            folder_metadata = {
-                'name': 'Battleships_test',
-                'mimeType': 'application/vnd.google-apps.folder',
-                'parents': [folderId]
-            }
-            return self.service.files().create(body=folder_metadata,
-                                               fields='id').execute()
-
-        # Makes test file
-        def uploadFile(folderMadeId):
-            file_metadata = {
-                'name': 'README.txt',
-                'mimeType': 'text/plain',
-                'parents': [folderMadeId.get('id')]
-            }
-            media = MediaFileUpload('UploadFileTest.txt',
-                                    mimetype='text/plain',
-                                    resumable=True)
-            return self.service.files().create(body=file_metadata,
-                                               media_body=media,
-                                               fields='id').execute()
-
-        # Download test file
-        def downloadFile(file):
-            request = self.service.files().get_media(fileId=file)
-            fileHandler = io.BytesIO()
-            downloader = MediaIoBaseDownload(fileHandler, request)
-            done = False
-            while done is False:
-                status, done = downloader.next_chunk()
-                print("Downloaded {}%".format(int(status.progress()) * 100))
-            html = fileHandler.getvalue()
-
-            with open("DownloadFileTest.txt", 'wb') as f:
-                f.write(html)
-            return True
-
-        # Delete local files (that got downloaded)
-        def DelLocal():
-            if os.path.exists("DownloadFileTest.txt"):
-                os.remove("DownloadFileTest.txt")
-                return True
-            else:
-                return False
-
-        # Delete server files (test)
-        def DelServer(file, folder):
-            self.service.files().delete(fileId=file).execute()
-            self.service.files().delete(fileId=folder).execute()
-
+        read, write1, write2 = None, None, None
         # Runs tests.
         # TODO: Add checks for fails
         # TODO: Replace some checks with the actual function
-        folder = makeFolder(self.folder)
+        folder = self.UploadData({
+            'name': 'DriveApiTest',
+            'folder': self.folder
+        }, True)
         print(folder)
-        file = uploadFile(folder)
-        print(file)
-        downloadFile(file['id'])
+        if folder:
+            write1 = True
+            file = self.UploadData({
+                'name': 'README (dont)',
+                'path': 'UploadFileText.txt',
+                'folder': folder
+            })
+            print(file)
+            if file:
+                write1 = True
+                success = self.DownloadData({
+                    'Id': file,
+                    'path': 'DownloadFileTest'
+                }, True)
+                if success:
+                    read = True
+                else:
+                    read = False
+            else:
+                write2 = False
+        else:
+            write1 = False
         time.sleep(5)  # updates
-        DelLocal()
-        DelServer(file['id'], folder['id'])
-        return True
+        if os.path.exists("DownloadFileTest.txt"):
+            os.remove("DownloadFileTest.txt")
+
+        if write2:
+            self.DeleteData(file['id'])
+
+        if write1:
+            self.DeleteData(folder['id'])
+
+        if write1 and write2 and read:
+            print("Everything is ready!")
+            self.TR = True
+            return
+        elif write1 and write2 and not read:
+            print("Can write but not read!")
+            self.TR = False
+            return
+        elif write1 and not write2 and not read:
+            print("Can make folder, not upload file!")
+            self.TR = False
+            return
+        elif not write1 and not write2 and not read:
+            print("Failed to read or write")
+            self.TR = False
+            return
 
     def DeleteData(self, id):
         try:
             self.service.files().delete(fileId=id).execute()
         except HttpError:
             return "Not found"
+
+    # Checks if the folder / file exists before making a duplicate
+    def checkIfExists(self, folder, name):
+        # folder -> folder to upload file to.
+        # name -> name of the file to compare
+        items = self.ListFolder(folder)
+        if items is not None:
+            for item in items:
+                if item['name'] == name:
+                    return True, item
+        return False, None
 
     # Makes folder / uploads data based on input
     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
@@ -130,31 +135,36 @@ class Api:
                 self.folder = data['folder']
         except KeyError:
             self.folder = self.folder
-        if folder:  # makes folder
-            metadata = {
-                'name': data['name'],
-                'mimeType': 'application/vnd.google-apps.folder',
-                'parents': [self.folder]
-            }
+
+        exists, Id = self.checkIfExists(self.folder, data['name'])
+        if not exists and Id is None:
+            if folder:  # makes folder
+                metadata = {
+                    'name': data['name'],
+                    'mimeType': 'application/vnd.google-apps.folder',
+                    'parents': [self.folder]
+                }
+            else:
+                metadata = {
+                    'name': data['name'],
+                    'mimeType': '*/*',  # not readable on drive
+                    'parents': [self.folder]
+                }
+                media = MediaFileUpload(data['path'],  # noqa
+                                        mimetype='*/*',
+                                        resumable=True)
+            if media:
+                return self.service.files().create(body=metadata,
+                                                   media_body=media,
+                                                   fields='id').execute()
+            else:
+                return self.service.files().create(body=metadata,
+                                                   fields='id').execute()
         else:
-            metadata = {
-                'name': data['name'],
-                'mimeType': '*/*',  # not readable on drive
-                'parents': [self.folder]
-            }
-            media = MediaFileUpload(os.path.join(os.path.dirname(os.path.realpath(__file__)), data['path']),  # noqa
-                                    mimetype='*/*',
-                                    resumable=True)
-        if media:
-            return self.service.files().create(body=metadata,
-                                               media_body=media,
-                                               fields='id').execute()
-        else:
-            return self.service.files().create(body=metadata,
-                                               fields='id').execute()
+            return Id
 
     # Download data from fileid. (Change to file name?)
-    def DownloadData(self, data={'name': 'error', 'path': 'Saves'}, End=True):
+    def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
         try:
             request = self.service.files().get_media(fileId=data['name'])
             fileHandler = io.BytesIO()
@@ -176,11 +186,13 @@ class Api:
             print("Error occured!: {}".format(error.reason))
             return False
 
-    def ListFolder(self):
+    def ListFolder(self, folder=None):
+        if folder is None:
+            folder = self.folder
         try:
             # Some things don't work...
             results = self.service.files().list(
-                q="'{}' in parents".format(self.folder),
+                q="'{}' in parents".format(folder),
                 pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
 
@@ -191,13 +203,3 @@ class Api:
         except HttpError as error:
             print(f'An error occurred: {error}')
             return "Error"
-
-
-if __name__ == "__main__":
-    api = Api(input("Folder id: "))
-    print(api.ListFolder())
-    # result = api.UploadData({'name': 'FolderTest', 'path': '', 'folder': None}, True)  # noqa
-    # print(result)
-    # file = api.UploadData({'name': 'FileTest', 'path': 'UploadFileTest.txt', 'folder': result['id']}, False)  # noqa
-    # print(file)
-    # api.DownloadData({'name': file['id'], 'path': 'Download'})
