@@ -73,16 +73,16 @@ class create:
                     })
                     if isinstance(saveItem, str):
                         if saveItem.startswith('GD'):
-                            Functions.clear(2, "Google Drive not installed. Please rerun this program with it installed or user a different directory.")
+                            Functions.clear(2, "Google Drive not installed. Please rerun this program with it installed or user a different directory.")  # noqa
                             Location = None
                             saveItem = True
                             break
-    
+
                         if saveItem.startswith('No'):
                             Location = None
                             saveItem = True
-                            Functions.clear(2, "Client doesn't have access to that folder id. Please make sure you have internet connect and can read and write into the folder specified!")
-                            break   
+                            Functions.clear(2, "Client doesn't have access to that folder id. Please make sure you have internet connect and can read and write into the folder specified!")  # noqa
+                            break
 
                 userSave.append(saveItem)
 
@@ -99,22 +99,16 @@ class create:
                     online = False
 
         gameBoard = Functions.board.CreateBoard(size)
-        game = None
-        while game is None:
-            for user in userSave:
-                info = user.makeFolder(str(user))
-                file = user.writeFile({
-                    'data': gameBoard,
-                    'folder': info
-                },
-                'grid')
-            save.save(Location, {
-                'name': name
-            }).writeFile({
-                'data': online
-            })
-            game = self.save.saveCreation(gameBoard, name, users, online)  # noqa
-            if game == "E":
-                name = self.strCheck("Please enter a name for this game: ", "Game Name")  # noqa
-                game = None
+        for user in range(len(userSave)):
+            info = userSave[user].makeFolder(users[user])
+            print(info)
+            userSave[user].writeFile({
+                'data': gameBoard,
+                'folder': info
+            }, 'grid')
+        save.save(Location, {
+            'name': name
+        }).writeFile({
+            'data': online
+        })
         return [name, users, Location, online]
