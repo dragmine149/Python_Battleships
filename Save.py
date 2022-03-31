@@ -1,6 +1,5 @@
 import os
 import Functions
-import shutil
 import json
 import platform
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -15,6 +14,8 @@ class save:
         file -> name of the subfile. Either user/ships or user
     }
     Api -> Api bypass. (skip the path check)
+
+    self.error -> Value to check for. If this is not None return false.
     """
     def __init__(self, path, Json=True, data={
         'name': None,
@@ -23,6 +24,7 @@ class save:
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
         self.api = None
+        self.error = None
         if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa
             # Google drive api check
             # A lot of checks, here and in the script
@@ -31,10 +33,10 @@ class save:
                 self.api = d.Api(self.path)
                 if not self.api.TR:
                     Functions.clear(2, "Something failed in testing the google drive api. Correct permissions?")  # noqa
-                    return 'GD failed'
+                    self.error = 'GD failed'
             except ModuleNotFoundError:
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
-                return 'No GD'
+                self.error = 'No GD'
         """
         Some files are encoded in json to make them not easly editable.
         Unfortuantly some files will break this program / file if they try to
@@ -47,13 +49,15 @@ class save:
         if data['name'] is not None and data['file'] is not None:
             self.data = data
         else:
-            return False
-    
+            self.error = "No Data"
+
     """
     _FolderCheck()
     - Checks if all primary / required folders are made. If not make them.
     """
     def _FolderCheck(self):
+        if self.error is not None:
+            return self.error
         if not os.path.exists("Saves"):
             os.mkdir("Saves")
         if not os.path.exists("Saves/Temp"):
@@ -61,13 +65,16 @@ class save:
 
     """
     makeFolder(sub)
-    -- sub -> Keeps looping until all the directories are fullfilled. 
-    - Makes a folder with the string imported from before. In save.save(). No extra imports required.
+    -- sub -> Keeps looping until all the directories are fullfilled.
+    - Makes a folder with the string imported from before. In save.save().
+      No extra imports required.
     - Returns the path to the folder. Either a dict (api) or string (local)
     """
     def makeFolder(self, sub=None):
+        if self.error is not None:
+            return self.error
         splitInfo = []
-        if sub:
+        if sub is not None:
             if platform.system() == "Windows":
                 splitInfo = sub.split("\\")
             else:
@@ -77,7 +84,7 @@ class save:
             folderId = self.api.UploadData({
                 'name': self.data['name']
             }, True)
-            if sub:
+            if sub is not None:
                 newFolder = None
                 for item in splitInfo:
                     newFolder = self.api.UploadData({
@@ -90,9 +97,20 @@ class save:
             path = os.path.join(self.path, self.data['name'])
             if not os.path.exists(path):
                 os.mkdir(path)
-            if sub:
+            # make sure sub is None because could be same as parent folder
+            elif sub is None:
+                overwrite = None
+                while overwrite is None:
+                    overwrite = input("Are you sure you want to overwrite this game? (y = yes, n = no): ")  # noqa
+                    if overwrite.lower()[0] == "n":
+                        return False
+                    elif overwrite.lower()[0] != "y":
+                        overwrite = None
+                        Functions.clear(2, "Please enter a valid option!")
+            print(sub)
+            if sub is not None:
                 for item in splitInfo:
-                    os.path.join(path, item)
+                    path = os.path.join(path, item)
                     if not os.path.exists(path):
                         os.mkdir(path)
             return path
@@ -112,12 +130,14 @@ class save:
         'data': None,
         'folder': None
     }, name=None):
+        if self.error is not None:
+            return self.error
         if name:
             self.data['name'], self.name = name, self.data['name']
         # Check to make sure there actually IS data
         if data['data'] is None:
             return False
-        
+
         # Makes the data in a file. (Both reasons)
         with open("Saves/Temp/{}".format(self.data['name']), 'w+') as tempFile:
             if self.json:
@@ -141,12 +161,15 @@ class save:
             command = "mv"
             if platform.system() == "Windows":
                 command = "move"
-            os.system('{} Saves/Temp/{} {}/{}'.format(command, self.data['name'], data['folder'], self.data['name']))
+            os.system('{} Saves/Temp/{} {}/{}'.format(command,
+                                                      self.data['name'],
+                                                      data['folder'],
+                                                      self.data['name']))
 
             if name:
                 self.data['name'] = name
             return "Saves/{}/{}".format(data['folder'], self.data['name'])
-    
+
     """
     readFile({
         'name' -> The name of the file. Either name or id
@@ -159,6 +182,8 @@ class save:
     def readFile(self, data={
         'name': None,
     }):
+        if self.error is not None:
+            return self.error
         saveLocation = "{}/{}/{}".format(self.data['name'],
                                          self.data['file'],
                                          data['name'])
@@ -178,7 +203,8 @@ class save:
                         return json.loads(file.read())
                     return file.read()
             else:
-                print("Failed -> File to read from not found!\nPath: {}".format(saveLocation))
+                print("Failed -> File to read from not found!" +
+                      "\nPath: {}".format(saveLocation))
                 return False
 
     """
@@ -186,6 +212,8 @@ class save:
     - Returns all the files in the directory
     """
     def ListDirectory(self):
+        if self.error is not None:
+            return self.error
         if self.api:
             return self.api.ListFolder()
         else:
