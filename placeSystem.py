@@ -1,11 +1,16 @@
-# import SaveSystem as save
-# import DriveApi as drive
+import Save as save
 import ShipInfo as ship
 import Functions
 import copy
 import os
 import sys
 import shutil
+
+"""
+TODO:
+- Replace google drive parts
+- Fix with new save system
+"""
 
 
 class place:
@@ -22,15 +27,16 @@ class place:
 
     def getBoard(self):
         directory = self.getUserFolder()
-        files = drive.Api(directory['id']).ListFolder()
+        files = save.save(directory).ListDirectory()
         for file in files:
             if file['name'] == "grid":
-                return save.save(directory['id']).readFile(os.path.join(self.game, self.user), "grid", file['id'])  # noqa
+                return save.save()
+                # return save.save(directory['id']).readFile(os.path.join(self.game, self.user), "grid", file['id'])  # noqa
 
     def getUserFolder(self):
-        dir = drive.Api(self.saveLocation).ListFolder()
+        dir = save.save(self.saveLocation).ListFolder()
         for directory in dir:
-            if directory['name'] == self.user:
+            if directory == self.user:
                 return directory
 
     # Get the board saved.
