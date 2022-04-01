@@ -212,9 +212,23 @@ class save:
     - Returns all the files in the directory
     """
     def ListDirectory(self):
+        print(self.api)
         if self.error is not None:
             return self.error
-        if self.api:
+        if self.api is not None:
+            print(self.api.ListFolder())
             return self.api.ListFolder()
         else:
+            print(os.listdir(self.path))
             return os.listdir(self.path)
+
+    """
+    CheckForFile(path)
+    - Returns true if a file exists, returns false if not
+    """
+    def CheckForFile(self, path):
+        if self.api:
+            return self.api.checkIfExists(self.path, path)[0]
+        elif os.path.exists(os.path.join(self.path, path)):
+            return True
+        return False
