@@ -1,8 +1,7 @@
 import Create as Create
-# import SaveSystem as save
+import Save as save
 import Functions
 import os
-import DriveApi as Drive
 
 
 class Process:
@@ -13,14 +12,19 @@ class Process:
         if not external:
             users = Functions.RemoveNonGames(os.path.join(path, name))
             for user in users:
-                sS = save.save(path)
-                sSpath = os.path.join(name, user)
+                sS = save.save(path, True, {
+                    'name': path,
+                    'file': user
+                })
 
                 print("{}'s' grid\n(where they shot)".format(user))
-                save.board.DisplayBoard(sS.readFile(sSpath, "grid"))
+                Functions.board.DisplayBoard(sS.readFile("grid"))
                 print("{}'s' ships\n(The ship layout they had)".format(user))
-                save.board.DisplayBoard(sS.readFile(sSpath, "ships"))
-            print("{} won this game.".format(sS.readFile(name, "win")))
+                Functions.board.DisplayBoard(sS.readFile("ships"))
+            print("{} won this game.".format(save.save(path, False, {
+                'name': path,
+                'file': 'win'
+            }).readFile("")))
             input("Press enter when you are ready to continue.")
             return None
 
@@ -30,19 +34,25 @@ class Process:
             return name, users, False, Location, online
         if not external:
             # Path Name
-            err_Msg = "Failed -> Folder not found"
-            win = save.save(path, False).readFile(name, "win")
-            if win != err_Msg:  # change msg
+            # Saves GameName
+            # Id Name
+            winPath = os.path.join(path, name)
+            win = save.save(winPath).CheckForFile(os.path.join(winPath, "win"))
+            if win:
                 return self.winView(path, name)
             else:
-                users = save.save(path, False).ListDirectory(os.path.join(path, name))  # noqa
+                users = save.save(os.path.join(path, name), False, {
+                    'name': path,
+                    'file': name
+                }).ListDirectory()
+
                 placed = False
-                if save.save(path, False).readFile(os.path.join(name, users[0]), "ships") != err_Msg:  # noqa
-                    if save.save(path, False).readFile(os.path.join(name, users[1]), "ships") != err_Msg:  # noqa
+                if save.save(path).CheckForFile(os.path.join(name, users[0], "ships")):  # noqa
+                    if save.save(path).CheckForFile(os.path.join(name, users[1], "ships")):  # noqa
                         placed = True
 
                 multi = False
-                if save.save(path, False).readFile(name, "multi") != err_Msg:
+                if save.save(path).CheckForFile(os.path.join(name, "multi")):
                     multi = True
 
                 return name, users, placed, path, multi
