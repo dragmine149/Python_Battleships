@@ -27,14 +27,16 @@ class place:
 
     def getBoard(self):
         directory = self.getUserFolder()
+        # print(directory)
         files = save.save(directory).ListDirectory()
         for file in files:
+            # print(file)
             if file['name'] == "grid":
                 return save.save()
                 # return save.save(directory['id']).readFile(os.path.join(self.game, self.user), "grid", file['id'])  # noqa
 
     def getUserFolder(self):
-        dir = save.save(self.saveLocation).ListFolder()
+        dir = save.save(self.saveLocation).ListDirectory()
         for directory in dir:
             if directory == self.user:
                 return directory
