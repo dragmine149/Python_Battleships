@@ -10,7 +10,7 @@ import os
 import time
 import platform
 print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
-time.sleep(1)
+time.sleep(.5)
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 gameName, users, Placed, Location, multi = None, None, None, None, None
 
@@ -55,10 +55,10 @@ while True:
         v = 0
         if not Placed:
             # Placing ships on the borad
-            v = place.place(gameName, users[0], Location).Place(getLocation)  # noqa
+            v = place.place(gameName, users[0], Location).Place(getLocation, users[0])  # noqa
             Functions.clear()
             if v == 0 and not multi:
-                v = place.place(gameName, users[1], Location).Place(getLocation) # noqa
+                v = place.place(gameName, users[1], Location).Place(getLocation, users[0]) # noqa
 
         # Plays the game until stops or someone wins.
         if v == 0:
