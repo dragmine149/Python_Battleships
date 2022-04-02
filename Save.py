@@ -161,6 +161,10 @@ class save:
             command = "mv"
             if platform.system() == "Windows":
                 command = "move"
+            print('{} Saves/Temp/{} {}/{}'.format(command,
+                                                  self.data['name'],
+                                                  data['folder'],
+                                                  self.data['name']))
             os.system('{} Saves/Temp/{} {}/{}'.format(command,
                                                       self.data['name'],
                                                       data['folder'],
@@ -210,16 +214,12 @@ class save:
     """
     ListDirectory()
     - Returns all the files in the directory
+    - No check as self.path is required.
     """
-    def ListDirectory(self):
-        print(self.api)
-        if self.error is not None:
-            return self.error
-        if self.api is not None:
-            print(self.api.ListFolder())
+    def ListDirectory(self, api=True):
+        if self.api is not None and api is True:
             return self.api.ListFolder()
         else:
-            print(os.listdir(self.path))
             return os.listdir(self.path)
 
     """
