@@ -194,7 +194,7 @@ class place:
             'data': self.gameBoard,
             'folder': os.path.join("Saves", self.game, self.user)
         })
-        turn = save.save(self.saveLocation, data={
+        save.save(self.saveLocation, data={
             'name': 'turn',
             'file': 'trun'
         }).writeFile({
