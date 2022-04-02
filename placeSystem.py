@@ -27,19 +27,22 @@ class place:
 
     def getBoard(self):
         directory = self.getUserFolder()
-        # print(directory)
-        files = save.save(directory).ListDirectory()
+        files = save.save(directory).ListDirectory(False)
         for file in files:
-            # print(file)
-            if file['name'] == "grid":
-                return save.save()
-                # return save.save(directory['id']).readFile(os.path.join(self.game, self.user), "grid", file['id'])  # noqa
+            if file == "grid":
+                return save.save(self.saveLocation, data={
+                    'name': "Saves/" + self.game,
+                    'file': self.user
+                }).readFile({
+                    'name': 'grid'
+                })
 
     def getUserFolder(self):
-        dir = save.save(self.saveLocation).ListDirectory()
+        # TODO: Google drive compatibility
+        dir = save.save(os.path.join(self.saveLocation, self.game)).ListDirectory()  # noqa
         for directory in dir:
             if directory == self.user:
-                return directory
+                return os.path.join(self.saveLocation, self.game, directory)
 
     # Get the board saved.
     def _LoadBoard(self):
@@ -70,7 +73,12 @@ class place:
             "w": 270
         }
         while not string:
-            string = input(request)[0].lower()
+            string = input(request)
+            if len(string) == 0:
+                Functions.clear(1, "Please enter a valid direction!")
+                string = None
+            else:
+                string = string[0].lower()
             try:
                 self.rot = rotation[string]
             except KeyError:
@@ -108,10 +116,8 @@ class place:
             place = None
             testTemp = 0
             while place is None:
-                # Test code support.
                 place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
-                    shutil.rmtree(os.path.join("Saves/Google", self.game))
                     return -1
                 if place is not None:
                     place -= 1
@@ -168,7 +174,7 @@ class place:
                         if not self.breaked:
                             self.placed = True
                         else:
-                            save.board.DisplayBoard(self.gameBoard)
+                            Functions.board.DisplayBoard(self.gameBoard)
                             print("{}'s Turn to place ships\n\nShip placing: {}".format(self.user, ships[place].Name))  # noqa
                     except IndexError:  # reset if ship can't go there
                         self._Error("Ship does not fit on board")
@@ -179,9 +185,20 @@ class place:
             else:
                 print("This has not been implement yet!")
             Functions.clear(0)
-            save.board.DisplayBoard(self.gameBoard)
+            Functions.board.DisplayBoard(self.gameBoard)
 
-        save.save(self.saveLocation).writeFile(self.game, "ships", self.gameBoard, self.getUserFolder()['id'])  # noqa
-        save.save(self.saveLocation).writeFile(self.saveLocation, "turn", owner)  # noqa
-        shutil.rmtree(os.path.join("Saves/google/", self.game))
+        save.save(self.saveLocation, data={
+            'name': 'ships',
+            'file': self.user
+        }).writeFile({
+            'data': self.gameBoard,
+            'folder': os.path.join("Saves", self.game, self.user)
+        })
+        turn = save.save(self.saveLocation, data={
+            'name': 'turn',
+            'file': 'trun'
+        }).writeFile({
+            'data': owner,
+            'folder': os.path.join("Saves", self.game)
+        })
         return 0  # pass check
