@@ -212,15 +212,28 @@ class save:
                 return False
 
     """
-    ListDirectory()
+    ListDirectory(api, dir)
+        - api -> If false, will not do the api no matter what.
+        - dir -> If true, will return only directories
     - Returns all the files in the directory
     - No check as self.path is required.
     """
-    def ListDirectory(self, api=True):
+    def ListDirectory(self, api=True, dir=False):
         if self.api is not None and api is True:
             return self.api.ListFolder()
         else:
-            return os.listdir(self.path)
+            if not dir:
+                try:
+                    return os.listdir(self.path)
+                except NotADirectoryError:
+                    return False
+            else:
+                DirInfo = os.listdir(self.path)
+                newDirList = []
+                for item in DirInfo:
+                    if os.path.isdir(os.path.join(self.path, item)):
+                        newDirList.append(item)
+                return newDirList
 
     """
     CheckForFile(path)
