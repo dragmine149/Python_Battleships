@@ -28,19 +28,21 @@ class place:
     def getBoard(self):
         directory = self.getUserFolder()
         files = save.save(directory).ListDirectory(False)
-        for file in files:
-            if file == "grid":
-                return save.save(self.saveLocation, data={
-                    'name': "Saves/" + self.game,
-                    'file': self.user
-                }).readFile({
-                    'name': 'grid'
-                })
+        if files is not False:
+            for file in files:
+                if file == "grid":
+                    return save.save(self.saveLocation, data={
+                        'name': "Saves/" + self.game,
+                        'file': self.user
+                    }).readFile({
+                        'name': 'grid'
+                    })
 
     def getUserFolder(self):
         # TODO: Google drive compatibility
         dir = save.save(os.path.join(self.saveLocation, self.game)).ListDirectory()  # noqa
         for directory in dir:
+            print(directory, self.user)
             if directory == self.user:
                 return os.path.join(self.saveLocation, self.game, directory)
 
