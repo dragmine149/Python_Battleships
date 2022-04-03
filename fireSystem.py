@@ -1,4 +1,4 @@
-# import SaveSystem as save
+import Save as save
 import Functions
 import ShipInfo as ship
 import os
@@ -12,12 +12,22 @@ class fire:
         self.fireUser = fireUser
         self.targetUser = targetUser
         self.shotTaken = False
-        self.fireBoard = save.save(Location).readFile(os.path.join(game, fireUser), "grid")  # noqa
-        self.targetBoard = save.save(Location).readFile(os.path.join(game, targetUser), "ships")  # noqa
+        self.fireBoard = save.save(Location, data={
+            'name': self.game,
+            'file': fireUser
+        }).readFile({
+            'name': 'grid'
+        })
+        self.targetBoard = save.save(Location, data={
+            'name': self.game,
+            'file': targetUser
+        }).readFile({
+            'name': 'ships'
+        })
         self.saveLocation = Location
 
     # Does multiple checks and fires at the other user
-    def Fire(self, Multi=False):
+    def Fire(self):
         # Just in case another check fails.
         if os.path.exists("{}/{}/win".format(self.saveLocation, self.game)):
             return True
@@ -27,10 +37,10 @@ class fire:
             # get shooting cooridnates
             x, y = None, None
             while x is None and y is None:
-            	# Output
+                # Output
                 print("{}'s Turn to shoot\n".format(self.fireUser))
-                save.board.DisplayBoard(self.fireBoard)
-                
+                Functions.board.DisplayBoard(self.fireBoard)
+
                 shotPos = input("Enter position to shoot at (-1 to quit game for now): ")  # noqa
                 if shotPos != "-1":
                     x, y = Functions.LocationConvert(shotPos).Convert()  # noqa
@@ -53,15 +63,26 @@ class fire:
 
                 # Update files.
                 self.shotTaken = True
-                save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.fireUser), "grid", self.fireBoard)  # noqa
+                save.save(self.saveLocation, data={
+                    'name': 'grid',
+                    'file': self.fireUser
+                }).writeFile({
+                    'data': self.fireBoard,
+                    'folder': os.path.join("Saves", self.game, self.fireUser)
+                })
 
                 # Switch user when fired.
-                if Multi:
-                    save.save(self.saveLocation).writeFile(self.game, "turn", self.targetUser)  # noqa
-                return self._DestroyedCheck(Multi)
+                save.save(self.saveLocation, data={
+                    'name': 'turn',
+                    'file': 'trun'
+                }).writeFile({
+                    'data': self.targetUser,
+                    'folder': os.path.join("Saves", self.game)
+                })
+                return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed
-    def _DestroyedCheck(self, Multi):
+    def _DestroyedCheck(self):
         # Change ships to take the ammount from file instead of in list.
         # Mod support bascially.
         ships = [
@@ -87,8 +108,14 @@ class fire:
         # game over check
         if destroyedAmount == len(ships):
             Functions.clear()
-            if not Multi:
-                print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
-            save.save(self.saveLocation, True).writeFile(self.game, "win", self.fireUser)  # noqa
+
+            print("GG!\n'{}' has beaten '{}'".format(self.fireUser, self.targetUser))  # noqa
+            save.save(self.saveLocation, data={
+                'name': 'win',
+                'file': 'win'
+            }).writeFile({
+                'data': self.fireUser,
+                'folder': os.path.join("Saves", self.game)
+            })
             return True
         Functions.clear(2, destroyedList)
