@@ -44,7 +44,7 @@ class Process:
                 users = save.save(os.path.join(path, name), False, {
                     'name': path,
                     'file': name
-                }).ListDirectory()
+                }).ListDirectory(dir=True)
 
                 placed = False
                 if save.save(path).CheckForFile(os.path.join(name, users[0], "ships")):  # noqa
