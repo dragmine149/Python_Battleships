@@ -201,6 +201,7 @@ class save:
                     return json.loads(file.read())
                 return file.read()
         else:
+            saveLocation = "{}/{}".format(self.path, saveLocation)
             if os.path.exists(saveLocation):
                 with open(saveLocation, "r") as file:
                     if self.json:
