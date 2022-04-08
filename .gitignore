@@ -5,6 +5,7 @@ Saves
 ApiFiles
 
 DownloadFileTest.txt
+TabletPath.txt
 
 Tests/*.txt
 .pytest_cache
