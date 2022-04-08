@@ -2,6 +2,7 @@ import os
 import Functions
 import json
 import platform
+import shutil
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -60,8 +61,8 @@ class save:
             return self.error
         if not os.path.exists("Saves"):
             os.mkdir("Saves")
-        if not os.path.exists("Saves/Temp"):
-            os.mkdir("Saves/Temp")
+        if not os.path.exists("Saves/.Temp"):
+            os.mkdir("Saves/.Temp")
 
     """
     makeFolder(sub)
@@ -139,7 +140,7 @@ class save:
             return False
 
         # Makes the data in a file. (Both reasons)
-        with open("Saves/Temp/{}".format(self.data['name']), 'w+') as tempFile:
+        with open("Saves/.Temp/{}".format(self.data['name']), 'w+') as tempFile:
             if self.json:
                 tempFile.write(json.dumps(data['data']))
             else:
@@ -149,7 +150,7 @@ class save:
         if self.api:
             id = self.api.UploadData({
                 'name': self.data['name'],
-                'path': 'Saves/Temp/{}'.format(self.data['name']),
+                'path': 'Saves/.Temp/{}'.format(self.data['name']),
                 'folder': data['folder']
             })
             os.system('rm Saves/Test/{}'.format(self.data['name']))
@@ -161,11 +162,11 @@ class save:
             command = "mv"
             if platform.system() == "Windows":
                 command = "move"
-            print('{} Saves/Temp/{} {}/{}'.format(command,
+            print('{} Saves/.Temp/{} {}/{}'.format(command,
                                                   self.data['name'],
                                                   data['folder'],
                                                   self.data['name']))
-            os.system('{} Saves/Temp/{} {}/{}'.format(command,
+            os.system('{} Saves/.Temp/{} {}/{}'.format(command,
                                                       self.data['name'],
                                                       data['folder'],
                                                       self.data['name']))
@@ -246,3 +247,17 @@ class save:
         elif os.path.exists(os.path.join(self.path, path)):
             return True
         return False
+
+    """
+    Delete(path)
+    - Deletes the path without question
+    """
+    def Delete(self, path):
+        if not self.api:
+            if os.path.exists(path):
+                shutil.rmtree(path)
+                return True
+            else:
+                print('Path not found! -> {}'.format(path))
+                return False
+        # Call api
