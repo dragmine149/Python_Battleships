@@ -22,8 +22,8 @@ class place:
         self.placed = False
         self.saveLocation = Location
         self.gameBoard = self.getBoard()
-        if self.gameBoard == "Failed -> Folder not found":
-            sys.exit('Failed to find folder, please check')
+        if not isinstance(self.gameBoard, list):
+            sys.exit('Failed to find game, please check')
 
     def getBoard(self):
         directory = self.getUserFolder()
@@ -32,7 +32,7 @@ class place:
             for file in files:
                 if file == "grid":
                     return save.save(self.saveLocation, data={
-                        'name': "Saves/" + self.game,
+                        'name': self.game,
                         'file': self.user
                     }).readFile({
                         'name': 'grid'
@@ -117,6 +117,11 @@ class place:
             print("{}'s Turn to place ships\n".format(self.user))
             place = None
             testTemp = 0
+            if not isinstance(self.gameBoard, list):
+                print(save.save(self.saveLocation, data={
+                        'name': "Saves/" + self.game,
+                        'file': self.user
+                    }).error)
             while place is None:
                 place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
