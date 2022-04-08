@@ -44,6 +44,7 @@ class LocationConvert:
 
 
 # Remove games that begin with '.' or '__' or are not directoies at all.
+# TODO: Better hidden folder check
 def RemoveNonGames(path="Saves"):
     games = None
     api = False
@@ -130,7 +131,7 @@ class check:
                 if self.check:
                     return self.Id
                 else:
-                    if self.Id == -1:
+                    if self.Id == -1 or self.Id == -2:
                         return self.Id
                     clear(1, "Out of range.")
                     self.Id = None
