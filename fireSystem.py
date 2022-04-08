@@ -68,7 +68,7 @@ class fire:
                     'file': self.fireUser
                 }).writeFile({
                     'data': self.fireBoard,
-                    'folder': os.path.join("Saves", self.game, self.fireUser)
+                    'folder': os.path.join(self.saveLocation, self.game, self.fireUser)
                 })
 
                 # Switch user when fired.
@@ -77,7 +77,7 @@ class fire:
                     'file': 'trun'
                 }).writeFile({
                     'data': self.targetUser,
-                    'folder': os.path.join("Saves", self.game)
+                    'folder': os.path.join(self.saveLocation, self.game)
                 })
                 return self._DestroyedCheck()
 
@@ -115,7 +115,7 @@ class fire:
                 'file': 'win'
             }).writeFile({
                 'data': self.fireUser,
-                'folder': os.path.join("Saves", self.game)
+                'folder': os.path.join(self.saveLocation, self.game)
             })
             return True
         Functions.clear(2, destroyedList)

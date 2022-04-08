@@ -197,14 +197,14 @@ class place:
             'file': self.user
         }).writeFile({
             'data': self.gameBoard,
-            'folder': os.path.join("Saves", self.game, self.user)
+            'folder': os.path.join(self.saveLocation, self.game, self.user)
         })
         save.save(self.saveLocation, data={
             'name': 'turn',
             'file': 'trun'
         }).writeFile({
             'data': owner,
-            'folder': os.path.join("Saves", self.game)
+            'folder': os.path.join(self.saveLocation, self.game)
         })
         Functions.clear(2)
         return 0  # pass check
