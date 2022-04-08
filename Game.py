@@ -3,7 +3,7 @@ import sys
 import Functions
 import ProcessInput as pi
 import platform
-# import DriveApi as drive
+import Save as save
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -26,8 +26,9 @@ class game:
         # Cannot indent otherwise formating is broken
         print("""
 Other Options:
+-2: Remove Game (Deletes ALL files)
 -1: Goes back to main screen
-0: Loads external game\n""")
+ 0: Loads external game\n""")
 
     def GameRangeCheck(self, value, list):
         if value >= 0 and value <= len(list):
@@ -44,6 +45,15 @@ Other Options:
             while not self.game:
                 Functions.clear()
                 self.game = Functions.check("Enter game number to load: ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
+                if self.game == -2:
+                    delGame = None
+                    while not delGame:
+                        Functions.clear(1)
+                        delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()
+                        if delGame != -1:
+                            save.save(self.path).Delete(os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame -1]))
+                            delGame = None
+                    self.game = None
                 if self.game == -1:
                     self.choice = None
                     self.game = None
