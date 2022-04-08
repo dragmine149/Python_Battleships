@@ -48,7 +48,7 @@ Other Options:
                 if self.game == -2:
                     delGame = None
                     while not delGame:
-                        Functions.clear(1)
+                        Functions.clear()
                         delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()
                         if delGame != -1:
                             save.save(self.path).Delete(os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame -1]))
