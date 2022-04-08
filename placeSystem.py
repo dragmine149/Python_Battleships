@@ -117,11 +117,6 @@ class place:
             print("{}'s Turn to place ships\n".format(self.user))
             place = None
             testTemp = 0
-            if not isinstance(self.gameBoard, list):
-                print(save.save(self.saveLocation, data={
-                        'name': "Saves/" + self.game,
-                        'file': self.user
-                    }).error)
             while place is None:
                 place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
@@ -194,6 +189,9 @@ class place:
             Functions.clear(0)
             Functions.board.DisplayBoard(self.gameBoard)
 
+        # Why are we not request the path?
+        # Like, this only works with the path...
+        # TODO: request path, replace 'Saves' with path
         save.save(self.saveLocation, data={
             'name': 'ships',
             'file': self.user
@@ -208,4 +206,5 @@ class place:
             'data': owner,
             'folder': os.path.join("Saves", self.game)
         })
+        Functions.clear(2)
         return 0  # pass check
