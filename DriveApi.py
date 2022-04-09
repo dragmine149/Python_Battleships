@@ -46,7 +46,7 @@ class Api:
             return build('drive', 'v3', credentials=creds)
         except:  # noqa  Try and find error handle 'RefreshError'
             os.system('rm ApiFiles/token.json')
-            self.__LoadAPI__()
+            return self.__LoadAPI__()
 
     # Runs a series of tests to make sure the client has all correct permission
     def Test(self):
