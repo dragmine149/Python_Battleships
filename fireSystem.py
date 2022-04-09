@@ -68,7 +68,7 @@ class fire:
                     'file': self.fireUser
                 }).writeFile({
                     'data': self.fireBoard,
-                    'folder': os.path.join(self.saveLocation, self.game, self.fireUser)
+                    'folder': os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
                 })
 
                 # Switch user when fired.

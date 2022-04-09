@@ -63,7 +63,8 @@ class create:
             if Location == "":
                 Location = "Saves"
             # Check for HttpError without putting google files into this file..
-            userSave = []
+            self.userSave = []
+            self.userFolder = []
             for user in users:
                 saveItem = False
                 while not saveItem:
@@ -83,8 +84,9 @@ class create:
                             saveItem = True
                             Functions.clear(2, "Client doesn't have access to that folder id. Please make sure you have internet connect and can read and write into the folder specified!")  # noqa
                             break
+                    self.userFolder.append(saveItem.makeFolder(user))
 
-                userSave.append(saveItem)
+                self.userSave.append(saveItem)
 
         online = None
         if Location != "Saves":
@@ -99,12 +101,14 @@ class create:
                     online = False
 
         gameBoard = Functions.board.CreateBoard(size)
-        for user in range(len(userSave)):
-            info = userSave[user].makeFolder(users[user])
-            print(info)
-            userSave[user].writeFile({
+        print("---------------INFO---------------")
+        print(self.userSave)
+        print(self.userFolder)
+        print("-------------END INFO-------------")
+        for user in range(len(self.userSave)):
+            self.userSave[user].writeFile({
                 'data': gameBoard,
-                'folder': info
+                'folder': self.userFolder[user]
             }, 'grid')
         save.save(Location, {
             'name': name

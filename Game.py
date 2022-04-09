@@ -49,9 +49,9 @@ Other Options:
                     delGame = None
                     while not delGame:
                         Functions.clear()
-                        delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()
+                        delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
                         if delGame != -1:
-                            save.save(self.path).Delete(os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame -1]))
+                            save.save(self.path).Delete(os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame - 1]))  # noqa
                             delGame = None
                     self.game = None
                 if self.game == -1:
@@ -79,7 +79,7 @@ Other Options:
                                     self.path = external
                             else:
                                 # Google api check
-                                self.path = drive.Api(external).ListFolder()
+                                self.path = save.save(external).ListDirectory()
                                 apiExternal = True
 
                                 # Reset if error in loading...

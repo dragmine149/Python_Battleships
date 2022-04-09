@@ -1,6 +1,5 @@
 # This file needs to be cleaned up a bit
 
-# import GameSetup as setup
 import Game
 import placeSystem as place
 import fireSystem as fire

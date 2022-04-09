@@ -80,16 +80,20 @@ class save:
                 splitInfo = sub.split("\\")
             else:
                 splitInfo = sub.split("/")
+
         if self.api:
             # Usess the google drive api and return the folder id.
             folderId = self.api.UploadData({
-                'name': self.data['name']
+                'name': self.data['name'],
+                'folder': self.path
             }, True)
             if sub is not None:
-                newFolder = None
+                newFolder = folderId['id']
+                print(splitInfo)
                 for item in splitInfo:
                     newFolder = self.api.UploadData({
-                        'name': item
+                        'name': item,
+                        'folder': newFolder
                     }, True)
                 return newFolder
             return folderId
@@ -140,7 +144,7 @@ class save:
             return False
 
         # Makes the data in a file. (Both reasons)
-        with open("Saves/.Temp/{}".format(self.data['name']), 'w+') as tempFile:
+        with open("Saves/.Temp/{}".format(self.data['name']), 'w+') as tempFile:  # noqa
             if self.json:
                 tempFile.write(json.dumps(data['data']))
             else:
@@ -154,8 +158,8 @@ class save:
                 'folder': data['folder']
             })
             os.system('rm Saves/Test/{}'.format(self.data['name']))
-            if name:
-                self.data['name'] = name
+            # if name:
+            #     self.data['name'] = name
             return id
         else:
             # Saves the data to a file. Returns the file path.
@@ -163,13 +167,13 @@ class save:
             if platform.system() == "Windows":
                 command = "move"
             print('{} Saves/.Temp/{} {}/{}'.format(command,
-                                                  self.data['name'],
-                                                  data['folder'],
-                                                  self.data['name']))
+                                                   self.data['name'],
+                                                   data['folder'],
+                                                   self.data['name']))
             os.system('{} Saves/.Temp/{} {}/{}'.format(command,
-                                                      self.data['name'],
-                                                      data['folder'],
-                                                      self.data['name']))
+                                                       self.data['name'],
+                                                       data['folder'],
+                                                       self.data['name']))
 
             if name:
                 self.data['name'] = name

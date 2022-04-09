@@ -23,6 +23,7 @@ class Api:
             os.mkdir("ApiFiles")
         self.service = self.__LoadAPI__()
         self.folder = folderId
+        self.TR = False  # In case it doesn't get set somehows...
         self.Test()  # change to not testing every time.
 
     # Loads the api for use later.
@@ -63,14 +64,14 @@ class Api:
             write1 = True
             file = self.UploadData({
                 'name': 'README (dont)',
-                'path': 'UploadFileText.txt',
+                'path': 'UploadFileTest.txt',
                 'folder': folder
             })
             print(file)
             if file:
-                write1 = True
+                write2 = True
                 success = self.DownloadData({
-                    'Id': file,
+                    'Id': file['id'],
                     'path': 'DownloadFileTest'
                 }, True)
                 if success:
@@ -107,6 +108,13 @@ class Api:
             print("Failed to read or write")
             self.TR = False
             return
+        else:
+            self.TR = False
+            print("Something failed...")
+            print("Results: {}".format({'write1': write1,
+                                        'write2': write2,
+                                        'read': read}))
+            return
 
     def DeleteData(self, id):
         try:
@@ -120,7 +128,9 @@ class Api:
         # name -> name of the file to compare
         items = self.ListFolder(folder)
         if items is not None:
+            print(items)
             for item in items:
+                print(item)
                 if item['name'] == name:
                     return True, item
         return False, None
@@ -134,8 +144,13 @@ class Api:
             if data['folder']:
                 self.folder = data['folder']
         except KeyError:
-            self.folder = self.folder
+            # No need to do anything if error.
+            pass
 
+        if isinstance(self.folder, dict):
+            self.folder = self.folder['id']
+
+        print({'self.folder': self.folder})
         exists, Id = self.checkIfExists(self.folder, data['name'])
         if not exists and Id is None:
             if folder:  # makes folder
@@ -150,6 +165,7 @@ class Api:
                     'mimeType': '*/*',  # not readable on drive
                     'parents': [self.folder]
                 }
+                print(metadata)
                 media = MediaFileUpload(data['path'],  # noqa
                                         mimetype='*/*',
                                         resumable=True)
@@ -166,7 +182,7 @@ class Api:
     # Download data from fileid. (Change to file name?)
     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
         try:
-            request = self.service.files().get_media(fileId=data['name'])
+            request = self.service.files().get_media(fileId=data['Id'])
             fileHandler = io.BytesIO()
             downloader = MediaIoBaseDownload(fileHandler, request)
             done = False
@@ -189,6 +205,8 @@ class Api:
     def ListFolder(self, folder=None):
         if folder is None:
             folder = self.folder
+        if isinstance(folder, dict):
+            folder = folder['id']
         try:
             # Some things don't work...
             results = self.service.files().list(
