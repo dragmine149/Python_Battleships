@@ -193,6 +193,8 @@ class save:
     }):
         if self.error is not None:
             return self.error
+
+        # Save location -> Where to save the file
         saveLocation = "{}/{}/{}".format(self.data['name'],
                                          self.data['file'],
                                          data['name'])

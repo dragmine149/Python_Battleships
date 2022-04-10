@@ -23,8 +23,8 @@ class Api:
             os.mkdir("ApiFiles")
         self.service = self.__LoadAPI__()
         self.folder = folderId
-        self.TR = False  # In case it doesn't get set somehows...
-        self.Test()  # change to not testing every time.
+        self.TR = True  # In case it doesn't get set somehows...
+        # self.Test()  # change to not testing every time.
 
     # Loads the api for use later.
     def __LoadAPI__(self):

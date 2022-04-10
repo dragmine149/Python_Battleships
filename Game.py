@@ -13,11 +13,12 @@ class game:
         self.choice = None
         self.game = None
         self.path = "Saves"
+        self.external = "Saves"
 
     def LoadGames(self, path):
         message = "Games found on disk: "
         if isinstance(path, list):
-            message = "Games found on external location: "
+            message = "Games found on external location ({}): ".format(self.external)  # noqa
         print(message)
 
         newList = Functions.RemoveNonGames(path)
@@ -61,33 +62,34 @@ Other Options:
                 if self.game == 0:
                     self.game = None
                     Functions.clear()
-                    external = None
-                    while not external:
-                        external = input("Please enter location of storage: ").rstrip().replace('"', '')  # noqa
-                        if external != "":
+                    self.external = None
+                    while not self.external:
+                        self.external = input("Please enter location of storage: ").rstrip().replace('"', '')  # noqa
+                        if self.external != "":
                             # Windows has different file structure AAA
                             if platform.system() != "Windows":
-                                external = external.replace("\\", "")
+                                self.external = self.external.replace("\\", "")
 
                             # Normal file check
-                            if external.find("\\") > -1 or external.find("/") > -1:  # noqa
+                            if self.external.find("\\") > -1 or self.external.find("/") > -1:  # noqa
                                 # Directory check
-                                if not os.path.isdir(external):
-                                    external = None
+                                if not os.path.isdir(self.external):
+                                    self.external = None
                                     Functions.clear(2, "Provided directory is not a directory")  # noqa
                                 else:
-                                    self.path = external
+                                    self.path = self.external
                             else:
                                 # Google api check
-                                self.path = save.save(external).ListDirectory()
+                                self.path = save.save(self.external).ListDirectory()  # noqa
                                 apiExternal = True
 
                                 # Reset if error in loading...
                                 if self.path == "Error":
                                     self.path = "Saves"
                         else:
-                            external = self.path
+                            self.external = self.path
                             self.path = "Saves"
+                            self.external = "Saves"
             return pi.Process().Inputs(self.path, name=Functions.RemoveNonGames(self.path)[self.game - 1], external=apiExternal)  # noqa
         if self.choice == 2:
             return pi.Process().Inputs(self.game, create=True)

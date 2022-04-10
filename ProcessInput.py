@@ -32,6 +32,7 @@ class Process:
         if create:
             [name, users, Location, online] = Create.create().inputs()
             return name, users, False, Location, online
+        print({'external': external})
         if not external:
             # Path Name
             # Saves GameName
@@ -64,7 +65,7 @@ class Process:
                     name = item
                     break
             print(name['id'])
-            usersInfo = Drive.Api(name['id']).ListFolder()
+            usersInfo = save.save(name['id']).ListDirectory()
             multiPlayerId = None
             for user in usersInfo:
                 if user['name'] == "multi":
@@ -76,20 +77,24 @@ class Process:
             for user in range(len(usersInfo)):
                 if usersInfo[user] in users:
                     print(usersInfo[user])
-                    Files = Drive.Api(usersInfo[user]['id']).ListFolder()
+                    Files = save.save(usersInfo[user]['id']).ListDirectory()
                     for file in Files:
                         if file['name'] == "ships":
                             placed[user] = True
                             break
             multi = False
             if multiPlayerId is not None:
-                multi = Drive.Api(name['id']).DownloadData({
-                    'name': multiPlayerId,
-                    'path': 'multiPlayer.temo'
+                if not os.path.exists("Saves/.Temp/{}".format(name['id'])):
+                    os.mkdir("Saves/.Temp/{}".format(name['id']))
+
+                multi = save.save(name['id'], data={
+                    'name': 'Saves',
+                    'file': '.Temp/{}'.format(name['id'])
+                }).readFile({
+                    'name': 'multiPlayer'
                 })
+                print({'multi': multi})
                 if multi:
-                    with open('multiPlayer.temo.txt', 'r') as mp:
-                        multi = mp.read()
-                    os.system('rm multiPlayer.temo.txt')
+                    save.save("Saves").Delete("Saves/.Temp/{}".format(name['id']))  # noqa
 
             return name['name'], users, placed[0] and placed[1], name['id'], multi  # noqa
