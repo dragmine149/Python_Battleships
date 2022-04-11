@@ -4,7 +4,7 @@ import Functions
 import copy
 import os
 import sys
-import shutil
+
 
 """
 TODO:
@@ -26,25 +26,42 @@ class place:
             sys.exit('Failed to find game, please check')
 
     def getBoard(self):
-        directory = self.getUserFolder()
-        files = save.save(directory).ListDirectory(False)
+        loc, game, directory, id = self.getUserFolder()
+        if id is None:
+            directory = os.path.join(loc, game, directory)
+        else:
+            directory = id
+
+        files = save.save(directory).ListDirectory()
         if files is not False:
             for file in files:
+                id = 'grid'
+                if isinstance(file, dict):
+                    id = file['id']
+                    file = file['name']
+
                 if file == "grid":
                     return save.save(self.saveLocation, data={
                         'name': self.game,
                         'file': self.user
                     }).readFile({
-                        'name': 'grid'
+                        'name': id
                     })
 
     def getUserFolder(self):
+        saveInfo = save.save(self.saveLocation)
+        if not saveInfo.api:
+            saveInfo.path = os.path.join(self.saveLocation, self.game).rstrip().replace('', '')  # noqa
         # TODO: Google drive compatibility
-        dir = save.save(os.path.join(self.saveLocation, self.game)).ListDirectory()  # noqa
+        dir = saveInfo.ListDirectory(dir=True)
+        print({'dir': dir})
         for directory in dir:
-            print(directory, self.user)
+            id = None
+            if isinstance(directory, dict):
+                id = directory['id']
+                directory = directory['name']
             if directory == self.user:
-                return os.path.join(self.saveLocation, self.game, directory)
+                return self.saveLocation, self.game, directory, id
 
     # Get the board saved.
     def _LoadBoard(self):
