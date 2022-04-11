@@ -200,7 +200,7 @@ class save:
                                          data['name'])
         if self.api:
             Id = self.api.DownloadData({
-               'name': data['name'],
+               'Id': data['name'],
                'path': saveLocation
             })
             with open(Id, 'r') as file:
