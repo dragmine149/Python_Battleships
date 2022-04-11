@@ -61,6 +61,7 @@ class Process:
             # Path, name (id, name)
             # Path usless
             for item in path:
+                # Errors... why?
                 if item['name'] == name:
                     name = item
                     break
