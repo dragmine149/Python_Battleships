@@ -21,6 +21,7 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
+        self.userDirectory = None
         self.saveInfo = save.save(self.saveLocation, data={
             'name': self.game,
             'file': self.user
@@ -37,6 +38,7 @@ class place:
             directory = id
 
         files = save.save(directory).ListDirectory()
+        self.userDirectory = directory
         if files is not False:
             for file in files:
                 id = 'grid'
@@ -203,9 +205,6 @@ class place:
             Functions.clear(0)
             Functions.board.DisplayBoard(self.gameBoard)
 
-        # Why are we not request the path?
-        # Like, this only works with the path...
-        # TODO: request path, replace 'Saves' with path
         print({'user': self.user,
                'folder': self.saveLocation})
         save.save(self.saveLocation, data={
@@ -213,7 +212,7 @@ class place:
             'file': self.user
         }).writeFile({
             'data': self.gameBoard,
-            'folder': self.saveLocation
+            'folder': self.userDirectory
         })
         save.save(self.saveLocation, data={
             'name': 'turn',
