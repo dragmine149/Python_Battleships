@@ -47,7 +47,7 @@ while True:
     print(r)
     # Probably could use 'r[0]' instead of gameName but more descriptive.
     gameName, users, Placed, Location, multi = r[0], r[1], r[2], r[3], r[4]
-    Functions.clear()
+    Functions.clear(2)
     if not multi:
         # check to see if game has already been started
         # and there are ships on the board.
