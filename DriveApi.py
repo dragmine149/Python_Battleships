@@ -126,6 +126,7 @@ class Api:
     def checkIfExists(self, folder, name):
         # folder -> folder to upload file to.
         # name -> name of the file to compare
+        print({'folder': folder})
         items = self.ListFolder(folder)
         if items is not None:
             print(items)
