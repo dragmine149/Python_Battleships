@@ -21,6 +21,10 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
+        self.saveInfo = save.save(self.saveLocation, data={
+            'name': self.game,
+            'file': self.user
+        })
         self.gameBoard = self.getBoard()
         if not isinstance(self.gameBoard, list):
             sys.exit('Failed to find game, please check')
@@ -41,19 +45,12 @@ class place:
                     file = file['name']
 
                 if file == "grid":
-                    return save.save(self.saveLocation, data={
-                        'name': self.game,
-                        'file': self.user
-                    }).readFile({
+                    return self.saveInfo.readFile({
                         'name': id
                     })
 
     def getUserFolder(self):
-        saveInfo = save.save(self.saveLocation)
-        if not saveInfo.api:
-            saveInfo.path = os.path.join(self.saveLocation, self.game).rstrip().replace('', '')  # noqa
-        # TODO: Google drive compatibility
-        dir = saveInfo.ListDirectory(dir=True)
+        dir = self.saveInfo.ListDirectory(dir=True)
         print({'dir': dir})
         for directory in dir:
             id = None
@@ -209,19 +206,21 @@ class place:
         # Why are we not request the path?
         # Like, this only works with the path...
         # TODO: request path, replace 'Saves' with path
+        print({'user': self.user,
+               'folder': self.saveLocation})
         save.save(self.saveLocation, data={
             'name': 'ships',
             'file': self.user
         }).writeFile({
             'data': self.gameBoard,
-            'folder': os.path.join(self.saveLocation, self.game, self.user)
+            'folder': self.saveLocation
         })
         save.save(self.saveLocation, data={
             'name': 'turn',
             'file': 'trun'
         }).writeFile({
             'data': owner,
-            'folder': os.path.join(self.saveLocation, self.game)
+            'folder': self.saveLocation
         })
         Functions.clear(2)
         return 0  # pass check
