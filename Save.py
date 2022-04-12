@@ -197,9 +197,9 @@ class save:
 
         # Save location -> Where to save the file
         self.saveLocation = "{}/{}/{}/{}".format(self.path,
-                                         self.data['name'],
-                                         self.data['file'],
-                                         data['name'])
+                                                 self.data['name'],
+                                                 self.data['file'],
+                                                 data['name'])
         if self.api:
             self.saveLocation = "Saves/.Temp/{}".format(self.data['file'])
             Id = self.api.DownloadData({
