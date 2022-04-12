@@ -167,6 +167,7 @@ class check:
             except ValueError:
                 self._FailCheck()
 
+
 # Everything to do with the board. Prints it and creates it.
 class board:
     def CreateBoard(size):
@@ -177,7 +178,7 @@ class board:
                 x.append('-')
             board.append(x)
         return board
-    
+
     def DisplayBoard(board):
         for y in board:
             for x in y:
