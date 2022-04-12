@@ -65,6 +65,13 @@ class create:
             # Check for HttpError without putting google files into this file..
             self.userSave = []
             self.userFolder = []
+            self.parent = save.save(Location, data={
+                'name': name,
+                'file': ''
+            }).makeFolder()
+            if isinstance(self.parent, dict):
+                self.parent = self.parent['id']
+
             for user in users:
                 saveItem = False
                 while not saveItem:
@@ -115,4 +122,4 @@ class create:
         }).writeFile({
             'data': online
         })
-        return [name, users, Location, online]
+        return [name, users, self.parent, online]
