@@ -66,23 +66,29 @@ class Process:
                     name = item
                     break
             print(name['id'])
-            usersInfo = save.save(name['id']).ListDirectory()
+            usersInfo = save.save(name['id']).ListDirectory(dir=True)
             multiPlayerId = None
             for user in usersInfo:
                 if user['name'] == "multi":
                     multiPlayerId = user['id']
+                    usersInfo.remove(user)
+                elif user['name'] == "turn":
+                    usersInfo.remove(user)
             users = Functions.RemoveNonGames(usersInfo)
-            print(users)
-            print(multiPlayerId)
+
+            print({'users': users})
+            print({'multiPlayerId': multiPlayerId})
             placed = [False, False]
             for user in range(len(usersInfo)):
-                if usersInfo[user] in users:
-                    print(usersInfo[user])
+                print({user: usersInfo[user]['name']})
+                if usersInfo[user]['name'] in users:
                     Files = save.save(usersInfo[user]['id']).ListDirectory()
                     for file in Files:
                         if file['name'] == "ships":
                             placed[user] = True
                             break
+            print({'placed': placed})
+
             multi = False
             if multiPlayerId is not None:
                 if not os.path.exists("Saves/.Temp/{}".format(name['id'])):
