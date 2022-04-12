@@ -8,22 +8,41 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 class fire:
     # Setup
     def __init__(self, game, fireUser, targetUser, Location):
+        print(game, fireUser, targetUser, Location)
         self.game = game
         self.fireUser = fireUser
         self.targetUser = targetUser
         self.shotTaken = False
-        self.fireBoard = save.save(Location, data={
-            'name': self.game,
-            'file': fireUser
-        }).readFile({
-            'name': 'grid'
-        })
-        self.targetBoard = save.save(Location, data={
-            'name': self.game,
-            'file': targetUser
-        }).readFile({
-            'name': 'ships'
-        })
+        # self.fireBoard = save.save(Location, data={
+        #     'name': self.game,
+        #     'file': fireUser
+        # }).readFile({
+        #     'name': 'grid'
+        # })
+        # self.targetBoard = save.save(Location, data={
+        #     'name': self.game,
+        #     'file': targetUser
+        # }).readFile({
+        #     'name': 'ships'
+        # })
+        self.fireBoard = Functions.boardRetrieve(fireUser,
+                                                 Location,
+                                                 game,
+                                                 None,
+                                                 save.save(Location, data={
+                                                    'name': self.game,
+                                                    'file': fireUser
+                                                 }),
+                                                 'grid').getBoard()
+        self.targetBoard = Functions.boardRetrieve(targetUser,
+                                                   Location,
+                                                   game,
+                                                   None,
+                                                   save.save(Location, data={
+                                                      'name': self.game,
+                                                      'file': fireUser
+                                                   }),
+                                                   'ships').getBoard()
         self.saveLocation = Location
 
     # Does multiple checks and fires at the other user
@@ -63,22 +82,34 @@ class fire:
 
                 # Update files.
                 self.shotTaken = True
-                save.save(self.saveLocation, data={
+                print({'self.saveLocation': self.saveLocation})
+                saveInfo = save.save(self.saveLocation, data={
                     'name': 'grid',
                     'file': self.fireUser
-                }).writeFile({
+                })
+                path = os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
+                if saveInfo.api:
+                    path = self.saveLocation
+                saveInfo.writeFile({
                     'data': self.fireBoard,
-                    'folder': os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
+                    'folder': path
                 })
 
                 # Switch user when fired.
-                save.save(self.saveLocation, data={
+                saveInfo = save.save(self.saveLocation, data={
                     'name': 'turn',
                     'file': 'trun'
-                }).writeFile({
-                    'data': self.targetUser,
-                    'folder': os.path.join(self.saveLocation, self.game)
                 })
+                path = os.path.join(self.saveLocation, self.game)
+                if saveInfo.api:
+                    path = self.saveLocation
+
+                saveInfo.writeFile({
+                    'data': self.targetUser,
+                    'folder': path
+                })
+
+                # Chek what is destroyed.
                 return self._DestroyedCheck()
 
     # Compares both boards to check if any has been destroyed

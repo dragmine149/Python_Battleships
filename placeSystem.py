@@ -26,45 +26,21 @@ class place:
             'name': self.game,
             'file': self.user
         })
-        self.gameBoard = self.getBoard()
+        self.boardRetrieve = Functions.boardRetrieve(user,
+                                                     self.saveLocation,
+                                                     self.game,
+                                                     self.userDirectory,
+                                                     self.saveInfo,
+                                                     'grid')
+        self.gameBoard = self.boardRetrieve.getBoard()
+        self.userDirectory = self.boardRetrieve.userDirectory
         if not isinstance(self.gameBoard, list):
             sys.exit('Failed to find game, please check')
 
-    def getBoard(self):
-        loc, game, directory, id = self.getUserFolder()
-        if id is None:
-            directory = os.path.join(loc, game, directory)
-        else:
-            directory = id
-
-        files = save.save(directory).ListDirectory()
-        self.userDirectory = directory
-        if files is not False:
-            for file in files:
-                id = 'grid'
-                if isinstance(file, dict):
-                    id = file['id']
-                    file = file['name']
-
-                if file == "grid":
-                    return self.saveInfo.readFile({
-                        'name': id
-                    })
-
-    def getUserFolder(self):
-        dir = self.saveInfo.ListDirectory(dir=True)
-        print({'dir': dir})
-        for directory in dir:
-            id = None
-            if isinstance(directory, dict):
-                id = directory['id']
-                directory = directory['name']
-            if directory == self.user:
-                return self.saveLocation, self.game, directory, id
-
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = self.getBoard()
+        self.gameBoard = self.boardRetrieve.getBoard()
+        self.userDirectory = self.boardRetrieve.userDirectory
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
