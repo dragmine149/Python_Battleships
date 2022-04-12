@@ -25,6 +25,7 @@ class save:
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
         self.api = None
+        self.ApiPath = None
         self.error = None
         if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa
             # Google drive api check
@@ -157,7 +158,7 @@ class save:
                 'path': 'Saves/.Temp/{}'.format(self.data['name']),
                 'folder': data['folder']
             })
-            os.system('rm Saves/Test/{}'.format(self.data['name']))
+            os.system('rm Saves/.Temp/{}'.format(self.data['name']))
             # if name:
             #     self.data['name'] = name
             return id
@@ -195,28 +196,29 @@ class save:
             return self.error
 
         # Save location -> Where to save the file
-        saveLocation = "{}/{}/{}".format(self.data['name'],
+        self.saveLocation = "{}/{}/{}/{}".format(self.path,
+                                         self.data['name'],
                                          self.data['file'],
                                          data['name'])
         if self.api:
+            self.saveLocation = "Saves/.Temp/{}".format(self.data['file'])
             Id = self.api.DownloadData({
                'Id': data['name'],
-               'path': saveLocation
+               'path': self.saveLocation
             })
             with open(Id, 'r') as file:
                 if self.json:
                     return json.loads(file.read())
                 return file.read()
         else:
-            saveLocation = "{}/{}".format(self.path, saveLocation)
-            if os.path.exists(saveLocation):
-                with open(saveLocation, "r") as file:
+            if os.path.exists(self.saveLocation):
+                with open(self.saveLocation, "r") as file:
                     if self.json:
                         return json.loads(file.read())
                     return file.read()
             else:
                 print("Failed -> File to read from not found!" +
-                      "\nPath: {}".format(saveLocation))
+                      "\nPath: {}".format(self.saveLocation))
                 return False
 
     """
