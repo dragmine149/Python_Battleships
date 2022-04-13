@@ -61,13 +61,13 @@ def RemoveNonGames(path="Saves"):
         if not api:
             if os.path.isdir(os.path.join(path, folder)):
                 if not folder.startswith(".") and not folder.startswith("__"):
-                    if folder != "Google":  # Remove google files
+                    if folder != ".Temp":  # Remove google files
                         newlist.append(folder)
         else:
             folder = folder['name']
-            if not folder.startswith(".") and not folder.startswith("__"):
+            if not folder.startswith(".") and not folder.startswith("__"):  # noqa
                 # Get more information from google Better check.
-                if not folder == "multi" and not folder == "turn" and not folder == "win":  # noqa
+                if not folder.lower() == "multi" and not folder.lower() == "turn" and not folder.lower() == "win":  # noqa
                     newlist.append(folder)
     return newlist
 
