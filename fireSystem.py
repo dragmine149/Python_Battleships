@@ -13,34 +13,25 @@ class fire:
         self.fireUser = fireUser
         self.targetUser = targetUser
         self.shotTaken = False
-        # self.fireBoard = save.save(Location, data={
-        #     'name': self.game,
-        #     'file': fireUser
-        # }).readFile({
-        #     'name': 'grid'
-        # })
-        # self.targetBoard = save.save(Location, data={
-        #     'name': self.game,
-        #     'file': targetUser
-        # }).readFile({
-        #     'name': 'ships'
-        # })
-        self.fireBoard = Functions.boardRetrieve(fireUser,
-                                                 Location,
-                                                 game,
-                                                 None,
-                                                 save.save(Location, data={
-                                                    'name': self.game,
-                                                    'file': fireUser
-                                                 }),
-                                                 'grid').getBoard()
+        print(fireUser, targetUser)
+        self.fireUserInfo = Functions.boardRetrieve(fireUser,
+                                                    Location,
+                                                    game,
+                                                    None,
+                                                    save.save(Location, data={
+                                                        'name': self.game,
+                                                        'file': fireUser
+                                                    }),
+                                                    'grid')
+        self.fireBoard = self.fireUserInfo.getBoard()
+        self.fireUserDir = self.fireUserInfo.userDirectory
         self.targetBoard = Functions.boardRetrieve(targetUser,
                                                    Location,
                                                    game,
                                                    None,
                                                    save.save(Location, data={
                                                       'name': self.game,
-                                                      'file': fireUser
+                                                      'file': targetUser
                                                    }),
                                                    'ships').getBoard()
         self.saveLocation = Location
@@ -84,12 +75,12 @@ class fire:
                 self.shotTaken = True
                 print({'self.saveLocation': self.saveLocation})
                 saveInfo = save.save(self.saveLocation, data={
-                    'name': 'grid',
+                    'name': self.fireUser,
                     'file': self.fireUser
                 })
                 path = os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
                 if saveInfo.api:
-                    path = self.saveLocation
+                    path = self.fireUserDir
                 saveInfo.writeFile({
                     'data': self.fireBoard,
                     'folder': path
