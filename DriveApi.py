@@ -153,7 +153,6 @@ class Api:
 
         print({'self.folder': self.folder})
         exists, Id = self.checkIfExists(self.folder, data['name'])
-        print(data['path'])
         if not exists and Id is None:
             if folder:  # makes folder
                 metadata = {
@@ -162,6 +161,7 @@ class Api:
                     'parents': [self.folder]
                 }
             else:
+                print(data['path'])
                 metadata = {
                     'name': data['name'],
                     'mimeType': '*/*',  # not readable on drive
