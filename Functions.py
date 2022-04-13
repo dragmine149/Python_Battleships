@@ -214,6 +214,7 @@ class boardRetrieve:
                     file = file['name']
 
                 if file == self.name:
+                    print({'file name': self.name, 'id': id})
                     return self.saveInfo.readFile({
                         'name': id
                     })
@@ -227,4 +228,5 @@ class boardRetrieve:
                 id = directory['id']
                 directory = directory['name']
             if directory == self.user:
+                print({'user': self.user, 'directory': id})
                 return self.saveLocation, self.game, directory, id

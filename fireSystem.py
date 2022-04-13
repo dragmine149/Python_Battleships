@@ -20,7 +20,7 @@ class fire:
                                                     None,
                                                     save.save(Location, data={
                                                         'name': self.game,
-                                                        'file': fireUser
+                                                        'file': 'grid'
                                                     }),
                                                     'grid')
         self.fireBoard = self.fireUserInfo.getBoard()
@@ -31,7 +31,7 @@ class fire:
                                                    None,
                                                    save.save(Location, data={
                                                       'name': self.game,
-                                                      'file': targetUser
+                                                      'file': 'ships'
                                                    }),
                                                    'ships').getBoard()
         self.saveLocation = Location
@@ -72,19 +72,21 @@ class fire:
                     print("Miss")
 
                 # Update files.
+                Functions.board.DisplayBoard(self.fireBoard)
                 self.shotTaken = True
                 print({'self.saveLocation': self.saveLocation})
                 saveInfo = save.save(self.saveLocation, data={
-                    'name': self.fireUser,
+                    'name': 'grid',
                     'file': self.fireUser
                 })
                 path = os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
                 if saveInfo.api:
                     path = self.fireUserDir
-                saveInfo.writeFile({
+                id = saveInfo.writeFile({
                     'data': self.fireBoard,
                     'folder': path
                 })
+                print({'Dataid': id})
 
                 # Switch user when fired.
                 saveInfo = save.save(self.saveLocation, data={

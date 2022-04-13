@@ -3,6 +3,7 @@ import Functions
 import json
 import platform
 import shutil
+import time
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -153,15 +154,16 @@ class save:
 
         # Upload the data to google. Returns the dict
         if self.api:
-            print(os.path.exists('Saves/.Temp/{}'.format(self.data['name'])))
+            print({'Saves/.Temp/{} exists?: '.format(self.data['name']): os.path.exists('Saves/.Temp/{}'.format(self.data['name']))})  # noqa
             id = self.api.UploadData({
                 'name': self.data['name'],
                 'path': 'Saves/.Temp/{}'.format(self.data['name']),
                 'folder': data['folder']
             })
-            # os.system('rm Saves/.Temp/{}'.format(self.data['name']))
-            # if name:
-            #     self.data['name'] = name
+            time.sleep(2)
+            os.system('rm Saves/.Temp/{}'.format(self.data['name']))
+            if name:
+                self.data['name'] = name
             return id
         else:
             # Saves the data to a file. Returns the file path.
@@ -207,6 +209,7 @@ class save:
                'Id': data['name'],
                'path': self.saveLocation
             })
+            print({'saveId', Id})
             with open(Id, 'r') as file:
                 if self.json:
                     return json.loads(file.read())
