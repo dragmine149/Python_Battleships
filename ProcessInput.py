@@ -79,7 +79,7 @@ class Process:
             print({'users': users})
             print({'multiPlayerId': multiPlayerId})
             placed = [False, False]
-            for user in range(len(usersInfo)):
+            for user in range(len(users)):
                 print({user: usersInfo[user]['name']})
                 if usersInfo[user]['name'] in users:
                     Files = save.save(usersInfo[user]['id']).ListDirectory()
