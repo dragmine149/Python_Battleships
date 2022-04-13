@@ -153,12 +153,13 @@ class save:
 
         # Upload the data to google. Returns the dict
         if self.api:
+            print(os.path.exists('Saves/.Temp/{}'.format(self.data['name'])))
             id = self.api.UploadData({
                 'name': self.data['name'],
                 'path': 'Saves/.Temp/{}'.format(self.data['name']),
                 'folder': data['folder']
             })
-            os.system('rm Saves/.Temp/{}'.format(self.data['name']))
+            # os.system('rm Saves/.Temp/{}'.format(self.data['name']))
             # if name:
             #     self.data['name'] = name
             return id
