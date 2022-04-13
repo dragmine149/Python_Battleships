@@ -61,6 +61,7 @@ class Process:
             # Path, name (id, name)
             # Path usless
             for item in path:
+                print(item)
                 # Errors... why?
                 if item['name'] == name:
                     name = item
@@ -80,9 +81,10 @@ class Process:
             print({'multiPlayerId': multiPlayerId})
             placed = [False, False]
             for user in range(len(users)):
+                print(users[user])
                 print({user: usersInfo[user]['name']})
                 if usersInfo[user]['name'] in users:
-                    Files = save.save(usersInfo[user]['id']).ListDirectory()
+                    Files = save.save(users[user]['id']).ListDirectory()
                     for file in Files:
                         if file['name'] == "ships":
                             placed[user] = True
