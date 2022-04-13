@@ -3,7 +3,6 @@ import Functions
 import json
 import platform
 import shutil
-import time
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -136,7 +135,7 @@ class save:
     def writeFile(self, data={
         'data': None,
         'folder': None
-    }, name=None):
+    }, name=None, overwrite=False):
         if self.error is not None:
             return self.error
         if name:
@@ -154,13 +153,11 @@ class save:
 
         # Upload the data to google. Returns the dict
         if self.api:
-            print({'Saves/.Temp/{} exists?: '.format(self.data['name']): os.path.exists('Saves/.Temp/{}'.format(self.data['name']))})  # noqa
             id = self.api.UploadData({
                 'name': self.data['name'],
                 'path': 'Saves/.Temp/{}'.format(self.data['name']),
                 'folder': data['folder']
-            })
-            time.sleep(2)
+            }, overwrite=overwrite)
             os.system('rm Saves/.Temp/{}'.format(self.data['name']))
             if name:
                 self.data['name'] = name

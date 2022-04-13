@@ -72,9 +72,7 @@ class fire:
                     print("Miss")
 
                 # Update files.
-                Functions.board.DisplayBoard(self.fireBoard)
                 self.shotTaken = True
-                print({'self.saveLocation': self.saveLocation})
                 saveInfo = save.save(self.saveLocation, data={
                     'name': 'grid',
                     'file': self.fireUser
@@ -82,11 +80,10 @@ class fire:
                 path = os.path.join(self.saveLocation, self.game, self.fireUser)  # noqa
                 if saveInfo.api:
                     path = self.fireUserDir
-                id = saveInfo.writeFile({
+                saveInfo.writeFile({
                     'data': self.fireBoard,
                     'folder': path
-                })
-                print({'Dataid': id})
+                }, overwrite=True)
 
                 # Switch user when fired.
                 saveInfo = save.save(self.saveLocation, data={
@@ -100,7 +97,7 @@ class fire:
                 saveInfo.writeFile({
                     'data': self.targetUser,
                     'folder': path
-                })
+                }, overwrite=True)
 
                 # Chek what is destroyed.
                 return self._DestroyedCheck()
@@ -140,6 +137,6 @@ class fire:
             }).writeFile({
                 'data': self.fireUser,
                 'folder': os.path.join(self.saveLocation, self.game)
-            })
+            }, overwrite=True)
             return True
         Functions.clear(2, destroyedList)

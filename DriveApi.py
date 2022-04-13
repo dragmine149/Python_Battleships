@@ -137,8 +137,8 @@ class Api:
         return False, None
 
     # Makes folder / uploads data based on input
-    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False):  # noqa
-        print("Uploading... {}\nFolder:{}".format(data, folder))
+    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False):  # noqa
+        print("Uploading... {}\tFolder:{}".format(data, folder))
         metadata = {}
         media = None
         try:
@@ -151,9 +151,8 @@ class Api:
         if isinstance(self.folder, dict):
             self.folder = self.folder['id']
 
-        print({'self.folder': self.folder})
         exists, Id = self.checkIfExists(self.folder, data['name'])
-        if not exists and Id is None:
+        if (not exists and Id is None) or overwrite:
             if folder:  # makes folder
                 metadata = {
                     'name': data['name'],
@@ -161,7 +160,6 @@ class Api:
                     'parents': [self.folder]
                 }
             else:
-                print(data['path'])
                 metadata = {
                     'name': data['name'],
                     'mimeType': '*/*',  # not readable on drive
