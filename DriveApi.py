@@ -153,6 +153,7 @@ class Api:
 
         print({'self.folder': self.folder})
         exists, Id = self.checkIfExists(self.folder, data['name'])
+        print(data['path'])
         if not exists and Id is None:
             if folder:  # makes folder
                 metadata = {
