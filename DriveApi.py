@@ -48,9 +48,10 @@ class Api:
         except:  # noqa  Try and find error handle 'RefreshError'
             if os.path.exists('ApiFiles/token.json'):
                 os.system('rm ApiFiles/token.json')
-            else:  # Check if files are actually there and not missing due to folder creation.
+
+                # Check if files are actually there and not missing due to folder creation.  # noqa
                 if not os.path.exists('ApiFiles/credentials.json'):
-                    os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')
+                    os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')  # noqa
             return self.__LoadAPI__()
 
     # Runs a series of tests to make sure the client has all correct permission
@@ -123,6 +124,7 @@ class Api:
     def DeleteData(self, id):
         try:
             self.service.files().delete(fileId=id).execute()
+            return "Deleted"
         except HttpError:
             return "Not found"
 
@@ -156,6 +158,11 @@ class Api:
             self.folder = self.folder['id']
 
         exists, Id = self.checkIfExists(self.folder, data['name'])
+
+        # Deletes if we overwrite the data.
+        if overwrite and exists:
+            print(self.DeleteData(Id['id']))
+
         if (not exists and Id is None) or overwrite:
             if folder:  # makes folder
                 metadata = {
