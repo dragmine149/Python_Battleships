@@ -86,6 +86,7 @@ Other Options:
                                 # Reset if error in loading...
                                 if self.path == "Error":
                                     self.path = "Saves"
+                                    Functions.clear(2)
                         else:
                             self.external = self.path
                             self.path = "Saves"
