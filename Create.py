@@ -117,9 +117,14 @@ class create:
                 'data': gameBoard,
                 'folder': self.userFolder[user]
             }, 'grid')
-        save.save(Location, {
-            'name': name
-        }).writeFile({
-            'data': online
-        })
+        if online:
+            result = save.save(Location, data={
+                'name': 'multi',
+                'file': 'multi'
+            }).writeFile({
+                'data': online,
+                'folder': self.parent
+            })
+            print({'result': result})
+            Functions.clear(20)
         return [name, users, self.parent, online]
