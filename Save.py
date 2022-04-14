@@ -231,7 +231,7 @@ class save:
     """
     def ListDirectory(self, api=True, dir=False):
         if self.api is not None and api is True:
-            return self.api.ListFolder(dir)
+            return self.api.ListFolder(dir=dir)
         else:
             if not dir:
                 try:
