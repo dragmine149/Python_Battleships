@@ -80,7 +80,7 @@ Other Options:
                                     self.path = self.external
                             else:
                                 # Google api check
-                                self.path = save.save(self.external).ListDirectory()  # noqa
+                                self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
                                 apiExternal = True
 
                                 # Reset if error in loading...
