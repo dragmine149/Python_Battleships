@@ -202,15 +202,19 @@ class Api:
             print("Error occured!: {}".format(error.reason))
             return False
 
-    def ListFolder(self, folder=None):
+    def ListFolder(self, folder=None, dir=False):
         if folder is None:
             folder = self.folder
         if isinstance(folder, dict):
             folder = folder['id']
         try:
+            query = "'{}' in parents".format(folder)
+            if dir:
+                query += "and mimeType = 'application/vnd.google-apps.folder'"
+
             # Some things don't work...
             results = self.service.files().list(
-                q="'{}' in parents".format(folder),
+                q=query,
                 pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
 
