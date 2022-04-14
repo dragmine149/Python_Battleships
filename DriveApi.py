@@ -46,7 +46,11 @@ class Api:
 
             return build('drive', 'v3', credentials=creds)
         except:  # noqa  Try and find error handle 'RefreshError'
-            os.system('rm ApiFiles/token.json')
+            if os.path.exists('ApiFiles/token.json'):
+                os.system('rm ApiFiles/token.json')
+            else:  # Check if files are actually there and not missing due to folder creation.
+                if not os.path.exists('ApiFiles/credentials.json'):
+                    os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')
             return self.__LoadAPI__()
 
     # Runs a series of tests to make sure the client has all correct permission
