@@ -60,13 +60,14 @@ class Process:
         else:
             # Path, name (id, name)
             # Path usless
+            print(path)
             for item in path:
                 print(item)
                 # Errors... why?
                 if item['name'] == name:
                     name = item
                     break
-            print(name['id'])
+
             usersInfo = save.save(name['id']).ListDirectory(dir=True)
             multiPlayerId = None
             for user in usersInfo:
@@ -78,18 +79,21 @@ class Process:
             users = Functions.RemoveNonGames(usersInfo)
 
             print({'users': users})
-            print({'multiPlayerId': multiPlayerId})
-            placed = [False, False]
-            for user in range(len(users)):
-                print(users[user])
-                print({user: usersInfo[user]['name']})
-                if usersInfo[user]['name'] in users:
-                    Files = save.save(users[user]['id']).ListDirectory()
-                    for file in Files:
-                        if file['name'] == "ships":
-                            placed[user] = True
-                            break
-            print({'placed': placed})
+            print({'usersInfo': usersInfo})
+
+            # print({'users': users})
+            # print({'multiPlayerId': multiPlayerId})
+            # placed = [False, False]
+            # for user in range(len(users)):
+            #     print(users[user])
+            #     print({user: usersInfo[user]['name']})
+            #     if usersInfo[user]['name'] in users:
+            #         Files = save.save(users[user]['id']).ListDirectory()
+            #         for file in Files:
+            #             if file['name'] == "ships":
+            #                 placed[user] = True
+            #                 break
+            # print({'placed': placed})
 
             multi = False
             if multiPlayerId is not None:
