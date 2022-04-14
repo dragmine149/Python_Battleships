@@ -80,20 +80,18 @@ class Process:
 
             print({'users': users})
             print({'usersInfo': usersInfo})
+            print({'multiPlayerId': multiPlayerId})
+            placed = [False, False]
 
-            # print({'users': users})
-            # print({'multiPlayerId': multiPlayerId})
-            # placed = [False, False]
-            # for user in range(len(users)):
-            #     print(users[user])
-            #     print({user: usersInfo[user]['name']})
-            #     if usersInfo[user]['name'] in users:
-            #         Files = save.save(users[user]['id']).ListDirectory()
-            #         for file in Files:
-            #             if file['name'] == "ships":
-            #                 placed[user] = True
-            #                 break
-            # print({'placed': placed})
+            for user in range(len(usersInfo)):
+                if usersInfo[user]['name'] in users:
+                    Files = save.save(usersInfo[user]['id']).ListDirectory()
+                    for file in Files:
+                        if file['name'] == "ships":
+                            placed[user] = True
+                            break
+
+            print({'placed': placed})
 
             multi = False
             if multiPlayerId is not None:
