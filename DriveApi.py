@@ -238,6 +238,7 @@ class Api:
             print(f'An error occurred: {error}')
             return "Error"
 
+
 if __name__ == '__main__':
     api = Api('1jgyfEG0R76adWlnyzqDU030ps-mk4M20')
     # print(api.ListFolder(dir=False))
