@@ -1,10 +1,16 @@
-import SaveSystem as save
+import Save as save
 import ShipInfo as ship
 import Functions
 import copy
-import random
 import os
 import sys
+
+
+"""
+TODO:
+- Replace google drive parts
+- Fix with new save system
+"""
 
 
 class place:
@@ -15,13 +21,26 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
-        if self.gameBoard == "Failed -> Folder not found":
-            sys.exit('Failed to find folder, please check')
+        self.userDirectory = None
+        self.saveInfo = save.save(self.saveLocation, data={
+            'name': self.game,
+            'file': self.user
+        })
+        self.boardRetrieve = Functions.boardRetrieve(user,
+                                                     self.saveLocation,
+                                                     self.game,
+                                                     self.userDirectory,
+                                                     self.saveInfo,
+                                                     'grid')
+        self.gameBoard = self.boardRetrieve.getBoard()
+        self.userDirectory = self.boardRetrieve.userDirectory
+        if not isinstance(self.gameBoard, list):
+            sys.exit('Failed to find game, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = save.save(self.saveLocation).readFile(os.path.join(self.game, self.user), "grid")  # noqa
+        self.gameBoard = self.boardRetrieve.getBoard()
+        self.userDirectory = self.boardRetrieve.userDirectory
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -48,7 +67,12 @@ class place:
             "w": 270
         }
         while not string:
-            string = input(request)[0].lower()
+            string = input(request)
+            if len(string) == 0:
+                Functions.clear(1, "Please enter a valid direction!")
+                string = None
+            else:
+                string = string[0].lower()
             try:
                 self.rot = rotation[string]
             except KeyError:
@@ -67,10 +91,11 @@ class place:
         self.placed = False
 
     def _ShipError(self):
-        self.gameBoard[len(self.gameBoard) + 1][len(self.gameBoard[0]) + 1] = "+++"
+        self.gameBoard[len(self.gameBoard) + 1][len(self.gameBoard[0]) + 1] = "+++"  # noqa
 
     # Function to palce ship
-    def Place(self, locInput, owner=None, data=[True, None], rot=None):
+    def Place(self, locInput, owner=None):
+        Functions.clear()
         # TODO: change to allow mod support
         ships = [
             ship.Short(),
@@ -82,14 +107,10 @@ class place:
         while len(ships) > 0:
             self._Reset()
             print("{}'s Turn to place ships\n".format(self.user))
-            self._ShowShips(ships)
             place = None
             testTemp = 0
             while place is None:
-                # Test code support.
-                if testTemp >= 1 and data[1] is not None:
-                    data[1] = str(random.randint(1, 11))
-                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck(data[0], data[1]) # noqa
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
                 if place == -1:
                     return -1
                 if place is not None:
@@ -104,10 +125,7 @@ class place:
                     while x is None and y is None:
                         # Change to make sure locInput is function
                         x, y = Functions.LocationConvert(locInput()).Convert()  # noqa
-                    if type(rot) != int:
                         self._rotationCheck("Enter rotation of ship (North, East, South, West): ")  # noqa
-                    else:
-                        self.rot = rot
 
                     # Attempts to place the ship at the desiered location
                     # with rotation.
@@ -132,10 +150,10 @@ class place:
                                 else:
                                     self._ShipError()
                             elif self.rot == 270:
-                                 if x - i >= 0:
-                                     squareId = [y, x - i]
-                                 else:
-                                     self._ShipError()
+                                if x - i >= 0:
+                                    squareId = [y, x - i]
+                                else:
+                                    self._ShipError()
                             else:  # Fail safe check.
                                 Functions.clear(1, "Error in placing ship, Please try again")  # noqa
                                 self.placed = False
@@ -150,23 +168,34 @@ class place:
                         if not self.breaked:
                             self.placed = True
                         else:
-                            save.board.DisplayBoard(self.gameBoard)
+                            Functions.board.DisplayBoard(self.gameBoard)
                             print("{}'s Turn to place ships\n\nShip placing: {}".format(self.user, ships[place].Name))  # noqa
                     except IndexError:  # reset if ship can't go there
                         self._Error("Ship does not fit on board")
                         self.gameBoard = deep
                         self.placed = False
-                        if not data[0]:
-                            data[1] = str(random.randint(0, 10))
-                            self.rot = rot
-                            locInput = chr(random.randint(ord('a'), ord('j'))) + str(random.randint(1, 11))  # noqa
 
                 ships.pop(place)  # removed placed ship
             else:
                 print("This has not been implement yet!")
             Functions.clear(0)
-            save.board.DisplayBoard(self.gameBoard)
+            Functions.board.DisplayBoard(self.gameBoard)
 
-        save.save(self.saveLocation).writeFile("{}/{}".format(self.game, self.user), "ships", self.gameBoard)  # noqa
-        save.save(self.saveLocation).writeFile("{}".format(self.game), "turn", owner)  # noqa
+        print({'user': self.user,
+               'folder': self.saveLocation})
+        save.save(self.saveLocation, data={
+            'name': 'ships',
+            'file': self.user
+        }).writeFile({
+            'data': self.gameBoard,
+            'folder': self.userDirectory
+        })
+        save.save(self.saveLocation, data={
+            'name': 'turn',
+            'file': 'trun'
+        }).writeFile({
+            'data': owner,
+            'folder': self.saveLocation
+        })
+        Functions.clear(2)
         return 0  # pass check

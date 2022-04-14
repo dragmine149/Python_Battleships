@@ -1,6 +1,7 @@
 import time
 import os
 import platform
+import Save as save
 
 
 # Converts the input to a valid location (a1 -> [0,0])
@@ -41,6 +42,34 @@ class LocationConvert:
         else:
             clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
             return None, None
+
+
+# Remove games that begin with '.' or '__' or are not directoies at all.
+# TODO: Better hidden folder check
+def RemoveNonGames(path="Saves"):
+    games = None
+    api = False
+    if isinstance(path, list):
+        api = True
+        games = path
+    else:
+        games = os.listdir(path)
+
+    newlist = []
+    for folder in games:
+        # Removes non directories
+        if not api:
+            if os.path.isdir(os.path.join(path, folder)):
+                if not folder.startswith(".") and not folder.startswith("__"):
+                    if folder != ".Temp":  # Remove google files
+                        newlist.append(folder)
+        else:
+            folder = folder['name']
+            if not folder.startswith(".") and not folder.startswith("__"):  # noqa
+                # Get more information from google Better check.
+                if not folder.lower() == "multi" and not folder.lower() == "turn" and not folder.lower() == "win":  # noqa
+                    newlist.append(folder)
+    return newlist
 
 
 # Checks if a number is within 0 and another value.
@@ -95,15 +124,17 @@ class check:
                 if self.rangeCheckValue is None:
                     self.check = self.rangeCheck(self.Id)
                 else:
-                    self.check = self.rangeCheck(self.Id, self.rangeCheckValue)
+                    if callable(self.rangeCheckValue):
+                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue())  # noqa
+                    else:
+                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue)  # noqa
 
                 if self.check:
                     return self.Id
                 else:
-                    if self.Id == -1:
+                    if self.Id == -1 or self.Id == -2:
                         return self.Id
                     clear(1, "Out of range.")
-                    self._CallExtra()
                     self.Id = None
                     return None
             else:
@@ -115,7 +146,6 @@ class check:
     def _FailCheck(self):
         # user notification
         clear(1, "Please enter a valid input")
-        self._CallExtra()
         self.Id = None
 
     def _CallExtra(self):  # repeats any information the user needs to know
@@ -128,22 +158,75 @@ class check:
             else:
                 print(self.extra)
 
-    def InputDigitCheck(self, Input=True, idIn=0):  # noqa
+    def InputDigitCheck(self):  # noqa
         while not self.Id:
-            if Input:
-                self.Id = input("{}".format(self.request))  # get input
-                if len(self.Id) >= 2:  # check
-                    if self.Id[0] == '-':  # Negative Number Check
-                        if not self.Id[0:].isdigit():
-                            self._FailCheck()
-                        else:
-                            return self._PassCheck()
-                    else:
-                    	self._FailCheck()
-                elif not self.Id.isdigit():
-                    self._FailCheck()
-                else:
-                    return self._PassCheck()
-            else:
-                self.Id = idIn
+            self._CallExtra()
+            self.Id = input("{}".format(self.request))  # get input
+            try:
+                int(self.Id)
                 return self._PassCheck()
+            except ValueError:
+                self._FailCheck()
+
+
+# Everything to do with the board. Prints it and creates it.
+class board:
+    def CreateBoard(size):
+        board = []
+        for _ in range(size[1]):  # Y size (height)
+            x = []
+            for _ in range(size[0]):  # X size (width)
+                x.append('-')
+            board.append(x)
+        return board
+
+    def DisplayBoard(board):
+        for y in board:
+            for x in y:
+                print(x, end="")
+            print()
+
+
+# Gets board information
+class boardRetrieve:
+    def __init__(self, user, saveLocation, game, userDirectory, saveInfo, name):  # noqa
+        self.user = user
+        self.saveLocation = saveLocation
+        self.game = game
+        self.userDirectory = userDirectory
+        self.saveInfo = saveInfo
+        self.name = name
+
+    def getBoard(self):
+        loc, game, directory, id = self.getUserFolder()
+        if id is None:
+            directory = os.path.join(loc, game, directory)
+        else:
+            directory = id
+
+        files = save.save(directory).ListDirectory()
+        self.userDirectory = directory
+        if files is not False:
+            for file in files:
+                id = self.name
+                if isinstance(file, dict):
+                    id = file['id']
+                    file = file['name']
+
+                if file == self.name:
+                    print({'file name': self.name, 'id': id})
+                    return self.saveInfo.readFile({
+                        'name': id
+                    })
+
+    def getUserFolder(self):
+        dir = self.saveInfo.ListDirectory(dir=True)
+        print({'dir': dir})
+        for directory in dir:
+            id = None
+            if isinstance(directory, dict):
+                id = directory['id']
+                directory = directory['name']
+            if directory == self.user:
+                print({'user': self.user, 'directory': id})
+                return self.saveLocation, self.game, directory, id

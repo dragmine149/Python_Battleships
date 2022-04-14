@@ -1,14 +1,15 @@
 # This file needs to be cleaned up a bit
 
-import GameSetup as setup
+import Game
 import placeSystem as place
 import fireSystem as fire
-import SaveSystem as save
+# import SaveSystem as save
 import Functions
 import os
 import time
 import platform
 print("Stored Path: {}".format(os.path.dirname(os.path.realpath(__file__))))
+time.sleep(.5)
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 gameName, users, Placed, Location, multi = None, None, None, None, None
 
@@ -19,6 +20,8 @@ def getLocation():
 
 if os.path.exists('Tests/Path.txt'):
     os.remove('Tests/Path.txt')  # removes old data at start
+if not os.path.exists("Saves"):
+    os.mkdir("Saves")
 
 
 def waitSim(iN, message):
@@ -40,18 +43,21 @@ def waitSim(iN, message):
 
 while True:
     # Terminal setup ui
-    gameName, users, Placed, Location, multi = setup.game().setup()
-    Functions.clear()
+    r = Game.game().GetInput()
+    print(r)
+    # Probably could use 'r[0]' instead of gameName but more descriptive.
+    gameName, users, Placed, Location, multi = r[0], r[1], r[2], r[3], r[4]
+    Functions.clear(2)
     if not multi:
         # check to see if game has already been started
         # and there are ships on the board.
         v = 0
         if not Placed:
             # Placing ships on the borad
-            v = place.place(gameName, users[0], Location).Place(getLocation)  # noqa
+            v = place.place(gameName, users[0], Location).Place(getLocation, users[0])  # noqa
             Functions.clear()
             if v == 0 and not multi:
-                v = place.place(gameName, users[1], Location).Place(getLocation) # noqa
+                v = place.place(gameName, users[1], Location).Place(getLocation, users[0]) # noqa
 
         # Plays the game until stops or someone wins.
         if v == 0:
