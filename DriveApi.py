@@ -214,8 +214,9 @@ class Api:
         try:
             query = "'{}' in parents".format(folder)
             if dir:
-                query += "and mimeType = 'application/vnd.google-apps.folder'"
+                query += " and mimeType = 'application/vnd.google-apps.folder'"
 
+            # print(query)
             # Some things don't work...
             results = self.service.files().list(
                 q=query,
@@ -229,3 +230,8 @@ class Api:
         except HttpError as error:
             print(f'An error occurred: {error}')
             return "Error"
+
+if __name__ == '__main__':
+    api = Api('1jgyfEG0R76adWlnyzqDU030ps-mk4M20')
+    # print(api.ListFolder(dir=False))
+    # print(api.ListFolder(dir=True))
