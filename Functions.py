@@ -198,8 +198,12 @@ class boardRetrieve:
         self.name = name
 
     def getBoard(self):
-        loc, game, directory, id = self.getUserFolder()
+        result = self.getUserFolder()
+        print(result)
+        loc, game, directory, id = result[0], result[1], result[2], result[3]
+        print(loc, game, directory, id)
         if id is None:
+            print(loc, game, directory)
             directory = os.path.join(loc, game, directory)
         else:
             directory = id
@@ -220,6 +224,8 @@ class boardRetrieve:
                     })
 
     def getUserFolder(self):
+        print('a')
+        print(self.saveInfo.path)
         dir = self.saveInfo.ListDirectory(dir=True)
         print({'dir': dir})
         for directory in dir:

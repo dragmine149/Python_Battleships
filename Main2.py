@@ -102,7 +102,7 @@ class Main:
 
             Functions.clear()
             # Plays game until win or return
-            if self.count == 0:
+            if self.cont == 0:
                 self.Fire()
             self.__reset()
         else:

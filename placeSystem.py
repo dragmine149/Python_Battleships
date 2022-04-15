@@ -22,6 +22,7 @@ class place:
         self.placed = False
         self.saveLocation = Location
         self.userDirectory = None
+        print(self.game, self.user)
         self.saveInfo = save.save(self.saveLocation, data={
             'name': self.game,
             'file': self.user
