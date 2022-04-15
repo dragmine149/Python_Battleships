@@ -2,6 +2,7 @@
 import Game
 import placeSystem as place
 import fireSystem as fire
+import Save as save
 import Functions
 import os
 import time
@@ -29,6 +30,9 @@ class Main:
         self.users = None
         self.Placed = None
 
+    def LocInput(self):
+        return input("Enter location to place ship: ")
+
     # Whilst waiting for other person to do stuff.
     def waitSim(self, message):
         try:
@@ -49,7 +53,7 @@ class Main:
         return place.place(self.gameName,
                            user,
                            self.Location).Place(
-                           input("Enter location to place ship: "),
+                           self.LocInput,
                            other
                            )
 
@@ -85,7 +89,7 @@ class Main:
         Functions.clear(2)
 
         # If not multiplayer.
-        if not self.mutli:
+        if not self.multi:
             # Value to see if the user didn't back out
             self.cont = 0
             # Checks if placed
@@ -104,7 +108,7 @@ class Main:
         else:
             # Gets players username
             username, opponent = None, None
-            while not username:
+            while username is None:
                 username = input("Please enter your name: ")
                 if self.users[0] == username:
                     opponent = self.users[1]
@@ -118,3 +122,16 @@ class Main:
             self.count = 0
             if not self.Placed:
                 self.count = self.Place(username, opponent)
+
+            o_Placed = False
+            while not o_Placed:
+                print(self.users)
+                opponentData = save.save(self.Location, data={
+                    'name': self.gameName,
+                    'file': opponent
+                })
+
+
+if __name__ == "__main__":
+    main = Main()
+    main.MainLoop()
