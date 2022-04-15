@@ -60,22 +60,21 @@ class Process:
         else:
             # Path, name (id, name)
             # Path usless
-            print(path)
             for item in path:
-                print(item)
                 # Errors... why?
                 if item['name'] == name:
                     name = item
                     break
 
-            usersInfo = save.save(name['id']).ListDirectory(dir=True)
+            usersInfo = save.save(name['id']).ListDirectory()
             multiPlayerId = None
+            newUsers = []
             for user in usersInfo:
                 if user['name'] == "multi":
                     multiPlayerId = user['id']
-                    usersInfo.remove(user)
-                elif user['name'] == "turn":
-                    usersInfo.remove(user)
+                elif user['name'] != "turn":
+                    newUsers.append(user)
+            print({'1. usersInfo': newUsers})
             users = Functions.RemoveNonGames(usersInfo)
 
             print({'users': users})
@@ -83,13 +82,12 @@ class Process:
             print({'multiPlayerId': multiPlayerId})
             placed = [False, False]
 
-            for user in range(len(usersInfo)):
-                if usersInfo[user]['name'] in users:
-                    Files = save.save(usersInfo[user]['id']).ListDirectory()
-                    for file in Files:
-                        if file['name'] == "ships":
-                            placed[user] = True
-                            break
+            for user in range(len(newUsers)):
+                Files = save.save(newUsers[user]['id']).ListDirectory()
+                for file in Files:
+                    if file['name'] == "ships":
+                        placed[user] = True
+                        break
 
             print({'placed': placed})
 
@@ -100,9 +98,9 @@ class Process:
 
                 multi = save.save(name['id'], data={
                     'name': 'Saves',
-                    'file': '.Temp/{}'.format(name['id'])
+                    'file': self.parent
                 }).readFile({
-                    'name': 'multiPlayer'
+                    'name': 'multi'
                 })
                 print({'multi': multi})
                 if multi:
