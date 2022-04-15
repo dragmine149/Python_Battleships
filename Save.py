@@ -206,21 +206,22 @@ class save:
                'Id': data['name'],
                'path': self.saveLocation
             })
-            print({'saveId', Id})
-            with open(Id, 'r') as file:
-                if self.json:
-                    return json.loads(file.read())
-                return file.read()
+            if isinstance(Id, str):
+                print({'saveId', Id})
+                with open(Id, 'r') as file:
+                    if self.json:
+                        return json.loads(file.read())
+                    return file.read()
+            return Id
         else:
             if os.path.exists(self.saveLocation):
                 with open(self.saveLocation, "r") as file:
                     if self.json:
                         return json.loads(file.read())
                     return file.read()
-            else:
-                print("Failed -> File to read from not found!" +
-                      "\nPath: {}".format(self.saveLocation))
-                return False
+            print("Failed -> File to read from not found!" +
+                  "\nPath: {}".format(self.saveLocation))
+            return False
 
     """
     ListDirectory(api, dir)
