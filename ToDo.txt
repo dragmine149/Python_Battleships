@@ -15,7 +15,7 @@ Main:
 ✅ Multiplayer
 🅿️ Network
   🅿️ Extra file support
-  🅿 Google Drive Support
+  ✅ Google Drive Support
 ◾️ Settings
 ◾️ UI (optional for user)
 🅿️ Bug Fixes
