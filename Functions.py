@@ -202,8 +202,6 @@ class boardRetrieve:
 
     def geTBoard(self):
         result = self.getUserFolder()
-        print('RESULT:')
-        print(result)
         # Get board in user folder from stuff
         userFiles = save.save(result).ListDirectory()
         for file in userFiles:
@@ -212,9 +210,7 @@ class boardRetrieve:
                 id = file['id']
                 file = file['name']
 
-            print({'id': id, 'self.name': self.name, 'equal': id == self.name})
             if file == self.name:
-                print(self.name)
                 # We found file!
                 # now read and return
                 return save.save(self.saveLocation, data={
@@ -232,9 +228,6 @@ class boardRetrieve:
         if not external:
             dir = save.save(self.saveLocation).ListDirectory(dir=True)
             for directory in dir:
-
-                print('dir')
-                print(directory)
                 id = None
                 if isinstance(directory, dict):
                     id = directory['id']

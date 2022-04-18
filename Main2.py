@@ -60,17 +60,26 @@ class Main:
     def Fire(self):
         game = False
         while not game:
-            game = fire.fire(self.gameName,
-                             self.users[0],
-                             self.users[1],
-                             self.Location).Fire()
-            if not game:
-                game = fire.fire(self.gameName,
-                                 self.users[0],
-                                 self.users[1],
-                                 self.Location).Fire()
+            turn = save.save(self.Location, False, {
+                'name': self.gameName,
+                'file': '',
+            }).readFile({
+                'name': 'turn'
+            })
+            print({'turn': turn})
+            for user in range(len(self.users)):
+                # Get the other user (target user)
+                other = 0
+                if user == 0:
+                    other = 1
+
+                if turn.replace('"', '') == self.users[user]:
+                    game = fire.fire(self.gameName,
+                                     self.users[user],
+                                     self.users[other],
+                                     self.Location).Fire()
         # Win check
-        # "Fake means returned"
+        # "Fake" means returned
         if game == "Fake":
             Functions.clear()
         else:
@@ -151,6 +160,8 @@ class Main:
                     o_Placed = save.save(location).CheckForFile('ships')
                     if not o_Placed:
                         o_Placed = self.waitSim("Waiting for opponent to place their ships")  # noqa
+
+        self.MainLoop()
 
 
 if __name__ == "__main__":

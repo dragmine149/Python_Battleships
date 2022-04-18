@@ -196,10 +196,16 @@ class save:
             return self.error
 
         # Save location -> Where to save the file
-        self.saveLocation = "{}/{}/{}/{}".format(self.path,
-                                                 self.data['name'],
-                                                 self.data['file'],
-                                                 data['name'])
+        self.saveLocation = ""
+        if self.path is not None and self.path != '':
+            self.saveLocation += self.path + "/"
+        if self.data['name'] is not None and self.data['name'] != '':
+            self.saveLocation += self.data['name'] + "/"
+        if self.data['file'] is not None and self.data['file'] != '':
+            self.saveLocation += self.data['file'] + "/"
+        if data['name'] is not None and data['name'] != '':
+            self.saveLocation += data['name']
+
         if self.api:
             self.saveLocation = "Saves/.Temp/{}".format(self.data['file'])
             Id = self.api.DownloadData({
