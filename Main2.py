@@ -57,27 +57,46 @@ class Main:
                            other
                            )
 
-    def Fire(self):
-        game = False
-        while not game:
+    def getTurn(self):
+        turn = None
+        while not isinstance(turn, str):
             turn = save.save(self.Location, False, {
                 'name': self.gameName,
-                'file': '',
+                'file': 'turn',
             }).readFile({
                 'name': 'turn'
             })
-            print({'turn': turn})
-            for user in range(len(self.users)):
-                # Get the other user (target user)
-                other = 0
-                if user == 0:
-                    other = 1
+        return turn.replace('"', '')
 
-                if turn.replace('"', '') == self.users[user]:
-                    game = fire.fire(self.gameName,
-                                     self.users[user],
-                                     self.users[other],
-                                     self.Location).Fire()
+    def Fire(self, username=None):
+        game = False
+        while not game:
+            turn = self.getTurn()
+            print({'username': username,
+                   'self.opponent': self.opponent,
+                   'turn': turn,
+                   'opponent turn?': self.opponent == turn,
+                   'Your turn?': username == turn})
+            if username == turn:
+                game = fire.fire(self.gameName,
+                                 username,
+                                 self.opponent,
+                                 self.Location).Fire()
+            elif turn == self.opponent:
+                game = self.waitSim("Waiting for opponent to shoot")
+                Functions.clear()
+            else:
+                for user in range(len(self.users)):
+                    # Get the other user (target user)
+                    other = 0
+                    if user == 0:
+                        other = 1
+
+                    if turn == self.users[user]:
+                        game = fire.fire(self.gameName,
+                                         self.users[user],
+                                         self.users[other],
+                                         self.Location).Fire()
         # Win check
         # "Fake" means returned
         if game == "Fake":
@@ -126,16 +145,16 @@ class Main:
             self.__reset()
         else:
             # Gets players username
-            username, opponent = None, None
+            username, self.opponent = None, None
             playerPos = 0  # To check if local player placed.
             while username is None:
                 username = input("Please enter your name: ")
                 if self.users[0] == username:
                     playerPos = 0
-                    opponent = self.users[1]
+                    self.opponent = self.users[1]
                 elif self.users[1] == username:
                     playerPos = 1
-                    opponent = self.users[0]
+                    self.opponent = self.users[0]
                 else:
                     username = None
                     print("Name not found in the game! (spectate comming soon)")  # noqa
@@ -143,24 +162,28 @@ class Main:
             # Place check
             self.count = 0
             if not self.Placed[playerPos]:
-                self.count = self.Place(username, opponent)
+                self.count = self.Place(username, self.opponent)
 
             Functions.clear()
 
-            if not (self.Placed[0] and self.Placed[1]):
+            if self.count == 0:
                 o_Placed = False
-                while not o_Placed:
-                    loc = 0
-                    if playerPos == 0:
-                        loc = 1
-                    if isinstance(users[loc], dict):
-                        location = users[loc]['id']
-                    else:
-                        location = os.path.join(self.Location, self.gameName, users[loc])  # noqa
-                    o_Placed = save.save(location).CheckForFile('ships')
-                    if not o_Placed:
-                        o_Placed = self.waitSim("Waiting for opponent to place their ships")  # noqa
+                if not (self.Placed[0] and self.Placed[1]):
+                    while not o_Placed:
+                        loc = 0
+                        if playerPos == 0:
+                            loc = 1
+                        if isinstance(users[loc], dict):
+                            location = users[loc]['id']
+                        else:
+                            location = os.path.join(self.Location, self.gameName, users[loc])  # noqa
+                        o_Placed = save.save(location).CheckForFile('ships')
+                        if not o_Placed:
+                            o_Placed = self.waitSim("Waiting for opponent to place their ships")  # noqa
 
+                if o_Placed != "Fake":
+                    self.Fire(username)
+            self.__reset()
         self.MainLoop()
 
 

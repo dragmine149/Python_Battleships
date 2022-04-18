@@ -212,6 +212,17 @@ class save:
                'Id': data['name'],
                'path': self.saveLocation
             })
+            if Id is False:
+                # If id is false, try and find file in directory instead
+                files = self.api.ListFolder()
+                for file in files:
+                    if file['name'] == data['name']:
+                        Id = self.api.DownloadData({
+                            'Id': file['id'],
+                            'path': self.saveLocation
+                        })
+                        break
+
             if isinstance(Id, str):
                 print({'saveId', Id})
                 with open(Id, 'r') as file:

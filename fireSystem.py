@@ -83,6 +83,7 @@ class fire:
                 if saveInfo.api:
                     path = self.saveLocation
 
+                print({'New turn': self.targetUser})
                 saveInfo.writeFile({
                     'data': self.targetUser,
                     'folder': path
