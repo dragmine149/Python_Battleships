@@ -81,9 +81,19 @@ class Main:
     def MainLoop(self):
         # Get game information
         gameInfo = Game.game().GetInput()
+        print({'gameInfo': gameInfo})
         self.gameName = gameInfo[0]
-        self.users = gameInfo[1]
+        # Users start
+        users = gameInfo[1]
+        self.users = []
+        for usr in users:
+            if isinstance(usr, dict):
+                self.users.append(usr['name'])
+            else:
+                self.users.append(usr)
+        # users end
         self.Placed = gameInfo[2]
+        Placed = self.Placed[0] and self.Placed[1]
         self.Location = gameInfo[3]
         self.multi = gameInfo[4]
         Functions.clear(2)
@@ -93,12 +103,12 @@ class Main:
             # Value to see if the user didn't back out
             self.cont = 0
             # Checks if placed
-            if not self.Placed:
+            if not Placed:
                 # Place otherwise
-                self.cont = self.Place(self.users[0], self.users[1])
+                self.cont = self.Place(self.users[0], self.users[1])  # noqa
                 Functions.clear()
                 if self.cont == 0:
-                    self.cont = self.Place(self.users[1], self.users[0])
+                    self.cont = self.Place(self.users[1], self.users[0])  # noqa
 
             Functions.clear()
             # Plays game until win or return
@@ -108,11 +118,14 @@ class Main:
         else:
             # Gets players username
             username, opponent = None, None
+            playerPos = 0  # To check if local player placed.
             while username is None:
                 username = input("Please enter your name: ")
                 if self.users[0] == username:
+                    playerPos = 0
                     opponent = self.users[1]
                 elif self.users[1] == username:
+                    playerPos = 1
                     opponent = self.users[0]
                 else:
                     username = None
@@ -120,16 +133,24 @@ class Main:
 
             # Place check
             self.count = 0
-            if not self.Placed:
+            if not self.Placed[playerPos]:
                 self.count = self.Place(username, opponent)
 
-            o_Placed = False
-            while not o_Placed:
-                print(self.users)
-                opponentData = save.save(self.Location, data={
-                    'name': self.gameName,
-                    'file': opponent
-                })
+            Functions.clear()
+
+            if not (self.Placed[0] and self.Placed[1]):
+                o_Placed = False
+                while not o_Placed:
+                    loc = 0
+                    if playerPos == 0:
+                        loc = 1
+                    if isinstance(users[loc], dict):
+                        location = users[loc]['id']
+                    else:
+                        location = os.path.join(self.Location, self.gameName, users[loc])  # noqa
+                    o_Placed = save.save(location).CheckForFile('ships')
+                    if not o_Placed:
+                        o_Placed = self.waitSim("Waiting for opponent to place their ships")  # noqa
 
 
 if __name__ == "__main__":

@@ -21,27 +21,19 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
-        self.userDirectory = None
-        print(self.game, self.user)
-        self.saveInfo = save.save(self.saveLocation, data={
-            'name': self.game,
-            'file': self.user
-        })
         self.boardRetrieve = Functions.boardRetrieve(user,
                                                      self.saveLocation,
                                                      self.game,
-                                                     self.userDirectory,
-                                                     self.saveInfo,
                                                      'grid')
         self.gameBoard = self.boardRetrieve.getBoard()
-        self.userDirectory = self.boardRetrieve.userDirectory
+        self.userDirectory = self.boardRetrieve.dir
         if not isinstance(self.gameBoard, list):
             sys.exit('Failed to find game, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
         self.gameBoard = self.boardRetrieve.getBoard()
-        self.userDirectory = self.boardRetrieve.userDirectory
+        self.userDirectory = self.boardRetrieve.dir
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)

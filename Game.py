@@ -64,33 +64,38 @@ Other Options:
                     Functions.clear()
                     self.external = None
                     while not self.external:
-                        self.external = input("Please enter location of storage: ").rstrip().replace('"', '')  # noqa
-                        if self.external != "":
-                            # Windows has different file structure AAA
-                            if platform.system() != "Windows":
-                                self.external = self.external.replace("\\", "")
+                        try:
+                            self.external = input("Please enter location of storage (leave blank to go back): ").rstrip().replace('"', '')  # noqa
+                            if self.external != "":
+                                # Windows has different file structure AAA
+                                if platform.system() != "Windows":
+                                    self.external = self.external.replace("\\", "")  # noqa
 
-                            # Normal file check
-                            if self.external.find("\\") > -1 or self.external.find("/") > -1:  # noqa
-                                # Directory check
-                                if not os.path.isdir(self.external):
-                                    self.external = None
-                                    Functions.clear(2, "Provided directory is not a directory")  # noqa
+                                # Normal file check
+                                if self.external.find("\\") > -1 or self.external.find("/") > -1:  # noqa
+                                    # Directory check
+                                    if not os.path.isdir(self.external):
+                                        self.external = None
+                                        Functions.clear(2, "Provided directory is not a directory")  # noqa
+                                    else:
+                                        self.path = self.external
                                 else:
-                                    self.path = self.external
-                            else:
-                                # Google api check
-                                self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
-                                apiExternal = True
+                                    # Google api check
+                                    self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
+                                    apiExternal = True
 
-                                # Reset if error in loading...
-                                if self.path == "Error":
-                                    self.path = "Saves"
-                                    Functions.clear(2)
-                        else:
-                            self.external = self.path
-                            self.path = "Saves"
-                            self.external = "Saves"
+                                    # Reset if error in loading...
+                                    if self.path == "Error":
+                                        self.path = "Saves"
+                                        Functions.clear(2)
+                            else:
+                                self.external = self.path
+                                self.path = "Saves"
+                                self.external = "Saves"
+                        # Easy way to redo just in case mess up.
+                        except KeyboardInterrupt:
+                            self.external = None
+                            Functions.clear()
             return pi.Process().Inputs(self.path, name=Functions.RemoveNonGames(self.path)[self.game - 1], external=apiExternal)  # noqa
         if self.choice == 2:
             return pi.Process().Inputs(self.game, create=True)

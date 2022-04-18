@@ -24,6 +24,7 @@ class Api:
         self.service = self.__LoadAPI__()
         self.folder = folderId
         self.TR = True  # In case it doesn't get set somehows...
+        self.pageSize = 10  # Change to variable setting later.
         # self.Test()  # change to not testing every time.
 
     # Loads the api for use later.
@@ -227,7 +228,7 @@ class Api:
             # Some things don't work...
             results = self.service.files().list(
                 q=query,
-                pageSize=10, fields="nextPageToken, files(id, name)").execute()
+                pageSize=self.pageSize, fields="nextPageToken, files(id, name)").execute()  # noqa
             items = results.get('files', [])
 
             if not items:

@@ -189,50 +189,75 @@ class board:
 
 # Gets board information
 class boardRetrieve:
-    def __init__(self, user, saveLocation, game, userDirectory, saveInfo, name):  # noqa
+    def __init__(self, user, saveLocation, game, name):  # noqa
         self.user = user
         self.saveLocation = saveLocation
         self.game = game
-        self.userDirectory = userDirectory
-        self.saveInfo = saveInfo
         self.name = name
+        self.dir = None
 
     def getBoard(self):
+        data = self.geTBoard()
+        return data
+
+    def geTBoard(self):
         result = self.getUserFolder()
+        print('RESULT:')
         print(result)
-        loc, game, directory, id = result[0], result[1], result[2], result[3]
-        print(loc, game, directory, id)
-        if id is None:
-            print(loc, game, directory)
-            directory = os.path.join(loc, game, directory)
-        else:
-            directory = id
+        # Get board in user folder from stuff
+        userFiles = save.save(result).ListDirectory()
+        for file in userFiles:
+            id = file
+            if isinstance(file, dict):
+                id = file['id']
+                file = file['name']
 
-        files = save.save(directory).ListDirectory()
-        self.userDirectory = directory
-        if files is not False:
-            for file in files:
-                id = self.name
-                if isinstance(file, dict):
-                    id = file['id']
-                    file = file['name']
-
-                if file == self.name:
-                    print({'file name': self.name, 'id': id})
-                    return self.saveInfo.readFile({
-                        'name': id
-                    })
+            print({'id': id, 'self.name': self.name, 'equal': id == self.name})
+            if file == self.name:
+                print(self.name)
+                # We found file!
+                # now read and return
+                return save.save(self.saveLocation, data={
+                    'name': self.game,
+                    'file': self.user
+                }).readFile({
+                    'name': id
+                })
+        return 'Error'
 
     def getUserFolder(self):
-        print('a')
-        print(self.saveInfo.path)
-        dir = self.saveInfo.ListDirectory(dir=True)
-        print({'dir': dir})
-        for directory in dir:
-            id = None
-            if isinstance(directory, dict):
-                id = directory['id']
-                directory = directory['name']
-            if directory == self.user:
-                print({'user': self.user, 'directory': id})
-                return self.saveLocation, self.game, directory, id
+        users = self.saveLocation
+        external = save.save(self.saveLocation).api
+        id = None
+        if not external:
+            dir = save.save(self.saveLocation).ListDirectory(dir=True)
+            for directory in dir:
+
+                print('dir')
+                print(directory)
+                id = None
+                if isinstance(directory, dict):
+                    id = directory['id']
+                    directory = directory['name']
+                else:
+                    id = os.path.join(self.saveLocation, directory)
+
+                if directory == self.game:
+                    users = save.save(id).ListDirectory(dir=True)
+                    break
+        else:
+            users = save.save(self.saveLocation).ListDirectory()
+
+        for user in users:
+            userId = None
+            if isinstance(user, dict):
+                userId = user['id']
+                user = user['name']
+            else:
+                userId = os.path.join(id, user)
+
+            if user == self.user:
+                self.dir = userId
+                return userId
+
+        return 'Error'

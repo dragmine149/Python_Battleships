@@ -126,5 +126,5 @@ class create:
                 'folder': self.parent
             })
             print({'result': result})
-            Functions.clear(20)
+            Functions.clear(2)
         return [name, users, self.parent, online]

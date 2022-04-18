@@ -47,10 +47,11 @@ class Process:
                     'file': name
                 }).ListDirectory(dir=True)
 
-                placed = False
+                placed = [False, False]
                 if save.save(path).CheckForFile(os.path.join(name, users[0], "ships")):  # noqa
-                    if save.save(path).CheckForFile(os.path.join(name, users[1], "ships")):  # noqa
-                        placed = True
+                    placed[0] = True
+                if save.save(path).CheckForFile(os.path.join(name, users[1], "ships")):  # noqa
+                    placed[1] = True
 
                 multi = False
                 if save.save(path).CheckForFile(os.path.join(name, "multi")):
@@ -63,6 +64,7 @@ class Process:
             for item in path:
                 # Errors... why?
                 if item['name'] == name:
+                    saveLoc = item['id']
                     name = item
                     break
 
@@ -98,12 +100,12 @@ class Process:
 
                 multi = save.save(name['id'], data={
                     'name': 'Saves',
-                    'file': self.parent
+                    'file': 'multi'
                 }).readFile({
-                    'name': 'multi'
+                    'name': multiPlayerId
                 })
                 print({'multi': multi})
                 if multi:
                     save.save("Saves").Delete("Saves/.Temp/{}".format(name['id']))  # noqa
 
-            return name['name'], users, placed[0] and placed[1], name['id'], multi  # noqa
+            return name['name'], newUsers, placed, saveLoc, multi  # noqa
