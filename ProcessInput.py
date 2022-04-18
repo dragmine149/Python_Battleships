@@ -31,7 +31,7 @@ class Process:
     def Inputs(self, path, name=None, external=False, create=False):
         if create:
             [name, users, Location, online] = Create.create().inputs()
-            return name, users, False, Location, online
+            return name, users, [True, True], Location, online
         print({'external': external})
         if not external:
             # Path Name
