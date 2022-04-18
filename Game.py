@@ -52,7 +52,19 @@ Other Options:
                         Functions.clear()
                         delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
                         if delGame != -1:
-                            save.save(self.path).Delete(os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame - 1]))  # noqa
+                            deletePath = None
+                            if apiExternal:
+                                deletePath = Functions.RemoveNonGames(self.path)[delGame - 1]  # noqa
+                                for item in self.path:
+                                    if item['name'] == deletePath:
+                                        result = save.save(self.external).Delete(item['id'])  # noqa
+
+                                        # Reset ui to show new list instead of old  # noqa
+                                        self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
+                                        break
+                            else:
+                                deletePath = os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame - 1])  # noqa
+                                save.save(self.path).Delete(deletePath)  # noqa
                             delGame = None
                     self.game = None
                 if self.game == -1:

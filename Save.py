@@ -276,4 +276,5 @@ class save:
             else:
                 print('Path not found! -> {}'.format(path))
                 return False
-        # Call api
+        else:
+            return self.api.DeleteData(path)
