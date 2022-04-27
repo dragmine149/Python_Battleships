@@ -2,18 +2,11 @@ import Save as save
 import ShipInfo as ship
 import Functions
 import copy
-import os
 import sys
 
 
-"""
-TODO:
-- Replace google drive parts
-- Fix with new save system
-"""
-
-
 class place:
+    # setup system
     def __init__(self, game, user, Location):
         self.game = game
         self.user = user
@@ -89,14 +82,8 @@ class place:
     # Function to palce ship
     def Place(self, locInput, owner=None):
         Functions.clear()
-        # TODO: change to allow mod support
-        ships = [
-            ship.Short(),
-            ship.Medium1(),
-            ship.Medium2(),
-            ship.Long(),
-            ship.ExtraLong()
-        ]
+        # Better mod support
+        ships = ship.getShips()
         while len(ships) > 0:
             self._Reset()
             print("{}'s Turn to place ships\n".format(self.user))
@@ -109,6 +96,7 @@ class place:
                 if place is not None:
                     place -= 1
                 testTemp += 1
+            # Copy board to easy revert if bad
             deep = copy.deepcopy(self.gameBoard)
 
             if place != -1:
@@ -174,6 +162,7 @@ class place:
             Functions.clear(0)
             Functions.board.DisplayBoard(self.gameBoard)
 
+        # Saving...
         print({'user': self.user,
                'folder': self.saveLocation})
         save.save(self.saveLocation, data={

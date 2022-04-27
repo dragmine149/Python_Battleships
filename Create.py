@@ -7,6 +7,8 @@ class create:
         self.info = []
         self.save = None
 
+    # Checks if the inputted string is valid
+    # TODO: better check
     def strCheck(self, msg, info, check=None):
         name = None
         while not name:
@@ -42,12 +44,14 @@ class create:
             return True
         return False
 
+    # Checks if int
     def intCheck(self, msg):
         iNT = None
         while not iNT:
             iNT = Functions.check(msg, None, None, self._SizeRangeCheck).InputDigitCheck()  # noqa
         return iNT
 
+    # Gets inputs for the game
     def inputs(self):
         name = self.strCheck("Please enter a name for this game: ", "Game Name")  # noqa
         u1 = self.strCheck("Please enter player 1's name: ", "Player 1 Name")  # noqa
@@ -72,6 +76,7 @@ class create:
             if isinstance(self.parent, dict):
                 self.parent = self.parent['id']
 
+            # Makes save file for every user
             for user in users:
                 saveItem = False
                 while not saveItem:
@@ -95,6 +100,7 @@ class create:
 
                 self.userSave.append(saveItem)
 
+        # Deals with online stuff
         online = None
         if Location != "Saves":
             while online is None:
