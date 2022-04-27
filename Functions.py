@@ -287,3 +287,30 @@ class boardRetrieve:
                 return userId
 
         return 'Error'
+
+
+class board:
+    def __init__(self, saveLocation, gameName):
+        # These have to be differnet to make easier to do stuff
+        # Also got to add in drive support
+        self.saveLocation = saveLocation
+        self.gameName = gameName
+
+    def getBoard(self):
+        """
+        Process of getting a board
+        - Find user folder
+        - Find user file
+        - Return request board data
+        """
+        userData = self.getUserFolder()
+
+    def getUserFolder(self):
+        # join together saveLocation and path
+        gameData = os.path.join(self.saveLocation, self.gameName)
+
+        # api test
+        gameSaveData = save.save(gameData, False, {
+            self.saveLocation,
+            self.gameName
+        }).ListDirectory(dir=True)
