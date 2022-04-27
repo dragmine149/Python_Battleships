@@ -24,7 +24,7 @@ class save:
     }, Api=False):
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
-        self.api = False # would set to None but windows be like... (why windows...)
+        self.api = False  # would set to None but windows be like... (why windows...)
         self.ApiPath = None
         self.error = None
         if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa
@@ -38,7 +38,7 @@ class save:
                     self.error = 'GD failed'
             # So, seeing as mac/linux want ModuleNotFoundError and windows wants ImportError.
             # Just going to catch everything, don't want to write out the same code Twice
-            except Exception: 
+            except Exception:
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
                 print("DEBUG -> Drive api not installed")
                 self.error = 'No GD'
@@ -174,12 +174,12 @@ class save:
                 slash = "\\"
 
             runCommand = '{} Saves{}.Temp{}{} {}{}{}'.format(command,
-                                                      slash,
-                                                      slash,
-                                                      self.data['name'],
-                                                      data['folder'],
-                                                      slash,
-                                                      self.data['name'])
+                                                             slash,
+                                                             slash,
+                                                             self.data['name'],
+                                                             data['folder'],
+                                                             slash,
+                                                             self.data['name'])
             print(runCommand)
             os.system(runCommand)
 
