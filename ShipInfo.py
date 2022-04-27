@@ -93,6 +93,8 @@ Please do not touch
 class shipInfo:
     def __init__(self, ships):
         self.ships = ships
+        # Symbol set defined, These are symbols that the text will work without
+        # having the grid be messed up
         self.symbols = [
             "{",
             "}",
@@ -105,15 +107,14 @@ class shipInfo:
             ">"
         ]
 
+    # gets health
     def calculate(self, ship):
         return ship.Length * ship.Height
 
+    # Checks if all values of the class are correct
     def valid_Check(self):
-        goodShips = []
+        goodShips = []  # good, meet the rules
         for shipNum in range(len(self.ships)):
-            if shipNum == len(self.ships):
-                print("Reached limit!")
-                break
             ship = self.ships[shipNum]
             # Length check
             try:
@@ -132,16 +133,20 @@ class shipInfo:
             try:
                 ship.Name
             except AttributeError:
-                ship.Name = "({} long)".format(self.calculate(ship))
+                ship.Name = "({} by {})".format(ship.Height, ship.Length)
 
             # set health
             ship.Health = self.calculate(ship)
-            goodShips.append(ship)
+            goodShips.append(ship)  # If reach, then good ship
 
         return goodShips
 
+    # This is called after to make sure symbols don't get taken out if the ship
+    # is bad and could be used for something else.
     def setSymbol(self):
         noSymbol = []
+        # Removes all symbols already assigned
+        # Adds ships without symbols to array
         for ship in self.ships:
             try:
                 if ship.Symbol in self.symbols:
@@ -151,6 +156,8 @@ class shipInfo:
             except AttributeError:
                 pass
 
+        # For ships without symbols, Add a symbol from the global array
+        # If run out of symbols, then erm... Just remove the ship (need to add result other than remove for this case)  # noqa E501
         for noShip in range(len(noSymbol)):
             if self.symbols.Length > 0:
                 noSymbol[noShip].Symbol = self.symbols[0]
@@ -158,6 +165,7 @@ class shipInfo:
             else:
                 self.ships.remove(noShip)
 
+    # Groups everything up into one funciton
     def Main(self):
         self.ships = self.valid_Check()
         self.setSymbol()

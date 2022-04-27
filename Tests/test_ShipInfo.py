@@ -1,6 +1,7 @@
 import ShipInfo as ships
 
 
+# Test classes
 class TB4:
     def __init__(self):
         self.Height = 4
@@ -30,6 +31,7 @@ def Creation():
     return customShips
 
 
+# The actually test itself
 def test_Test():
     customShips = Creation()
     """
@@ -38,10 +40,12 @@ def test_Test():
     - Invalid being deleted from table
     - Missing being deleted from table
     """
+    # Where the data comes from
     shipData = ships.shipInfo(customShips)
     customShips = shipData.Main()
 
-    Passed = [[False, False, False], False]
+    # Checks to make sure data is Correct
+    Passed = [[False, False], False]
     print({'Remaning': customShips})
     foundShip = None
     for ship in customShips:
