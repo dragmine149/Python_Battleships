@@ -92,7 +92,6 @@ Please do not touch
 
 class shipInfo:
     def __init__(self, ships):
-        print('waiting...')
         self.ships = ships
         self.symbols = [
             "{",
@@ -110,43 +109,57 @@ class shipInfo:
         return ship.Length * ship.Height
 
     def valid_Check(self):
-        for ship in self.ships:
+        goodShips = []
+        for shipNum in range(len(self.ships)):
+            if shipNum == len(self.ships):
+                print("Reached limit!")
+                break
+            ship = self.ships[shipNum]
             # Length check
             try:
-                ship.Length
+                if ship.Length == 0:
+                    continue
             except AttributeError:
-                self.ships.remove(ship)
+                continue
             # Height check
             try:
-                ship.Height
+                if ship.Height == 0:
+                    continue
             except AttributeError:
-                self.ships.remove(ship)
+                continue
 
             # Set name
-            if ship.Name is None:
+            try:
+                ship.Name
+            except AttributeError:
                 ship.Name = "({} long)".format(self.calculate(ship))
 
             # set health
             ship.Health = self.calculate(ship)
+            goodShips.append(ship)
+
+        return goodShips
 
     def setSymbol(self):
         noSymbol = []
         for ship in self.ships:
-            if ship.Symbol in self.symbols:
-                self.symbols.remove(ship.Symbol)
-            else:
-                noSymbol.append(ship)
+            try:
+                if ship.Symbol in self.symbols:
+                    self.symbols.remove(ship.Symbol)
+                else:
+                    noSymbol.append(ship)
+            except AttributeError:
+                pass
 
-        for noShip in noSymbol:
+        for noShip in range(len(noSymbol)):
             if self.symbols.Length > 0:
-                noShip.Symbol = self.symbols[0]
+                noSymbol[noShip].Symbol = self.symbols[0]
                 self.symbols.pop(0)
             else:
                 self.ships.remove(noShip)
-                break
 
     def Main(self):
-        self.valid_Check()
+        self.ships = self.valid_Check()
         self.setSymbol()
         return self.ships
 
