@@ -2,6 +2,7 @@ import time
 import os
 import platform
 import Save as save
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 # Converts the input to a valid location (a1 -> [0,0])
@@ -53,11 +54,20 @@ def RemoveNonGames(path="Saves"):
         api = True
         games = path
     else:
-        games = os.listdir(path)
+        try:
+            games = os.listdir(path)
+        except FileNotFoundError:
+            return []
 
     newlist = []
     for folder in games:
         # Removes non directories
+""" WINDOWS ALERT!!!
+So, after doing some testing on windows, i noticed a file called 'desktop.ini'
+This file is hidden and thankfully is at the end of the list but still needs
+to be removed. I could add a list of hidden files and check for them but would
+rather not do that to save time and stuff.
+"""
         if not api:
             if os.path.isdir(os.path.join(path, folder)):
                 if not folder.startswith(".") and not folder.startswith("__"):
@@ -188,6 +198,8 @@ class board:
 
 
 # Gets board information
+# This function is annoying with the ammount of checks and stuff
+# Rewrite to be better, quicker and more comments to understand what i did.
 class boardRetrieve:
     def __init__(self, user, saveLocation, game, name):  # noqa
         self.user = user
@@ -195,6 +207,16 @@ class boardRetrieve:
         self.game = game
         self.name = name
         self.dir = None
+        foundLocation = self.saveLocation.find(self.game)
+        if foundLocation != -1:
+            self.saveLocation = self.saveLocation[:foundLocation - 1]
+        print({
+            'self.user': self.user,
+            'self.saveLocation': self.saveLocation,
+            'self.game': self.game,
+            'self.name': self.name,
+            'self.dir': self.dir
+            })
 
     def getBoard(self):
         data = self.geTBoard()
@@ -202,14 +224,17 @@ class boardRetrieve:
 
     def geTBoard(self):
         result = self.getUserFolder()
+        print({'b': result})
         # Get board in user folder from stuff
         userFiles = save.save(result).ListDirectory()
+        print({'userFiles': userFiles})
         for file in userFiles:
             id = file
             if isinstance(file, dict):
                 id = file['id']
                 file = file['name']
 
+            print({'file': file, 'self.name': self.name})
             if file == self.name:
                 # We found file!
                 # now read and return
@@ -226,7 +251,7 @@ class boardRetrieve:
         external = save.save(self.saveLocation).api
         id = None
         if not external:
-            dir = save.save(self.saveLocation).ListDirectory(dir=True)
+            dir = save.save(self.saveLocation).ListDirectory(dir=True, api=external)
             for directory in dir:
                 id = None
                 if isinstance(directory, dict):
@@ -236,7 +261,12 @@ class boardRetrieve:
                     id = os.path.join(self.saveLocation, directory)
 
                 if directory == self.game:
-                    users = save.save(id).ListDirectory(dir=True)
+                    users = save.save(id).ListDirectory(dir=True, api=external)
+                    break
+                # Check if within one search, the users dir have already been found.
+                elif directory == self.user:
+                    users = dir
+                    id = self.saveLocation
                     break
         else:
             users = save.save(self.saveLocation).ListDirectory()

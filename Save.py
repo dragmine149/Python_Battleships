@@ -24,7 +24,7 @@ class save:
     }, Api=False):
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
-        self.api = None
+        self.api = False # would set to None but windows be like... (why windows...)
         self.ApiPath = None
         self.error = None
         if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa
@@ -36,8 +36,11 @@ class save:
                 if not self.api.TR:
                     Functions.clear(2, "Something failed in testing the google drive api. Correct permissions?")  # noqa
                     self.error = 'GD failed'
-            except ModuleNotFoundError:
+            # So, seeing as mac/linux want ModuleNotFoundError and windows wants ImportError.
+            # Just going to catch everything, don't want to write out the same code Twice
+            except Exception: 
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
+                print("DEBUG -> Drive api not installed")
                 self.error = 'No GD'
         """
         Some files are encoded in json to make them not easly editable.
@@ -165,16 +168,20 @@ class save:
         else:
             # Saves the data to a file. Returns the file path.
             command = "mv"
+            slash = "/"
             if platform.system() == "Windows":
                 command = "move"
-            print('{} Saves/.Temp/{} {}/{}'.format(command,
-                                                   self.data['name'],
-                                                   data['folder'],
-                                                   self.data['name']))
-            os.system('{} Saves/.Temp/{} {}/{}'.format(command,
-                                                       self.data['name'],
-                                                       data['folder'],
-                                                       self.data['name']))
+                slash = "\\"
+
+            runCommand = '{} Saves{}.Temp{}{} {}{}{}'.format(command,
+                                                      slash,
+                                                      slash,
+                                                      self.data['name'],
+                                                      data['folder'],
+                                                      slash,
+                                                      self.data['name'])
+            print(runCommand)
+            os.system(runCommand)
 
             if name:
                 self.data['name'] = name
@@ -248,7 +255,7 @@ class save:
     - No check as self.path is required.
     """
     def ListDirectory(self, api=True, dir=False):
-        if self.api is not None and api is True:
+        if self.api is not False and api is True:
             return self.api.ListFolder(dir=dir)
         else:
             if not dir:

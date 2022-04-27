@@ -96,13 +96,7 @@ class fire:
     def _DestroyedCheck(self):
         # Change ships to take the ammount from file instead of in list.
         # Mod support bascially.
-        ships = [
-            ship.Short(),
-            ship.Medium1(),
-            ship.Medium2(),
-            ship.Long(),
-            ship.ExtraLong()
-        ]
+        ships = ship.getShips()
         destroyedList = "Destroyed Ships:\n"  # makes a list
         destroyedAmount = 0
 

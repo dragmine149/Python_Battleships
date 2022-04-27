@@ -24,12 +24,14 @@ class Main:
         self.Location = None
         self.multi = None
         self.cont = 0
+        self.opponent = None
 
     def __reset(self):
         # Resets for infinite loop
         self.gameName = None
         self.users = None
         self.Placed = None
+        self.opponent = None
 
     def LocInput(self):
         # This is so we can send it into a function
@@ -68,7 +70,7 @@ class Main:
                 'name': self.gameName,
                 'file': 'turn',
             }).readFile({
-                'name': 'turn'
+                'name': None  # don't want to do this (on windows at time of writing), but it fixies it for now...
             })
         return turn.replace('"', '')
 

@@ -236,7 +236,7 @@ class Api:
                 return
             return items
         except HttpError as error:
-            print(f'An error occurred: {error}')
+            print('An error occurred: {}'.format(error))
             return "Error"
 
 

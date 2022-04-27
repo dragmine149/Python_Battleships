@@ -26,3 +26,6 @@ AI:
 ◾️ Auto place
 ◾️ Auto Shoot
 ◾️ Levels to what your level is.
+--------------------------------------------------------------------------------
+Bugs:
+◾️ Breaks when attempting to make file in location not found by system

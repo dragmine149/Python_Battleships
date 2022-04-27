@@ -77,7 +77,7 @@ class Ships:
             self.Symbol = ")"
             self.Health = Ships.calculateHealth(self)
 
-    # Changed to something better
+    # Change to something better
     @staticmethod
     def calculateHealth(ship):
         return ship.Length * ship.Height
