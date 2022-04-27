@@ -83,14 +83,14 @@ class place:
     def Place(self, locInput, owner=None):
         Functions.clear()
         # Better mod support
-        ships = ship.getShips()
+        ships = ship.shipInfo(ship.getShips()).Main()
         while len(ships) > 0:
             self._Reset()
             print("{}'s Turn to place ships\n".format(self.user))
             place = None
             testTemp = 0
             while place is None:
-                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck() # noqa
+                place = Functions.check("Enter ship you want to place: ", self._ShowShips, ships, self._rangeCheck, ships).InputDigitCheck()  # noqa
                 if place == -1:
                     return -1
                 if place is not None:
