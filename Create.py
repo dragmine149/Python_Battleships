@@ -73,6 +73,14 @@ class create:
                 'name': name,
                 'file': ''
             }).makeFolder()
+
+            # This sets the name depending on the folder created.
+            # Might break with google drive AAAAAAAAAA
+            start = self.parent.find(Location)
+            length = len(Location)
+            end = start + length + 1
+            name = self.parent[end:]
+
             if isinstance(self.parent, dict):
                 self.parent = self.parent['id']
 
@@ -80,8 +88,9 @@ class create:
             for user in users:
                 saveItem = False
                 while not saveItem:
-                    saveItem = save.save(Location, data={
-                        'name': name,
+                    # TODO: use new folder.
+                    saveItem = save.save(self.parent, data={
+                        'name': '',
                         'file': user
                     })
                     if isinstance(saveItem, str):
@@ -133,4 +142,4 @@ class create:
             })
             print({'result': result})
             Functions.clear(2)
-        return [name, users, self.parent, online]
+        return [name, users, Location, online]

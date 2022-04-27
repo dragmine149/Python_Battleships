@@ -70,11 +70,14 @@ class Main:
                 'name': self.gameName,
                 'file': 'turn',
             }).readFile({
-                'name': None  # don't want to do this (on windows at time of writing), but it fixies it for now...
+                # don't want to do this (on windows at time of writing)
+                # but it fixies it for now...
+                'name': None
             })
         return turn.replace('"', '')
 
     def Fire(self, username=None):
+        self.printStatus()
         # Fire function
         game = False
         while not game:
@@ -112,6 +115,15 @@ class Main:
             Functions.clear(10)
         return
 
+    def printStatus(self):
+        print({
+            'self.gameName': self.gameName,
+            'self.users': self.users,
+            'self.Placed': self.Placed,
+            'self.Location': self.Location,
+            'self.multi': self.multi
+        })
+
     # Loop of the program
     def MainLoop(self):
         # Get game information
@@ -133,6 +145,7 @@ class Main:
         self.multi = gameInfo[4]
         Functions.clear(2)
 
+        self.printStatus()
         # If not multiplayer.
         if not self.multi:
             # Value to see if the user didn't back out

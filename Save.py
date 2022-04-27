@@ -3,6 +3,8 @@ import Functions
 import json
 import platform
 import shutil
+import random
+import string
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -18,13 +20,15 @@ class save:
 
     self.error -> Value to check for. If this is not None return false.
     """
+
     def __init__(self, path, Json=True, data={
         'name': None,
         'file': None
     }, Api=False):
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
-        self.api = False  # would set to None but windows be like... (why windows...)
+        # would set to None but windows be like... (why windows...)
+        self.api = False
         self.ApiPath = None
         self.error = None
         if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa
@@ -36,8 +40,8 @@ class save:
                 if not self.api.TR:
                     Functions.clear(2, "Something failed in testing the google drive api. Correct permissions?")  # noqa
                     self.error = 'GD failed'
-            # So, seeing as mac/linux want ModuleNotFoundError and windows wants ImportError.
-            # Just going to catch everything, don't want to write out the same code Twice
+            # So, seeing as mac/linux want ModuleNotFoundError and windows wants ImportError.  # noqa E501
+            # Just going to catch everything, don't want to write out the same code Twice      # noqa E501
             except Exception:
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
                 print("DEBUG -> Drive api not installed")
@@ -60,6 +64,7 @@ class save:
     _FolderCheck()
     - Checks if all primary / required folders are made. If not make them.
     """
+
     def _FolderCheck(self):
         if self.error is not None:
             return self.error
@@ -75,6 +80,7 @@ class save:
       No extra imports required.
     - Returns the path to the folder. Either a dict (api) or string (local)
     """
+
     def makeFolder(self, sub=None):
         if self.error is not None:
             return self.error
@@ -104,6 +110,8 @@ class save:
         else:
             # Makes a local folder
             path = os.path.join(self.path, self.data['name'])
+            if self.data['name'] == '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
+                path = self.path
             if not os.path.exists(path):
                 os.mkdir(path)
             # make sure sub is None because could be same as parent folder
@@ -112,7 +120,11 @@ class save:
                 while overwrite is None:
                     overwrite = input("Are you sure you want to overwrite this game? (y = yes, n = no): ")  # noqa
                     if overwrite.lower()[0] == "n":
-                        return False
+                        # If they don't want to overwrite, Makes the same game but with a random string attacked on to the end  # noqa
+                        # This is so they can use the same name yet not interfer with the old game # noqa
+                        # TODO: Add an option for the user to change the name of the game  # noqa
+                        path = path + '-' + ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))  # noqa E501
+                        os.mkdir(path)
                     elif overwrite.lower()[0] != "y":
                         overwrite = None
                         Functions.clear(2, "Please enter a valid option!")
@@ -135,6 +147,7 @@ class save:
     - If api will send the file to the api and them remove after upload.
     - If local, Moves the file to the save location.
     """
+
     def writeFile(self, data={
         'data': None,
         'folder': None
@@ -196,6 +209,7 @@ class save:
     - If file is not found returns False
     - If file found / made, Returns data of file.
     """
+
     def readFile(self, data={
         'name': None,
     }):
@@ -243,8 +257,8 @@ class save:
                     if self.json:
                         return json.loads(file.read())
                     return file.read()
-            print("Failed -> File to read from not found!" +
-                  "\nPath: {}".format(self.saveLocation))
+            print("Failed -> File to read from not found!"
+                  + "\nPath: {}".format(self.saveLocation))
             return False
 
     """
@@ -254,6 +268,7 @@ class save:
     - Returns all the files in the directory
     - No check as self.path is required.
     """
+
     def ListDirectory(self, api=True, dir=False):
         if self.api is not False and api is True:
             return self.api.ListFolder(dir=dir)
@@ -275,6 +290,7 @@ class save:
     CheckForFile(path)
     - Returns true if a file exists, returns false if not
     """
+
     def CheckForFile(self, path):
         if self.api:
             return self.api.checkIfExists(self.path, path)[0]
@@ -286,6 +302,7 @@ class save:
     Delete(path)
     - Deletes the path without question
     """
+
     def Delete(self, path):
         if not self.api:
             if os.path.exists(path):
