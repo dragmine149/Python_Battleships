@@ -62,12 +62,12 @@ def RemoveNonGames(path="Saves"):
     newlist = []
     for folder in games:
         # Removes non directories
-""" WINDOWS ALERT!!!
-So, after doing some testing on windows, i noticed a file called 'desktop.ini'
-This file is hidden and thankfully is at the end of the list but still needs
-to be removed. I could add a list of hidden files and check for them but would
-rather not do that to save time and stuff.
-"""
+        """ WINDOWS ALERT!!! # noqa E501
+        So, after doing some testing on windows, i noticed a file called 'desktop.ini'
+        This file is hidden and thankfully is at the end of the list but still needs
+        to be removed. I could add a list of hidden files and check for them but would
+        rather not do that to save time and stuff.
+        """
         if not api:
             if os.path.isdir(os.path.join(path, folder)):
                 if not folder.startswith(".") and not folder.startswith("__"):
@@ -116,6 +116,7 @@ class check:
     rangeCheckValue -> Interager
         - The other digit for the range check
     """
+
     def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
         self.request = request
         self.extra = extra
@@ -251,7 +252,8 @@ class boardRetrieve:
         external = save.save(self.saveLocation).api
         id = None
         if not external:
-            dir = save.save(self.saveLocation).ListDirectory(dir=True, api=external)
+            dir = save.save(self.saveLocation).ListDirectory(
+                dir=True, api=external)
             for directory in dir:
                 id = None
                 if isinstance(directory, dict):
@@ -263,7 +265,8 @@ class boardRetrieve:
                 if directory == self.game:
                     users = save.save(id).ListDirectory(dir=True, api=external)
                     break
-                # Check if within one search, the users dir have already been found.
+                # Check if within one search
+                # the users dir have already been found.
                 elif directory == self.user:
                     users = dir
                     id = self.saveLocation
