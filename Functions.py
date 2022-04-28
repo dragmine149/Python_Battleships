@@ -220,81 +220,19 @@ class boardRetrieve:
             })
 
     def getBoard(self):
-        data = self.geTBoard()
+        # Call the other class, this is temparary (works without breaking yet)
+        data = userData(self.saveLocation, self.game, self.user, self.name).getBoard()  # noqa E501
         return data
 
-    def geTBoard(self):
-        result = self.getUserFolder()
-        print({'b': result})
-        # Get board in user folder from stuff
-        userFiles = save.save(result).ListDirectory()
-        print({'userFiles': userFiles})
-        for file in userFiles:
-            id = file
-            if isinstance(file, dict):
-                id = file['id']
-                file = file['name']
 
-            print({'file': file, 'self.name': self.name})
-            if file == self.name:
-                # We found file!
-                # now read and return
-                return save.save(self.saveLocation, data={
-                    'name': self.game,
-                    'file': self.user
-                }).readFile({
-                    'name': id
-                })
-        return 'Error'
-
-    def getUserFolder(self):
-        users = self.saveLocation
-        external = save.save(self.saveLocation).api
-        id = None
-        if not external:
-            dir = save.save(self.saveLocation).ListDirectory(
-                dir=True, api=external)
-            for directory in dir:
-                id = None
-                if isinstance(directory, dict):
-                    id = directory['id']
-                    directory = directory['name']
-                else:
-                    id = os.path.join(self.saveLocation, directory)
-
-                if directory == self.game:
-                    users = save.save(id).ListDirectory(dir=True, api=external)
-                    break
-                # Check if within one search
-                # the users dir have already been found.
-                elif directory == self.user:
-                    users = dir
-                    id = self.saveLocation
-                    break
-        else:
-            users = save.save(self.saveLocation).ListDirectory()
-
-        for user in users:
-            userId = None
-            if isinstance(user, dict):
-                userId = user['id']
-                user = user['name']
-            else:
-                userId = os.path.join(id, user)
-
-            if user == self.user:
-                self.dir = userId
-                return userId
-
-        return 'Error'
-
-
-class board:
-    def __init__(self, saveLocation, gameName):
+class userData:
+    def __init__(self, saveLocation, gameName, user, data="grid"):
         # These have to be differnet to make easier to do stuff
         # Also got to add in drive support
         self.saveLocation = saveLocation
         self.gameName = gameName
+        self.user = user
+        self.data = data
 
     def getBoard(self):
         """
@@ -304,13 +242,35 @@ class board:
         - Return request board data
         """
         userData = self.getUserFolder()
+        for file in userData:
+            if file == self.data:
+                data = save.save(self.EndPath, True, {
+                    'name': '',
+                    'file': ''
+                }).readFile({
+                    'name': file
+                })
+                return data
 
     def getUserFolder(self):
         # join together saveLocation and path
         gameData = os.path.join(self.saveLocation, self.gameName)
 
         # api test
-        gameSaveData = save.save(gameData, False, {
-            self.saveLocation,
-            self.gameName
-        }).ListDirectory(dir=True)
+        # Excepted data: Data in game Folder
+        gameSaveData = save.save(gameData).ListDirectory(dir=True)
+
+        # Checks if the data returned a folder exists for the user
+        for data in gameSaveData:
+            if data == self.user:
+                # TODO: work with Google drive
+                self.EndPath = os.path.join(self.saveLocation, self.gameName, data)  # noqa E501
+
+                # Get user data and return it
+                userData = save.save(self.EndPath).ListDirectory()
+                return userData
+
+
+if __name__ == "__main__":
+    data = userData("Saves", "Test", "me")
+    data.getBoard()

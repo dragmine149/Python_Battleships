@@ -70,7 +70,7 @@ class Main:
                 'name': self.gameName,
                 'file': 'turn',
             }).readFile({
-                # don't want to do this (on windows at time of writing)
+                # don't want to do this (on windows at time of writing)  # noqa E501
                 # but it fixies it for now...
                 'name': None
             })
