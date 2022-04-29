@@ -119,7 +119,10 @@ class save:
                 overwrite = None
                 while overwrite is None:
                     overwrite = input("Are you sure you want to overwrite this game? (y = yes, n = no): ")  # noqa
-                    if overwrite.lower()[0] == "n":
+                    if overwrite.lower() == "":
+                        overwrite = None
+                        Functions.clear(2, "Please enter something...")
+                    elif overwrite.lower()[0] == "n":
                         # If they don't want to overwrite, Makes the same game but with a random string attacked on to the end  # noqa
                         # This is so they can use the same name yet not interfer with the old game # noqa
                         # TODO: Add an option for the user to change the name of the game  # noqa
