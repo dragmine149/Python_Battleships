@@ -250,7 +250,7 @@ class userData:
                 }).readFile({
                     'name': file
                 })
-                return data
+                return data, self.EndPath
 
     def getUserFolder(self):
         # join together saveLocation and path

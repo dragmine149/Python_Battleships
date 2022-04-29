@@ -3,6 +3,7 @@ import ShipInfo as ship
 import Functions
 import copy
 import sys
+import os
 
 
 class place:
@@ -14,19 +15,14 @@ class place:
         self.breaked = False
         self.placed = False
         self.saveLocation = Location
-        self.boardRetrieve = Functions.boardRetrieve(user,
-                                                     self.saveLocation,
-                                                     self.game,
-                                                     'grid')
-        self.gameBoard = self.boardRetrieve.getBoard()
-        self.userDirectory = self.boardRetrieve.dir
+        self.boardRetrieve = Functions.userData(Location, game, user)
+        self.gameBoard, self.userDirectory = self.boardRetrieve.getBoard()
         if not isinstance(self.gameBoard, list):
             sys.exit('Failed to find game, please check')
 
     # Get the board saved.
     def _LoadBoard(self):
-        self.gameBoard = self.boardRetrieve.getBoard()
-        self.userDirectory = self.boardRetrieve.dir
+        self.gameBoard, self.userDirectory = self.boardRetrieve.getBoard()
         if self.gameBoard == "Failed -> Folder not found":
             sys.exit('Failed to find folder, please check')
         save.board.DisplayBoard(self.gameBoard)
@@ -164,7 +160,9 @@ class place:
 
         # Saving...
         print({'user': self.user,
-               'folder': self.saveLocation})
+               'folder': self.saveLocation,
+               'self.userDirectory': self.userDirectory,
+               'data': self.gameBoard})
         save.save(self.saveLocation, data={
             'name': 'ships',
             'file': self.user
@@ -173,11 +171,11 @@ class place:
             'folder': self.userDirectory
         })
         save.save(self.saveLocation, data={
-            'name': 'turn',
-            'file': 'trun'
+            'name': '',
+            'file': 'turn'
         }).writeFile({
             'data': owner,
-            'folder': self.saveLocation
+            'folder': os.path.join(self.saveLocation, self.game)
         })
         Functions.clear(2)
         return 0  # pass check
