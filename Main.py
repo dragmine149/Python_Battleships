@@ -207,6 +207,19 @@ class Main:
         self.MainLoop()
 
 
+"""
+TODO: Instead of having to type out python Main.py and going through there,
+have the ability to type out `python Main X` with x being an option
+
+Options:
+- Game Name
+    - If game not found, Makes game
+    - If game found, load game
+    - Also works with GD id's
+- Number
+    - Does that option
+    - E.g. 2 = make game
+"""
 if __name__ == "__main__":
     main = Main()
     main.MainLoop()
