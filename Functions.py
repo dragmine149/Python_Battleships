@@ -271,6 +271,33 @@ class userData:
                 return userData
 
 
+"""
+ynCheck
+Check if the result is "y" or "n" and calls the function based on it
+- yesFunc: function to call if true,
+- noFunc: function to call if false,
+- returnFunc: function to call if neither, default None (resets)
+"""
+
+
+def ynCheck(result, yesFunc, noFunc, returnFunc=None):
+    result = result.replace(" ", "")  # remove all spaces
+    result = result.lower()  # lower case
+    result = result[0]  # gets first character
+    if result == "y":
+        if callable(yesFunc):  # checks if callable and stuff
+            return yesFunc()
+        return yesFunc
+    elif result == "n":
+        if callable(noFunc):
+            return noFunc()
+        return noFunc
+    else:
+        if callable(returnFunc()):
+            return returnFunc()
+        return returnFunc
+
+
 if __name__ == "__main__":
     data = userData("Saves", "Test", "me")
     data.getBoard()
