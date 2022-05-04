@@ -6,7 +6,7 @@ import Save as save
 import Functions
 import os
 import time
-import platform
+import sys
 
 # Prints where stored
 filePath = os.path.dirname(os.path.realpath(__file__))
@@ -125,7 +125,7 @@ class Main:
         })
 
     # Loop of the program
-    def MainLoop(self):
+    def MainLoop(self, argv):
         # Get game information
         gameInfo = Game.game().GetInput()
         print({'gameInfo': gameInfo})
@@ -222,4 +222,4 @@ Options:
 """
 if __name__ == "__main__":
     main = Main()
-    main.MainLoop()
+    main.MainLoop(sys.argv)
