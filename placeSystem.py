@@ -171,7 +171,7 @@ class place:
             'folder': self.userDirectory
         })
         save.save(self.saveLocation, data={
-            'name': '',
+            'name': 'turn',
             'file': 'turn'
         }).writeFile({
             'data': owner,
