@@ -1,16 +1,15 @@
 # Google drive api inputs (a lot)
 from __future__ import print_function
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from google.auth.transport.requests import Request  # type: ignore
+from google.oauth2.credentials import Credentials  # type: ignore
+from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
+from googleapiclient.discovery import build  # type: ignore
+from googleapiclient.errors import HttpError  # type: ignore
+from apiclient.http import MediaFileUpload, MediaIoBaseDownload  # type: ignore
 
 
 import os
 import io
-import time
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -23,9 +22,7 @@ class Api:
             os.mkdir("ApiFiles")
         self.service = self.__LoadAPI__()
         self.folder = folderId
-        self.TR = True  # In case it doesn't get set somehows...
         self.pageSize = 10  # Change to variable setting later.
-        # self.Test()  # change to not testing every time.
 
     # Loads the api for use later.
     def __LoadAPI__(self):
@@ -54,73 +51,6 @@ class Api:
                 if not os.path.exists('ApiFiles/credentials.json'):
                     os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')  # noqa
             return self.__LoadAPI__()
-
-    # Runs a series of tests to make sure the client has all correct permission
-    def Test(self):
-        read, write1, write2 = None, None, None
-        # Runs tests.
-        # TODO: Add checks for fails
-        # TODO: Replace some checks with the actual function
-        folder = self.UploadData({
-            'name': 'DriveApiTest',
-            'folder': self.folder
-        }, True)
-        print(folder)
-        if folder:
-            write1 = True
-            file = self.UploadData({
-                'name': 'README (dont)',
-                'path': 'UploadFileTest.txt',
-                'folder': folder
-            })
-            print(file)
-            if file:
-                write2 = True
-                success = self.DownloadData({
-                    'Id': file['id'],
-                    'path': 'DownloadFileTest'
-                }, True)
-                if success:
-                    read = True
-                else:
-                    read = False
-            else:
-                write2 = False
-        else:
-            write1 = False
-        time.sleep(5)  # updates
-        if os.path.exists("DownloadFileTest.txt"):
-            os.remove("DownloadFileTest.txt")
-
-        if write2:
-            self.DeleteData(file['id'])
-
-        if write1:
-            self.DeleteData(folder['id'])
-
-        if write1 and write2 and read:
-            print("Everything is ready!")
-            self.TR = True
-            return
-        elif write1 and write2 and not read:
-            print("Can write but not read!")
-            self.TR = False
-            return
-        elif write1 and not write2 and not read:
-            print("Can make folder, not upload file!")
-            self.TR = False
-            return
-        elif not write1 and not write2 and not read:
-            print("Failed to read or write")
-            self.TR = False
-            return
-        else:
-            self.TR = False
-            print("Something failed...")
-            print("Results: {}".format({'write1': write1,
-                                        'write2': write2,
-                                        'read': read}))
-            return
 
     def DeleteData(self, id):
         try:
@@ -238,9 +168,3 @@ class Api:
         except HttpError as error:
             print('An error occurred: {}'.format(error))
             return "Error"
-
-
-if __name__ == '__main__':
-    api = Api('1jgyfEG0R76adWlnyzqDU030ps-mk4M20')
-    # print(api.ListFolder(dir=False))
-    # print(api.ListFolder(dir=True))
