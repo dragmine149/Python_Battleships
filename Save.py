@@ -1,10 +1,9 @@
 import os
+import osFunc
 import Functions
 import json
 import platform
 import shutil
-import random
-import string
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -27,6 +26,9 @@ class save:
     }, Api=False):
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
+        if platform.system() != "Windows":
+            # remove backslash from the path
+            self.path = self.path.replace("\\", "")
         # would set to None but windows be like... (why windows...)
         self.api = False
         self.ApiPath = None
@@ -84,12 +86,6 @@ class save:
     def makeFolder(self, sub=None):
         if self.error is not None:
             return self.error
-        splitInfo = []
-        if sub is not None:
-            if platform.system() == "Windows":
-                splitInfo = sub.split("\\")
-            else:
-                splitInfo = sub.split("/")
 
         if self.api:
             # Usess the google drive api and return the folder id.
@@ -98,6 +94,10 @@ class save:
                 'folder': self.path
             }, True)
             if sub is not None:
+                splitInfo = sub.split("/")
+                if platform.system() == "Windows":
+                    splitInfo = sub.split("\\")
+
                 newFolder = folderId['id']
                 print(splitInfo)
                 for item in splitInfo:
@@ -109,73 +109,59 @@ class save:
             return folderId
         else:
             # Makes a local folder
-            path = os.path.join(self.path, self.data['name'])
-            if self.data['name'] == '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
-                path = self.path
+            path = self.path
+            if self.data['name'] != '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
+                path = os.path.join(self.path, self.data['name'])
+            name = None  # set for later when making new game name
             if not os.path.exists(path):
                 os.mkdir(path)
-            # make sure sub is None because could be same as parent folder
-            elif sub is None:
-                overwrite = None
-                while overwrite is None:
-                    overwrite = input("Are you sure you want to overwrite this game? (y = yes, n = no): ")  # noqa
-                    if overwrite.lower() == "":
-                        overwrite = None
-                        Functions.clear(2, "Please enter something...")
-                    elif overwrite.lower()[0] == "n":
-                        # If they don't want to overwrite, Makes the same game but with a random string attacked on to the end  # noqa
-                        # This is so they can use the same name yet not interfer with the old game # noqa
-                        # TODO: Add an option for the user to change the name of the game  # noqa
-                        path = path + '-' + ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))  # noqa E501
-                        os.mkdir(path)
-                    elif overwrite.lower()[0] != "y":
-                        overwrite = None
-                        Functions.clear(2, "Please enter a valid option!")
-            print(sub)
             if sub is not None:
-                for item in splitInfo:
-                    path = os.path.join(path, item)
-                    if not os.path.exists(path):
-                        os.mkdir(path)
-            return path
+                osFunc.mkdir(path, os.path.realpath(__file__))
+            return path, name
 
     """
     writeFile({
         'data' -> Data to save
-        'folder' -> Folder to save data to
     },
     name -> A name different from the game name
     )
     - Makes a file in a folder before deciding how to upload.
     - If api will send the file to the api and them remove after upload.
     - If local, Moves the file to the save location.
+    Returns: path where saved
     """
 
     def writeFile(self, data={
         'data': None,
-        'folder': None
     }, name=None, overwrite=False):
         if self.error is not None:
             return self.error
         if name:
             self.data['name'], self.name = name, self.data['name']
         # Check to make sure there actually IS data
-        if data['data'] is None:
-            return False
+        writeData = None
+        if isinstance(data, dict):
+            writeData = data['data']
+            if writeData is None:
+                return False
+        else:
+            writeData = data
+            if data is None:
+                return False
 
         # Makes the data in a file. (Both reasons)
         with open("Saves/.Temp/{}".format(self.data['name']), 'w+') as tempFile:  # noqa
             if self.json:
-                tempFile.write(json.dumps(data['data']))
+                tempFile.write(json.dumps(writeData))
             else:
-                tempFile.write(data['data'])
+                tempFile.write(writeData)
 
         # Upload the data to google. Returns the dict
         if self.api:
             id = self.api.UploadData({
                 'name': self.data['name'],
                 'path': 'Saves/.Temp/{}'.format(self.data['name']),
-                'folder': data['folder']
+                'folder': self.path
             }, overwrite=overwrite)
             os.system('rm Saves/.Temp/{}'.format(self.data['name']))
             if name:
@@ -193,7 +179,7 @@ class save:
                                                              slash,
                                                              slash,
                                                              self.data['name'],
-                                                             data['folder'],
+                                                             self.path,
                                                              slash,
                                                              self.data['name'])
             print(runCommand)
@@ -201,7 +187,9 @@ class save:
 
             if name:
                 self.data['name'] = name
-            return "Saves/{}/{}".format(data['folder'], self.data['name'])
+            return "{}{}{}".format(self.path,
+                                   slash,
+                                   self.data['name'])
 
     """
     readFile({
@@ -219,16 +207,14 @@ class save:
         if self.error is not None:
             return self.error
 
+        slash = "/"
+        if platform.system() == "Windows":
+            slash = "\\"
+
         # Save location -> Where to save the file
-        self.saveLocation = ""
-        if self.path is not None and self.path != '':
-            self.saveLocation += self.path + "/"
-        if self.data['name'] is not None and self.data['name'] != '':
-            self.saveLocation += self.data['name'] + "/"
-        if self.data['file'] is not None and self.data['file'] != '':
-            self.saveLocation += self.data['file'] + "/"
-        if data['name'] is not None and data['name'] != '':
-            self.saveLocation += data['name']
+        path = "{}{}{}".format(self.path,
+                               slash,
+                               self.data['name'])
 
         if self.api:
             self.saveLocation = "Saves/.Temp/{}".format(self.data['file'])
@@ -255,13 +241,15 @@ class save:
                     return file.read()
             return Id
         else:
-            if os.path.exists(self.saveLocation):
-                with open(self.saveLocation, "r") as file:
+            if os.path.exists(path):
+                print("Exists")
+                with open(path, "r") as file:
+                    print(file)
                     if self.json:
                         return json.loads(file.read())
                     return file.read()
             print("Failed -> File to read from not found!"
-                  + "\nPath: {}".format(self.saveLocation))
+                  + "\nPath: {}".format(path))
             return False
 
     """
