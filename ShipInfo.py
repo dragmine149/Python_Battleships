@@ -133,7 +133,7 @@ class shipInfo:
             try:
                 ship.Name
             except AttributeError:
-                ship.Name = "({} by {})".format(ship.Height, ship.Length)
+                ship.Name = "({} by {})".format(ship.Length, ship.Height)
 
             # set health
             ship.Health = self.calculate(ship)
@@ -168,6 +168,7 @@ class shipInfo:
     # Groups everything up into one funciton
     def Main(self):
         self.ships = self.valid_Check()
+        print(self.ships)
         self.setSymbol()
         return self.ships
 

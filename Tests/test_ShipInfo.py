@@ -45,21 +45,23 @@ def test_Test():
     customShips = shipData.Main()
 
     # Checks to make sure data is Correct
-    Passed = [[False, False], False]
+    Passed = [[False, False, False], False]
     print({'Remaning': customShips})
     foundShip = None
     for ship in customShips:
-        if ship.Name == "(8 long)":  # 2B4 check
+        if ship.Name == "(2 by 4)":  # 2B4 check
             print("Found ship! (TB4)")
             foundShip = ship
             if ship.Health == 8:
                 print("Correct Health (TB4)")
                 try:
+                    print(vars(ship))
                     print(ship.Symbol)
                     Passed[0] = True
                 except AttributeError:
                     Passed[0][0] = True
                     Passed[0][1] = True
+                    Passed[0][2] = False
                     break
             else:
                 Passed[0][0] = True
@@ -69,6 +71,8 @@ def test_Test():
             print("Failed to find ship! Excepted: TB4. Found:None")
         if not Passed[0][1]:
             print("Failed to get ship health! Excepted: 8, Found:{}".format(foundShip.Health))  # noqa E501
+        if not Passed[0][2]:
+            print("Failed to get ship symbol!")
         Passed[0] = False
 
     if len(customShips) == 6:  # In theory, no other added in testing
@@ -77,6 +81,8 @@ def test_Test():
     if not Passed[1]:
         print("customShips length is {}! Excepted: {}".format(len(customShips), 6))  # noqa
 
+    print(Passed[0], Passed[1])
+    assert Passed[0] and Passed[1]
     return Passed[0] and Passed[1]
 
 
