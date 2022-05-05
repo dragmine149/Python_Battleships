@@ -20,15 +20,17 @@ class save:
     self.error -> Value to check for. If this is not None return false.
     """
 
+    def __replace__(self, path):
+        if platform.system() != "Windows":
+            # remove backslash from the path
+            return path.replace("\\", "")
+
     def __init__(self, path, Json=True, data={
         'name': None,
         'file': None
     }, Api=False):
         # removes hidden characters and replaces the "" if dragged in.
         self.path = path.rstrip().replace('', '')
-        if platform.system() != "Windows":
-            # remove backslash from the path
-            self.path = self.path.replace("\\", "")
         # would set to None but windows be like... (why windows...)
         self.api = False
         self.ApiPath = None
@@ -113,7 +115,8 @@ class save:
             if self.data['name'] != '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
                 path = os.path.join(self.path, self.data['name'])
             name = None  # set for later when making new game name
-            if not os.path.exists(path):
+            Npath = self.__replace__(path)
+            if not os.path.exists(Npath):
                 os.mkdir(path)
             if sub is not None:
                 osFunc.mkdir(path, os.path.realpath(__file__))
@@ -123,7 +126,8 @@ class save:
     writeFile({
         'data' -> Data to save
     },
-    name -> A name different from the game name
+    name -> A name different from the game name,
+    overwrite -> Whever the overwrite the old file (USED FOR DRIVE)
     )
     - Makes a file in a folder before deciding how to upload.
     - If api will send the file to the api and them remove after upload.
@@ -192,18 +196,16 @@ class save:
                                    self.data['name'])
 
     """
-    readFile({
+    readFile(
         'name' -> The name of the file. Either name or id
-    })
+    )
     - Attempts to read the file. If its on the server or not.
     - Location to save/read = self.data['name']/self.data['file']/data['name']
     - If file is not found returns False
     - If file found / made, Returns data of file.
     """
 
-    def readFile(self, data={
-        'name': None,
-    }):
+    def readFile(self, name=None):
         if self.error is not None:
             return self.error
 
@@ -219,14 +221,14 @@ class save:
         if self.api:
             self.saveLocation = "Saves/.Temp/{}".format(self.data['file'])
             Id = self.api.DownloadData({
-               'Id': data['name'],
+               'Id': name,
                'path': self.saveLocation
             })
             if Id is False:
                 # If id is false, try and find file in directory instead
                 files = self.api.ListFolder()
                 for file in files:
-                    if file['name'] == data['name']:
+                    if file['name'] == name:
                         Id = self.api.DownloadData({
                             'Id': file['id'],
                             'path': self.saveLocation
@@ -241,10 +243,13 @@ class save:
                     return file.read()
             return Id
         else:
+            if platform.system() != "Windows":
+                # remove backslash from the path
+                path = path.replace("\\", "")
+
+            # Checks before reading
             if os.path.exists(path):
-                print("Exists")
                 with open(path, "r") as file:
-                    print(file)
                     if self.json:
                         return json.loads(file.read())
                     return file.read()
@@ -283,20 +288,26 @@ class save:
     """
 
     def CheckForFile(self, path):
+        Npath = self.__replace__(path)
         if self.api:
-            return self.api.checkIfExists(self.path, path)[0]
-        elif os.path.exists(os.path.join(self.path, path)):
+            return self.api.checkIfExists(self.path, Npath)[0]
+        elif os.path.exists(os.path.join(self.path, Npath)):
             return True
         return False
 
     """
-    Delete(path)
+    Delete(path=None)
     - Deletes the path without question
     """
 
-    def Delete(self, path):
+    def Delete(self, path=None):
+        # If no path specified, use self.path
+        if path is None:
+            path = self.path
+
         if not self.api:
-            if os.path.exists(path):
+            Npath = self.__replace__(path)
+            if os.path.exists(Npath):
                 shutil.rmtree(path)
                 return True
             else:
