@@ -1,5 +1,6 @@
 import Save as save
 import Functions
+import Switch
 
 
 class create:
@@ -108,15 +109,14 @@ class create:
                 saveInfo.writeFile("This is a test file")
 
                 # reads file from same place
-                data = saveInfo.readFile({
-                    'name': 'Test'
-                })
+                data = saveInfo.readFile('Test')
 
-                print(data)
                 if data != "This is a test file":
                     # Oh oh, doesn't work... Return error
                     Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
                     Location = None
+
+                saveInfo.Delete()
 
         print({"Loc": Location})
         # # Location get, i do not like it too much.
