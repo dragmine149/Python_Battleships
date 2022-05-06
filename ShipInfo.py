@@ -154,12 +154,13 @@ class shipInfo:
                 else:
                     noSymbol.append(ship)
             except AttributeError:
+                noSymbol.append(ship)
                 pass
 
         # For ships without symbols, Add a symbol from the global array
         # If run out of symbols, then erm... Just remove the ship (need to add result other than remove for this case)  # noqa E501
         for noShip in range(len(noSymbol)):
-            if self.symbols.Length > 0:
+            if len(self.symbols) > 0:
                 noSymbol[noShip].Symbol = self.symbols[0]
                 self.symbols.pop(0)
             else:
@@ -168,7 +169,6 @@ class shipInfo:
     # Groups everything up into one funciton
     def Main(self):
         self.ships = self.valid_Check()
-        print(self.ships)
         self.setSymbol()
         return self.ships
 
