@@ -30,16 +30,21 @@ def SwitchTest():
         results.append(Switch.Call(item))
 
     # loops through and checks for errors.
+    goodList = []
+    for indexItem in range(len(results)):
+        # Result should be the input, or the function called to be good
+        result = results[indexItem]
+        if result == data[indexItem]:
+            goodList.append(result)
+        elif result == "ABCDE":
+            goodList.append(result)
+
+    # Makes a bad list with all the results that was not in the good list
     bad = False
     badList = []
-    for indexItem in range(len(results)):
-        result = results[indexItem]
-        print(result, data[indexItem])
-        print(result != data[indexItem])
-        print(result != "ABCDE")
-        print(str(result) != str(data[indexItem]) and result != "ABCDE")
-        if str(result) != str(data[indexItem]) or str(result) != "ABCDE":
-            badList.append([data[indexItem], result])  # Excepted, Recieved
+    for item in goodList:
+        if item not in data and item != "ABCDE":
+            badList.append(item)
             bad = True
 
     if bad:
@@ -55,6 +60,6 @@ def test_Switch_STUFF():
     end = SwitchTest()
     print(end)
     assert end
-    
+
 if __name__ == '__main__':
     test_Switch_STUFF()
