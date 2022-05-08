@@ -1,3 +1,5 @@
+import inspect
+
 """
 Switch class!
 
@@ -10,7 +12,7 @@ this program is designed to work with all py3 versions.
 """
 
 # Make variable with all data
-# atom gets annoyed here as data is [], but we want it to be that for later
+# PERSONAL NOTE: DO NOT WORRY ABOUT THIS ERROR (just my ide)-- drag
 data = []
 default = None
 
@@ -28,23 +30,37 @@ When you want to change the default returned value:
     Switch.default = None
 
 When you want to call a function:
-    result = Switch.Call(callableFunction)
+    result = Switch.Call(callableFunction, data)
 
 If you want to add in a callable function, this script will automatically call it once it gets selected  # noqa (why atom?)
-Due to how python works, functions results will not be added through function call. E.g. "print({data})" for the result of error.
+If you want to call a function with arguments, pass the arguments in a triple '()', the arguments will be in order of the way they are in the triple.
 """
 
 
-def Call(argv=None):
+def Call(argv=None, DATA=None):
     if argv is None:
-        return callTest(default)
+        return callTest(default, DATA)
     for item in data:
         if item == argv:
-            return callTest(item)
-    return callTest(default)
+            return callTest(item, DATA)
+    return callTest(default, DATA)
 
 
-def callTest(value):
+def callTest(value, data=None):
     if callable(value):
-        return value()
+        if data is None:
+            return value()
+        else:
+            sig = inspect.signature(value)
+            requiredLength = 0
+            for param in sig.parameters.values():
+                if param.default is not param.empty:
+                    requiredLength += 1
+            maxLength = len(sig.parameters)
+            data = data[:maxLength]
+            if len(data) < requiredLength:
+                raise ValueError(
+                    "Incorrect ammount of arguments provided!"
+                )
+            value(*data)
     return value

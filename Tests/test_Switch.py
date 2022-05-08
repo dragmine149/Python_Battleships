@@ -9,6 +9,11 @@ def FuncTest():
     return "ABCDE"
 
 
+def argFuncTest(A, B="c"):
+    print(A, B)
+    return "ABCDE"
+
+
 # run a series of tests, like a lot
 def SwitchTest():
 
@@ -19,6 +24,8 @@ def SwitchTest():
         data.append(inItem)
         if random.randint(1, 3) == 1:
             data.append(FuncTest)
+        if random.randint(1, 7) == 4:
+            data.append(argFuncTest)
     Switch.data = data
 
     # Adds another error value
@@ -27,7 +34,10 @@ def SwitchTest():
     # Loop through and get results
     results = []
     for item in data:
-        results.append(Switch.Call(item))
+        try:
+            results.append(Switch.Call(item, ("A", "C", "D")))
+        except ValueError:
+            results.append(Switch.Call(item, ("A", "cc")))
 
     # loops through and checks for errors.
     goodList = []
@@ -60,6 +70,7 @@ def test_Switch_STUFF():
     end = SwitchTest()
     print(end)
     assert end
+
 
 if __name__ == '__main__':
     test_Switch_STUFF()
