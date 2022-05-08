@@ -8,11 +8,6 @@ class create:
         self.info = []
         self.save = None
 
-    @staticmethod
-    def yesFunc():
-        name = self.strCheck("Please enter a name for this game: ", "Game Name")  # noqa
-        return name
-
     def gameCheck(self, name, Location):
         gameInfo = save.save(Location)
         if gameInfo.CheckForFile(name):
@@ -21,12 +16,14 @@ class create:
                 overwrite = Functions.ynCheck(input("Are you sure you want to overwrite this game? (y = yes, n = no): "),  # noqa E501
                                               True)
                 if overwrite:
+                    def yesFunc():
+                        return self.strCheck("Please enter a name for this game: ", "Game Name")  # noqa
                     # If they don't want to overwrite, Makes the same game but with a random string attacked on to the end  # noqa
                     # This is so they can use the same name yet not interfer with the old game # noqa
                     newName = None
                     while newName is None:
                         newName = Functions.ynCheck(input("Do you want to choose a new name?: "),  # noqa E501
-                                                    self.yesFunc, "n")
+                                                    yesFunc, "n")
                     if newName == "n":
                         newName = path + '-' + ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(10))  # noqa E501
                     return newName
@@ -126,7 +123,7 @@ class create:
         #     Location = input("Custom save location (blank = default, Supports google drive files): ")  # noqa
         #     if Location == "":
         #         Location = "Saves"
-        #     # Check for HttpError without putting google files into this file..
+        #     # Check for HttpError without putting google files into this file
         #     self.userSave = []
         #     self.userFolder = []
         #     name = self.gameCheck(name, Location)
