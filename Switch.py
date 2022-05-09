@@ -37,20 +37,23 @@ If you want to call a function with arguments, pass the arguments in a triple '(
 """
 
 
+# Input of data
 def Call(argv=None, DATA=None):
-    if argv is None:
+    if argv is None:  # check if no data recieved, return default
         return callTest(default, DATA)
-    for item in data:
+    for item in data:  # loop through all data until value found
         if item == argv:
             return callTest(item, DATA)
     return callTest(default, DATA)
 
 
+# Function to check if can be calls and calls it
 def callTest(value, data=None):
     if callable(value):
         if data is None:
             return value()
         else:
+            # only passes through required argument length
             sig = inspect.signature(value)
             requiredLength = 0
             for param in sig.parameters.values():
