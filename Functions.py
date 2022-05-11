@@ -90,7 +90,13 @@ def NumberRangeCheck(value, x):
 
 
 # Clears the console with a message before clear.
-def clear(timeS=0, message=None):
+def clear(timeS=0, message=None, total=()):
+
+    # way to bypass the different stuff, can pass in an array now
+    if len(total) > 2:
+        timeS = total[0]
+        message = total[1]
+
     if message:
         print(message)
     time.sleep(timeS)
