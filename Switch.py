@@ -38,7 +38,9 @@ If you want to call a function with arguments, pass the arguments in a triple '(
 
 
 # Input of data
-def Call(argv=None, DATA=None):
+def Call(argv=None, DATA=None, pos=-1):
+    if pos > -1:
+        return callTest(data[pos], DATA)
     if argv is None:  # check if no data recieved, return default
         return callTest(default, DATA)
     for item in data:  # loop through all data until value found
