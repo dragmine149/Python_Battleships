@@ -1,6 +1,5 @@
 import Save as save
 import Functions
-import Switch
 
 
 class create:
