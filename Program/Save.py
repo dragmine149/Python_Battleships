@@ -63,6 +63,13 @@ class save:
             self.data = data
         else:
             self.error = "No Data"
+        
+        try:
+            self.writeFile({"HI"})
+            self.Delete()
+        # Don't know the full error, change this later
+        except Exception:
+            self.error = "Can't write to folder!"
 
     """
     _FolderCheck()
