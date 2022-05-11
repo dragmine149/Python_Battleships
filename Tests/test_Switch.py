@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '../Program')
 import Switch
 import random
 import string
