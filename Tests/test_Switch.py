@@ -1,5 +1,7 @@
 import sys
-sys.path.insert(0, '../Program')
+# We assume the user is in the main directory
+# TODO: find directory of program and use that instead
+sys.path.insert(0, './Program')
 import Switch
 import random
 import string
