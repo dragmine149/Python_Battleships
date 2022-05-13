@@ -10,3 +10,4 @@ TabletPath.txt
 
 Tests/*.txt
 .pytest_cache
+*.swp
