@@ -207,19 +207,33 @@ class Main:
         self.MainLoop()
 
 
-"""
-TODO: Instead of having to type out python Main.py and going through there,
-have the ability to type out `python Main X` with x being an option
+def help():
+    print("""USAGE:
+--------------------------------------------------------------------------------------
+python Main.py [Option]
 
-Options:
-- Game Name
-    - If game not found, Makes game
-    - If game found, load game
-    - Also works with GD id's
+Option can be one of the following:
+- String
+  - Attempts to load game name of string, If not found will make game name of string
 - Number
-    - Does that option
-    - E.g. 2 = make game
-"""
+  - Calls that number
+
+Other possible options:
+- help
+  - Shows this menu
+---------------------------------------------------------------------------------------
+""")
+
+    return 1
+
+
 if __name__ == "__main__":
-    main = Main()
-    main.MainLoop(sys.argv)
+    # Checks if help before doing anything
+    arguments = sys.argv
+    if len(arguments) > 1:
+        if arguments[1].lower()[0] == 'h':
+            sys.exit(help())
+    else:
+        # Do rest of program
+        main = Main()
+        main.MainLoop(sys.argv)
