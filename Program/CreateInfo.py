@@ -7,15 +7,23 @@ class CreateData:
         self.Gname = None
         self.usernames = None
         self.siZe = None
+        self.Loc = None
 
     def showOptions(self):
-        print('0: Quit. 1: Game Name. 2: Usernames. 3: Board Size. 4: Save Location. 5: Save and make game.')  # noqa E501
-        print('')
-        print('Current Settings:')
-        print('Name: {}'.format(self.Gname))
-        print('UserNames: {}'.format(self.usernames))
-        print('Size: {}'.format(self.siZe))
-        print('')
+        print('''Current Settings:
+Name: {}
+Players: {}
+size: {}
+Save Location: {}
+'''.format(self.Gname, self.usernames, self.siZe, self.Loc))
+        print('''Options:
+0: Quit
+1: Game Name
+2: Usernames
+3: Board Size
+4: Save Location
+5: Save and make game
+''')
 
     def getOption(self):
         choice = None
