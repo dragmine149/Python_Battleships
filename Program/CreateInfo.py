@@ -1,17 +1,20 @@
 import Functions
 import Save
+import random
+import string
 
 
 class CreateData:
     def __init__(self):
-        print("Loading")
+        # Load the class and all it's data
         self.Gname = None
         self.usernames = None
-        self.siZe = None
-        self.Loc = None
-        self.Multi = False
+        self.siZe = [10, 10]
+        self.Loc = "Saves"
+        self.Multi = "no"
 
     def showOptions(self):
+        # Prints off the current settings and what options are alvalible
         print('''Current Settings:
 Name: {}
 Players: {}
@@ -30,8 +33,11 @@ Multiplayer: {}
 ''')
 
     def getOption(self):
+        # Get the option inputed and do the command required / called.
         choice = None
         while choice != 0:
+            if self.check() is not True:
+                print("Some settings have changed. Please confirm these new settings")  # noqa E501
             Functions.clear()
             choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 6).InputDigitCheck()  # noqa E501
             if choice == 1:
@@ -51,12 +57,14 @@ Multiplayer: {}
                 self.save()
 
     def name(self):
+        # Gets the name of the game
         self.Gname = None
         while self.Gname is None:
             self.Gname = input("Please enter the game name: ")
             # Check?
 
     def username(self):
+        # Get the players names
         self.usernames = []
         while len(self.usernames) < 2:
             user1 = input("Please enter player 1's name: ")
@@ -69,6 +77,7 @@ Multiplayer: {}
             self.usernames = [user1, user2]
 
     def size(self):
+        # get the size of the game board.
         self.siZe = []
         while len(self.siZe) < 2:
             gridSize = input("Please enter board size (Format: XxY): ")
@@ -89,6 +98,7 @@ Multiplayer: {}
                 Functions.clear(2, "Invalid format! 'x' was not found in the input")  # noqa E501
 
     def saveLoc(self):
+        # get the game save location
         Location = None
         while Location is None:
             Functions.clear()
@@ -135,6 +145,7 @@ Multiplayer: {}
         self.Loc = Location
 
     def MultiPlayer(self):
+        # get if multiplayer or not
         multi = None
         while multi is None:
             multi = input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): ")  # noqa E501
@@ -146,8 +157,37 @@ Multiplayer: {}
                 multi = None
                 Functions.clear(2, "Please enter y or n!")
 
+    def check(self):
+        # Checks if all fields are valid.
+        # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
+        games = Functions.RemoveNonGames(self.Loc)
+        if self.Gname in games:
+            randomEnd = '' + (random.choice(string.ascii_letters) for _ in range(10))  # noqa E501
+
+            def yesFunc():
+                self.Gname = '{}_{}'.format(self.Gname, randomEnd)
+
+            def noFunc():
+                Functions.clear("Please enter a new game name!")
+                return "Name"
+
+            if Functions.ynCheck(input("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd)), yesFunc, noFunc) == "Name":  # noqa E501
+                return "Name"
+
+        if self.Loc == "Saves" and self.Multi == "yes":
+            print("Automatically set multiplayer to false because you are using the default directory")  # noqa E051
+            self.Multi = "no"
+            return "Multi"
+        return True
+
     def save(self):
-        print("save")
+        if self.check() is not True:
+            Functions.clear(2, "Please check settings")
+            return False
+        # Create board
+        board = Functions.board.CreateBoard(self.siZe)
+
+        # Create save directories
 
 
 if __name__ == '__main__':
