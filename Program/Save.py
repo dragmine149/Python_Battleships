@@ -3,7 +3,6 @@ import osFunc
 import Functions
 import json
 import platform
-import shutil
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -63,13 +62,15 @@ class save:
             self.data = data
         else:
             self.error = "No Data"
-        
-        try:
-            self.writeFile({"HI"})
-            self.Delete()
-        # Don't know the full error, change this later
-        except Exception:
-            self.error = "Can't write to folder!"
+
+        # TODO: Better test for dirs like /
+        # try:
+        #     self.writeFile("HI")
+        #     self.Delete()
+        # # Don't know the full error, change this later
+        # except Exception as e:
+        #     print(e)
+        #     self.error = "Can't write to folder!"
 
     """
     _FolderCheck()
@@ -315,7 +316,7 @@ class save:
         if not self.api:
             Npath = self.__replace__(path)
             if os.path.exists(Npath):
-                shutil.rmtree(path)
+                os.remove(Npath)
                 return True
             else:
                 print('Path not found! -> {}'.format(path))
