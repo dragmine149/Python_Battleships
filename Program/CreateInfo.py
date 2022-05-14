@@ -1,4 +1,5 @@
 import Functions
+import Save
 
 
 class CreateData:
@@ -8,28 +9,31 @@ class CreateData:
         self.usernames = None
         self.siZe = None
         self.Loc = None
+        self.Multi = False
 
     def showOptions(self):
         print('''Current Settings:
 Name: {}
 Players: {}
-size: {}
+Size: {}
 Save Location: {}
-'''.format(self.Gname, self.usernames, self.siZe, self.Loc))
+Multiplayer: {}
+'''.format(self.Gname, self.usernames, self.siZe, self.Loc, self.Multi))
         print('''Options:
 0: Quit
 1: Game Name
 2: Usernames
 3: Board Size
 4: Save Location
-5: Save and make game
+5: Multiplayer (both on same device, or different devices)
+6: Save and make game
 ''')
 
     def getOption(self):
         choice = None
         while choice != 0:
             Functions.clear()
-            choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 5).InputDigitCheck()  # noqa E501
+            choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 6).InputDigitCheck()  # noqa E501
             if choice == 1:
                 self.name()
             elif choice == 2:
@@ -39,6 +43,11 @@ Save Location: {}
             elif choice == 4:
                 self.saveLoc()
             elif choice == 5:
+                if self.Loc == "Saves":
+                    Functions.clear(2, "Disabled! Please use a directory other than the default!")  # noqa E501
+                else:
+                    self.MultiPlayer()
+            elif choice == 6:
                 self.save()
 
     def name(self):
@@ -53,7 +62,7 @@ Save Location: {}
             user1 = input("Please enter player 1's name: ")
             user2 = None
             while user2 is None:
-                user2 = input("Please enter player 2's name: ")
+                user2 = input("\033[F\rPlease enter player 2's name: ")
                 if user2 == user1:
                     user2 = None
                     Functions.clear(1, "Player 2's name can not be the same as player 1!")  # noqa E501
@@ -80,7 +89,62 @@ Save Location: {}
                 Functions.clear(2, "Invalid format! 'x' was not found in the input")  # noqa E501
 
     def saveLoc(self):
-        print("saveLoc")
+        Location = None
+        while Location is None:
+            Functions.clear()
+            print("""Save Location:
+- Supports google drive folder id (if google drive api installed)
+- Leave blank for default location
+- Type path to folder for different location than the default
+""")
+            Location = input("Save location: ")
+
+            # Saves is the default location, only chosen if the input is blank.
+            if Location == "":
+                Location = "Saves"
+
+            # If default, don't need to do much
+            # If drive, run test
+            # If external, run test
+
+            # skip doing stuff to saves
+            if Location != "Saves":
+                # attmepts to write file and read file from dir specified
+                # creates save obj
+                saveInfo = Save.save(Location, False, {
+                    'name': 'Test',
+                    'file': 'test'
+                })
+                print(vars(saveInfo))
+
+                # creates file
+                savedLocation = saveInfo.writeFile("This is a test file")
+
+                # reads file from same place
+                data = saveInfo.readFile('Test')
+                print(data)
+
+                if data != "This is a test file":
+                    # Oh oh, doesn't work... Return error
+                    Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
+                    Location = None
+
+                saveInfo.Delete(savedLocation)
+
+        print({"Loc": Location})
+        self.Loc = Location
+
+    def MultiPlayer(self):
+        multi = None
+        while multi is None:
+            multi = input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): ")  # noqa E501
+            if multi.lower()[0] == "y":
+                self.Multi = "yes"
+            elif multi.lower()[0] == "n":
+                self.Multi = "no"
+            else:
+                multi = None
+                Functions.clear(2, "Please enter y or n!")
 
     def save(self):
         print("save")
