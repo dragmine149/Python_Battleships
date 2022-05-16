@@ -36,8 +36,7 @@ Multiplayer: {}
         # Get the option inputed and do the command required / called.
         choice = None
         while choice != 0:
-            if self.check() is not True:
-                print("Some settings have changed. Please confirm these new settings")  # noqa E501
+            result = True
             Functions.clear()
             choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 6).InputDigitCheck()  # noqa E501
             if choice == 1:
@@ -54,22 +53,36 @@ Multiplayer: {}
                 else:
                     self.MultiPlayer()
             elif choice == 6:
-                self.save()
+                result = self.save()
+
+            if choice != 0 and result:  # makes sure that this doesn't happen if you are stopping the program or whatever  # noqa E501
+                if self.Gname is not None and self.usernames is not None:
+                    if self.check() is not True:
+                        print("Some settings have changed. Please confirm these new settings")  # noqa E501
 
     def name(self):
         # Gets the name of the game
         self.Gname = None
         while self.Gname is None:
             self.Gname = input("Please enter the game name: ")
-            # Check?
+
+            # might move later. But at least check after creation
+            check = self.check()
+            if check == "Name":
+                self.Gname = None  # resets if not allowed.
 
     def username(self):
         # Get the players names
         self.usernames = []
+
+        # might remove while statement here.
         while len(self.usernames) < 2:
             user1 = input("Please enter player 1's name: ")
             user2 = None
             while user2 is None:
+                # \033[F\r -> Sends the cursor back to the start of the
+                # previous line
+                # In this case, overwrites previous input with new input
                 user2 = input("\033[F\rPlease enter player 2's name: ")
                 if user2 == user1:
                     user2 = None
@@ -148,21 +161,26 @@ Multiplayer: {}
         # get if multiplayer or not
         multi = None
         while multi is None:
-            multi = input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): ")  # noqa E501
-            if multi.lower()[0] == "y":
-                self.Multi = "yes"
-            elif multi.lower()[0] == "n":
-                self.Multi = "no"
-            else:
-                multi = None
+            def returnFunc():
                 Functions.clear(2, "Please enter y or n!")
+                return None
+
+            multi = Functions.ynCheck(input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): "), "yes", "no", returnFunc)  # noqa E501
 
     def check(self):
         # Checks if all fields are valid.
         # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
+        if self.Gname is None:
+            Functions.clear(2, "Please enter a name!")
+            return "Name"
+        if self.usernames is None:
+            Functions.clear(2, "Please enter player names!")
+
         games = Functions.RemoveNonGames(self.Loc)
         if self.Gname in games:
-            randomEnd = '' + (random.choice(string.ascii_letters) for _ in range(10))  # noqa E501
+            randomEnd = ''
+            for _ in range(10):
+                randomEnd += random.choice(string.ascii_letters)
 
             def yesFunc():
                 self.Gname = '{}_{}'.format(self.Gname, randomEnd)
@@ -186,6 +204,34 @@ Multiplayer: {}
             return False
         # Create board
         board = Functions.board.CreateBoard(self.siZe)
+
+        # Create folder for the game
+        gameData = Save.save(self.Loc, data={
+            'name': self.Gname,
+            'file': ''
+        })
+
+        gameFolder = gameData.makeFolder()
+        gameFolder = gameFolder[0]
+
+        userFolders = []
+        for user in self.usernames:
+            # create user data
+            userData = Save.save(gameFolder, data={
+                'name': user,
+                'file': ''
+            })
+            # create user folder
+            folder = userData.makeFolder()
+            userFolders.append(folder[0])
+
+            # create files for users
+            userData.writeFile({
+                'data': board,
+
+            })
+
+
 
         # Create save directories
 
