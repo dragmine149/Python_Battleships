@@ -54,11 +54,9 @@ Multiplayer: {}
                     self.MultiPlayer()
             elif choice == 6:
                 result = self.save()
-
-            if choice != 0 and result:  # makes sure that this doesn't happen if you are stopping the program or whatever  # noqa E501
-                if self.Gname is not None and self.usernames is not None:
-                    if self.check() is not True:
-                        print("Some settings have changed. Please confirm these new settings")  # noqa E501
+                if result:
+                    choice = 0  # end, result is good.
+                # return [name, users, Location, online]
 
     def name(self):
         # Gets the name of the game
@@ -66,28 +64,28 @@ Multiplayer: {}
         while self.Gname is None:
             self.Gname = input("Please enter the game name: ")
 
-            # might move later. But at least check after creation
-            check = self.check()
-            if check == "Name":
-                self.Gname = None  # resets if not allowed.
-
     def username(self):
         # Get the players names
         self.usernames = []
 
-        # might remove while statement here.
         while len(self.usernames) < 2:
             user1 = input("Please enter player 1's name: ")
-            user2 = None
-            while user2 is None:
-                # \033[F\r -> Sends the cursor back to the start of the
-                # previous line
-                # In this case, overwrites previous input with new input
-                user2 = input("\033[F\rPlease enter player 2's name: ")
-                if user2 == user1:
-                    user2 = None
-                    Functions.clear(1, "Player 2's name can not be the same as player 1!")  # noqa E501
-            self.usernames = [user1, user2]
+            if user1 != "":
+                user2 = None
+                while user2 is None:
+                    # \033[F\r -> Sends the cursor back to the start of the previous line  # noqa E501
+                    # In this case, overwrites previous input with new input
+                    user2 = input("\033[F\rPlease enter player 2's name: ")
+                    if user2 == user1:
+                        user2 = None
+                        Functions.clear(1, "Player 2's name can not be the same as player 1!")  # noqa E501
+                    if user2 == "":
+                        user2 = None
+                        Functions.clear("Player 2's name can't be nothing!")
+                self.usernames = [user1, user2]
+            else:
+                user1 = None
+                Functions.clear("Player 1's name can't be nothing!")
 
     def size(self):
         # get the size of the game board.
@@ -186,7 +184,7 @@ Multiplayer: {}
                 self.Gname = '{}_{}'.format(self.Gname, randomEnd)
 
             def noFunc():
-                Functions.clear("Please enter a new game name!")
+                Functions.clear(0, "Please enter a new game name!")
                 return "Name"
 
             if Functions.ynCheck(input("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd)), yesFunc, noFunc) == "Name":  # noqa E501
@@ -211,7 +209,7 @@ Multiplayer: {}
             'file': ''
         })
 
-        gameFolder = gameData.makeFolder()
+        gameFolder = gameData.makeFolder(replace=True)
         gameFolder = gameFolder[0]
 
         userFolders = []
@@ -222,18 +220,23 @@ Multiplayer: {}
                 'file': ''
             })
             # create user folder
-            folder = userData.makeFolder()
+            folder = userData.makeFolder(replace=True)
             userFolders.append(folder[0])
 
             # create files for users
             userData.writeFile({
                 'data': board,
+            }, 'ships')
 
-            })
+        # make turn file, notes whos turn it is.
+        gameData.writeFile({
+            'data': self.usernames[0]
+        }, 'turn')
+        gameData.writeFile({
+            'data': self.Multi[0]
+        }, 'multi')
 
-
-
-        # Create save directories
+        return True  # success!!!
 
 
 if __name__ == '__main__':
