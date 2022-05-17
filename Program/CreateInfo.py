@@ -164,6 +164,7 @@ Multiplayer: {}
                 return None
 
             multi = Functions.ynCheck(input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): "), "yes", "no", returnFunc)  # noqa E501
+        self.Multi = multi
 
     def check(self):
         # Checks if all fields are valid.
