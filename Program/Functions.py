@@ -90,12 +90,14 @@ def NumberRangeCheck(value, x):
 
 
 # Clears the console with a message before clear.
-def clear(timeS=0, message=None, total=()):
-
-    # way to bypass the different stuff, can pass in an array now
-    if len(total) > 2:
-        timeS = total[0]
-        message = total[1]
+def clear(timeS=0, message=None):
+    if isinstance(timeS, str):
+        print("Automatically fixed error! `timeS` was string instead of number!")  # noqa E501
+        time.sleep(2)  # force wait
+        if message is None:
+            message = timeS
+        # else discard message
+        timeS = 2  # default time, 2 seconds for message
 
     if message:
         print(message)
