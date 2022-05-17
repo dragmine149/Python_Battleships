@@ -88,12 +88,13 @@ class save:
     """
     makeFolder(sub)
     -- sub -> Keeps looping until all the directories are fullfilled.
+    -- replace (default: False) -> replace self.path with the new path.
     - Makes a folder with the string imported from before. In save.save().
       No extra imports required.
     - Returns the path to the folder. Either a dict (api) or string (local)
     """
 
-    def makeFolder(self, sub=None):
+    def makeFolder(self, sub=None, replace=False):
         if self.error is not None:
             return self.error
 
@@ -115,7 +116,11 @@ class save:
                         'name': item,
                         'folder': newFolder
                     }, True)
+                if replace:
+                    self.path = newFolder
                 return newFolder
+            if replace:
+                self.path = folderId
             return folderId
         else:
             # Makes a local folder
@@ -128,6 +133,8 @@ class save:
                 os.mkdir(path)
             if sub is not None:
                 osFunc.mkdir(path, os.path.realpath(__file__))
+            if replace:
+                self.path = path
             return path, name
 
     """
