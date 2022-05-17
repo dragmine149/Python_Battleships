@@ -130,6 +130,7 @@ class save:
             name = None  # set for later when making new game name
             Npath = self.__replace__(path)
             if not os.path.exists(Npath):
+                print(path)
                 os.mkdir(path)
             if sub is not None:
                 osFunc.mkdir(path, os.path.realpath(__file__))
