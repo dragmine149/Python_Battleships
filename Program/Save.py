@@ -43,9 +43,8 @@ class save:
                 if not self.api.TR:
                     Functions.clear(2, "Something failed in testing the google drive api. Correct permissions?")  # noqa
                     self.error = 'GD failed'
-            # So, seeing as mac/linux want ModuleNotFoundError and windows wants ImportError.  # noqa E501
-            # Just going to catch everything, don't want to write out the same code Twice      # noqa E501
-            except Exception:
+            # would use ModuleNotFoundError but py3.4 says use ImportError
+            except ImportError:
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
                 print("DEBUG -> Drive api not installed")
                 self.error = 'No GD'
