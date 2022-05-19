@@ -8,7 +8,7 @@ class CreateData:
     def __init__(self):
         # Load the class and all it's data
         self.Gname = None
-        self.usernames = None
+        self.usernames = [None, None]
         self.siZe = [10, 10]
         self.Loc = "Saves"
         self.Multi = "no"
@@ -137,6 +137,10 @@ Multiplayer: {}
                     'file': 'test'
                 })
                 print(vars(saveInfo))
+
+                # Creates test folder
+                folder = saveInfo.makeFolder(replace=True)
+                print(folder)
 
                 # creates file
                 savedLocation = saveInfo.writeFile("This is a test file")
