@@ -215,6 +215,7 @@ Multiplayer: {}
         })
 
         gameFolder = gameData.makeFolder(replace=True)
+        print(gameFolder)
         gameFolder = gameFolder[0]
 
         userFolders = []
