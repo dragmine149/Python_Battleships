@@ -1,6 +1,7 @@
-import DriveApi as Drive
 import os
 import Functions
+import platform
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class Setup:
     def __init__(self, Folder):
@@ -12,37 +13,43 @@ class Setup:
     '''
     def checkForFolder(self):
         if not os.path.exists('ApiFiles'):
+            print('Making folder {}/ApiFiles'.format(os.path.dirname(os.path.realpath(__file__))))
             os.mkdir('ApiFiles')
 
     '''
     getFile
-    - If ApiFiles/token.json is not found, attempts to find it.
+    - If ApiFiles/credentials.json is not found, attempts to find it.
     '''
     def getFile(self):
-        if not os.path.exists('ApiFiles/token.json'):
-            if os.path.exists('token.json'): # working dir
-                os.system('mv token.json ApiFiles/')  # fix for windows
+        if not os.path.exists('ApiFiles/credentials.json'):
+            cmdStart = "mv"
+            if platform.system() == "windows":
+                cmdStart = "move"
+
+            if os.path.exists('credentials.json'): # working
+                cmd = '{} credentials.json ApiFiles'.format(cmdStart)
+                os.system(cmd)
+                print('Moved file {}/credentials.json!'.format(os.path.dirname(os.path.realpath(__file__))))
+            elif os.path.exists('../credentials.json'):  # checks 1 directory above as well.
+                cmd = "{} ../credentials.json ApiFiles".format(cmdStart)
+                os.system(cmd)
+                print('Moved file {}credentials.json!'.format(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../'))))
             else:
                 File = None
                 while File is None:
                     File = input('Please enter location of google drive api token: ')  # add better info
                     if os.path.exists(File):
-                        os.system('mv {} ApiFiles/'.format(File))  # fix with windows, add file check
+                        os.system('{} {} ApiFiles/'.format(cmdStart, File))  # fix with windows, add file check
                     else:
                         Functions.clear(2, "File not found!")
                         File = None
+        else:
+            print("File 'credentials.json' already found in directory!")
         return True
     
-    def test(self):
-        try:
-            api = Drive.Api(self.Folder)
-        except Exception:  # change maybe?
-            print('Failed to setup API!')
-
     def main(self):
         self.checkForFolder()
         self.getFile()
-        self.test()
 
 if __name__ == '__main__':
     Set = Setup('1jgyfEG0R76adWlnyzqDU030ps-mk4M20')
