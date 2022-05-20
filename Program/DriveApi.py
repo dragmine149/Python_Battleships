@@ -10,6 +10,8 @@ from apiclient.http import MediaFileUpload, MediaIoBaseDownload  # type: ignore
 
 import os
 import io
+import DriveSetup as setup
+import Functions
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -18,14 +20,14 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 class Api:
     # Setup the api class
     def __init__(self, folderId):
-        if not os.path.exists("ApiFiles"):
-            os.mkdir("ApiFiles")
-        self.service = self.__LoadAPI__()
         self.folder = folderId
+        self.service = self.__LoadAPI__()
         self.pageSize = 10  # Change to variable setting later.
 
     # Loads the api for use later.
     def __LoadAPI__(self):
+        Functions.clear()
+        setup.Setup(self.folder).main()
         try:
             creds = None
             if os.path.exists('ApiFiles/token.json'):  # noqa
