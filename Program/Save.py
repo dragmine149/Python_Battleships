@@ -40,9 +40,6 @@ class save:
             try:
                 import DriveApi as d
                 self.api = d.Api(self.path)
-                if not self.api.TR:
-                    Functions.clear(2, "Something failed in testing the google drive api. Correct permissions?")  # noqa
-                    self.error = 'GD failed'
             # would use ModuleNotFoundError but py3.4 says use ImportError
             except ImportError:
                 Functions.clear(2, "Google drive api is not installed, Please follow the installation instructions or change path")  # noqa
