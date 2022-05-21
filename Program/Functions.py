@@ -306,6 +306,36 @@ def ynCheck(result, yesFunc, noFunc, returnFunc=None):
         return returnFunc
 
 
+def searchDirectory(directory, target):
+    print('----')
+    time.sleep(.5)
+    print('Searching Dir: "{}". Target file: "{}"'.format(directory, target))
+    if os.path.exists(os.path.join(directory, target)):
+        return "Found!"
+
+    files = os.listdir(directory)
+    print(files)
+    for file in files:
+        time.sleep(.5)
+        print('Looking at {}'.format(file))
+        if file.startswith('.') or file.startswith('__'):
+            print('Hidden file')
+            continue
+        if file == "Saves":
+            print("Probably not here...")
+            continue
+        # files.remove(file)
+        if os.path.isdir(os.path.join(directory, file)):
+            result = searchDirectory(os.path.join(directory, file), target)
+            print(result)
+            if result == "Found!":
+                return os.path.join(directory, file)
+
+    return searchDirectory(os.path.abspath(os.path.join(directory, '../')), target)  # noqa
+
+
 if __name__ == "__main__":
-    data = userData("Saves", "Test", "me")
-    data.getBoard()
+    result = searchDirectory('.', 'credentials.json')
+    print(result)
+    # result2 = searchDirectory('..', 'credentials.json')
+    # print(result2)
