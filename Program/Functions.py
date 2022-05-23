@@ -1,6 +1,5 @@
 import time
 import os
-import platform
 import Save as save
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -90,7 +89,7 @@ def NumberRangeCheck(value, x):
 
 
 # Clears the console with a message before clear.
-def clear(timeS=0, message=None):
+def clear(timeS=0, message=None, clear=True):
     if isinstance(timeS, str):
         print("Automatically fixed error! `timeS` was string instead of number!")  # noqa E501
         time.sleep(2)  # force wait
@@ -104,10 +103,11 @@ def clear(timeS=0, message=None):
     time.sleep(timeS)
     # Windows doesn't have 'clear' so having to use the other option.
     # Mac / Linux doesn't have 'cls' same issue as windows
-    if platform.system() == "Windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+    if clear:
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            os.system("clear")
 
 
 # Check if the input is a valid input using a whole bunch of data
@@ -305,13 +305,15 @@ def ynCheck(result, yesFunc, noFunc, returnFunc=None):
             return returnFunc()
         return returnFunc
 
+
 class search:
-    # setup
     """
     directory -> where to start search
     target -> what to search for
-    layers -> How many directories above the current directory to search. Default 3: '../../../' (WIP)
-    sti -> how long to wait between messages and stuff, just for fun. Recommendation don't add.
+    layers -> How many directories above the current directory to search.
+              Default 3: '../../../' (WIP)
+    sti -> how long to wait between messages and stuff, just for fun.
+           Recommendation don't add.
     """
     def __init__(self, directory, target, layers=3, sti=0):
         self.directory = directory
@@ -326,27 +328,39 @@ class search:
     """
     __searchDirectory(self, directory, sub)
     - Searches for a file in directory
-    Loops though pretty much the whole fs until the file is found. Goings us directories, down into directories and more!
+    Loops though pretty much the whole fs until the file is found.
+    Goings us directories, down into directories and more!
     """
     def __searchDirectory(self, directory, sub=False):
         if self.layers > 0:
-            print('Searching Dir: "{}". Target file: "{}"'.format(directory, self.target))
+            print('Searching Dir: "{}". Target file: "{}"'.format(directory, self.target)) # noqa E501
             time.sleep(self.sti)  # makes it look cool
-            
+
             # checks if in current directory, returns if it is.
-            if os.path.exists(os.path.join(directory, self.target)):
-                print("Found!")
-                return "Found!", os.path.join(directory, self.target)
-        
-            # get files in current directory and remove the folder the user just came out of (doesn't search the folder again)
+            targetFile = os.path.join(directory, self.target)
+            if os.path.exists(targetFile):
+                print("Found file: {}".format(targetFile))
+
+                def yes():
+                    return "Found!", targetFile
+
+                def no():
+                    return None
+
+                checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
+                if checkResult is not None:
+                    return checkResult
+
+            # get files in current directory and remove the folder the user
+            # just came out of (doesn't search the folder again)
             try:
                 files = os.listdir(directory)
             except PermissionError:
                 return
             if self.searched in files:
                 files.remove(self.searched)
-        
-            # loops though all the files 
+
+            # loops though all the files
             for file in files:
                 time.sleep(self.sti)
                 print('Looking at {}'.format(file))
@@ -354,22 +368,23 @@ class search:
                 if file.startswith('.') or file.startswith('__'):
                     print('Hidden file')
                     continue
-                
+
                 # checks if the folder is not Saves, probably not there
                 if file == "Saves":
                     print("Probably not here...")
                     continue
-                
+
                 # checks if the folder is a directory
-                if os.path.isdir(os.path.join(directory, file)):
-                    result = self.__searchDirectory(os.path.join(directory, file), True)
-                    
+                newFile = os.path.join(directory, file)
+                if os.path.isdir(newFile):
+                    result = self.__searchDirectory(newFile, True)  # noqa E501
+
                     # checks for the subdir and the result returned.
                     if result is not None:
                         if len(result) == 2:
                             if result[0] == "Found!" or result[0] == "Failed":
                                 return result[1]
-                                
+
             # if sub directory, don't go back up 1 directory.
             if not sub:
                 self.searched = os.path.basename(os.path.abspath(directory))
@@ -377,6 +392,7 @@ class search:
                 return self.__searchDirectory(os.path.abspath(os.path.join(directory, '../')))  # noqa
         else:
             return "Failed!", None
+
 
 if __name__ == "__main__":
     result = search('.', 'credentials.json').Locate()

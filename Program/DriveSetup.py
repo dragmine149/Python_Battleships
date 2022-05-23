@@ -31,7 +31,7 @@ class Setup:
                 cmdStart = "move"
 
             self.levels = 0
-            path = Functions.searchDirectory(self.dir, 'credentials.json')
+            path = Functions.search(self.dir, 'credentials.json').Locate()[1]
 
             if path is not None:
                 cmd = "{} {} ApiFiles".format(cmdStart, path)
