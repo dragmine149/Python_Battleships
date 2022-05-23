@@ -305,37 +305,79 @@ def ynCheck(result, yesFunc, noFunc, returnFunc=None):
             return returnFunc()
         return returnFunc
 
+class search:
+    # setup
+    """
+    directory -> where to start search
+    target -> what to search for
+    layers -> How many directories above the current directory to search. Default 3: '../../../' (WIP)
+    sti -> how long to wait between messages and stuff, just for fun. Recommendation don't add.
+    """
+    def __init__(self, directory, target, layers=3, sti=0):
+        self.directory = directory
+        self.target = target
+        self.searched = ''
+        self.layers = layers
+        self.sti = sti
 
-def searchDirectory(directory, target):
-    print('----')
-    time.sleep(.5)
-    print('Searching Dir: "{}". Target file: "{}"'.format(directory, target))
-    if os.path.exists(os.path.join(directory, target)):
-        return "Found!"
+    def Locate(self):
+        return self.__searchDirectory(self.directory)
 
-    files = os.listdir(directory)
-    print(files)
-    for file in files:
-        time.sleep(.5)
-        print('Looking at {}'.format(file))
-        if file.startswith('.') or file.startswith('__'):
-            print('Hidden file')
-            continue
-        if file == "Saves":
-            print("Probably not here...")
-            continue
-        # files.remove(file)
-        if os.path.isdir(os.path.join(directory, file)):
-            result = searchDirectory(os.path.join(directory, file), target)
-            print(result)
-            if result == "Found!":
-                return os.path.join(directory, file)
-
-    return searchDirectory(os.path.abspath(os.path.join(directory, '../')), target)  # noqa
-
+    """
+    __searchDirectory(self, directory, sub)
+    - Searches for a file in directory
+    Loops though pretty much the whole fs until the file is found. Goings us directories, down into directories and more!
+    """
+    def __searchDirectory(self, directory, sub=False):
+        if self.layers > 0:
+            print('Searching Dir: "{}". Target file: "{}"'.format(directory, self.target))
+            time.sleep(self.sti)  # makes it look cool
+            
+            # checks if in current directory, returns if it is.
+            if os.path.exists(os.path.join(directory, self.target)):
+                print("Found!")
+                return "Found!", os.path.join(directory, self.target)
+        
+            # get files in current directory and remove the folder the user just came out of (doesn't search the folder again)
+            try:
+                files = os.listdir(directory)
+            except PermissionError:
+                return
+            if self.searched in files:
+                files.remove(self.searched)
+        
+            # loops though all the files 
+            for file in files:
+                time.sleep(self.sti)
+                print('Looking at {}'.format(file))
+                # checks if the folder / file is marked as hidden
+                if file.startswith('.') or file.startswith('__'):
+                    print('Hidden file')
+                    continue
+                
+                # checks if the folder is not Saves, probably not there
+                if file == "Saves":
+                    print("Probably not here...")
+                    continue
+                
+                # checks if the folder is a directory
+                if os.path.isdir(os.path.join(directory, file)):
+                    result = self.__searchDirectory(os.path.join(directory, file), True)
+                    
+                    # checks for the subdir and the result returned.
+                    if result is not None:
+                        if len(result) == 2:
+                            if result[0] == "Found!" or result[0] == "Failed":
+                                return result[1]
+                                
+            # if sub directory, don't go back up 1 directory.
+            if not sub:
+                self.searched = os.path.basename(os.path.abspath(directory))
+                self.layers -= 1
+                return self.__searchDirectory(os.path.abspath(os.path.join(directory, '../')))  # noqa
+        else:
+            return "Failed!", None
 
 if __name__ == "__main__":
-    result = searchDirectory('.', 'credentials.json')
-    print(result)
-    # result2 = searchDirectory('..', 'credentials.json')
-    # print(result2)
+    result = search('.', 'credentials.json').Locate()
+    print({'result': result})
