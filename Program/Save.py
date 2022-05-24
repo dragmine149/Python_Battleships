@@ -59,14 +59,11 @@ class save:
         else:
             self.error = "No Data"
 
-        # TODO: Better test for dirs like /
-        # try:
-        #     self.writeFile("HI")
-        #     self.Delete()
-        # # Don't know the full error, change this later
-        # except Exception as e:
-        #     print(e)
-        #     self.error = "Can't write to folder!"
+        try:
+            self.writeFile("Hi")
+            self.Delete()
+        except PermissionError as e:
+            os.sys.exit('Failed to write to directory!')  # make better instead of quiting. At least we catch it
 
     """
     _FolderCheck()
@@ -114,10 +111,10 @@ class save:
                     }, True)
                 if replace:
                     self.path = newFolder
-                return newFolder
+                return newFolder['id'], item
             if replace:
                 self.path = folderId
-            return folderId
+            return folderId['id'], item
         else:
             # Makes a local folder
             path = self.path

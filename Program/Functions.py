@@ -399,6 +399,26 @@ class search:
             return "Failed!", None
 
 
+def tests():
+    # Run a series of tests for all things
+    r1 = LocationConvert('A1').Convert()
+    r2 = RemoveNonGames('.')
+    r3 = NumberRangeCheck(10, 5)
+    r4 = check('A').InputDigitCheck()
+    r5 = board.CreateBoard([10, 10])
+    r6 = board.DisplayBoard(r5)
+    r7 = ynCheck('y', True, False, None)
+    r8 = search('.', 'UploadFileTest.txt').Locate()
+    print(r1)
+    print(r2)
+    print(r3)
+    print(r4)
+    print(r5)
+    print(r6)
+    print(r7)
+    print(r8)
+
 if __name__ == "__main__":
-    result = search('.', 'credentials.json').Locate()
-    print({'result': result})
+    # result = search('.', 'credentials.json').Locate()
+    # print({'result': result})
+    tests()

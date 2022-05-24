@@ -21,7 +21,12 @@ Players: {}
 Size: {}
 Save Location: {}
 Multiplayer: {}
-'''.format(self.Gname, self.usernames, self.siZe, self.Loc, self.Multi))
+'''.format(
+self.Gname, 
+self.usernames, 
+self.siZe, 
+self.Loc, 
+self.Multi))
         print('''Options:
 0: Quit
 1: Game Name
@@ -41,22 +46,23 @@ Multiplayer: {}
             choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 6).InputDigitCheck()  # noqa E501
             if choice == 1:
                 self.name()
-            elif choice == 2:
+            if choice == 2:
                 self.username()
-            elif choice == 3:
+            if choice == 3:
                 self.size()
-            elif choice == 4:
+            if choice == 4:
                 self.saveLoc()
-            elif choice == 5:
+            if choice == 5:
                 if self.Loc == "Saves":
                     Functions.clear(2, "Disabled! Please use a directory other than the default!")  # noqa E501
-                else:
-                    self.MultiPlayer()
-            elif choice == 6:
+                    continue
+                self.MultiPlayer()
+            if choice == 6:
                 result = self.save()
                 if result:
                     choice = 0  # end, result is good.
-                # return [name, users, Location, online]
+                return [self.Gname, self.usernames, self.Loc, self.Multi]
+            # No need to add checks here as Functions.check().InputDigitCheck() should take care of it.
 
     def name(self):
         # Gets the name of the game
@@ -249,4 +255,5 @@ Multiplayer: {}
 
 if __name__ == '__main__':
     c = CreateData()
-    c.getOption()
+    result = c.getOption()
+    print(result)

@@ -1,6 +1,5 @@
 import os
 import Functions
-import platform
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -20,37 +19,46 @@ class Setup:
             print('Making folder {}/ApiFiles'.format(self.dir))
             os.mkdir('ApiFiles')
 
-    '''
-    getFile
-    - If ApiFiles/credentials.json is not found, attempts to find it.
-    '''
+
+    # Asks the user for where the file is
+    def getLocation(self):
+        File = None
+        while File is None:
+            File = input('Please enter the location of `credentials.json` (leave blank to search again): ')
+            if File == '':  # Search again
+                return 
+
+            # If correct file, move
+            if os.path.exists(File):
+                os.system('{} {} ApiFiles/credentials.json'.format(cmdStart, File))  # noqa E501
+                return File
+                
+            # shout at user
+            Functions.clear(2, "File not found!")
+            File = None
+
     def getFile(self):
-        if not os.path.exists('ApiFiles/credentials.json'):
-            cmdStart = "mv"
-            if platform.system() == "windows":
-                cmdStart = "move"
-
-            self.levels = 0
+        # Check if file is already there and returns
+        if os.path.exists('ApiFiles/credentials.json'):
+            return True
+            
+        # Sets up the command. THANKS WINDOWS!!!
+        cmdStart = "mv"
+        if os.name == "nt":
+            cmdStart = "move"
+        
+        # Searches for the path
+        path = None
+        while path is None:
             path = Functions.search(self.dir, 'credentials.json').Locate()[1]
-
-            if path is not None:
-                cmd = "{} {} ApiFiles".format(cmdStart, path)
-                os.system(cmd)
-                print('Moved File: {} to {}/ApiFiles'.format(path, self.dir))
-            else:
-                print('Failed to find in folders!')
-                File = None
-                while File is None:
-                    File = input('Please enter location of google drive api token: ')  # noqa
-                    if os.path.exists(File):
-                        # moves and renames just in case.
-                        os.system('{} {} ApiFiles/credentials.json'.format(cmdStart, File))  # noqa
-                    else:
-                        Functions.clear(2, "File not found!")
-                        File = None
-        else:
-            print("File 'credentials.json' already found in directory!")
-        return True
+            
+            if path is None:
+                print("Failed to find path in folders")
+                path = self.getLocation()  # gets the user to input location
+                if path is not None:
+                    return path
+                continue
+            os.system('{} {} ApiFiles/credentials.json'.format(cmdStart, File))  # noqa E501
 
     def main(self):
         self.checkForFolder()

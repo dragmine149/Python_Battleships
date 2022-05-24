@@ -2,7 +2,7 @@
 Index:
 ✅ = done
 🅿️ = In Progress
-◾️ = To do
+◾ = To do
 --------------------------------------------------------------------------------
 Main:
 ✅ Generate Board
@@ -20,6 +20,7 @@ Main:
 ◾️ UI (optional for user)
 🅿️ Bug Fixes
 ✅ Code Rewrite
+◾️ Save Game create inputs
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training

@@ -1,4 +1,4 @@
-import Create
+import CreateInfo as Create
 import Save as save
 import Functions
 import os
@@ -8,7 +8,7 @@ class Process:
     def __init__(self):
         print("Loading")
 
-    # Check if the game has been won, If so, print output
+    # Check if the game has been won, If so, print output
     def winView(self, path, name=None, external=False):
         if not external:
             users = Functions.RemoveNonGames(os.path.join(path, name))
@@ -32,7 +32,7 @@ class Process:
     # Gets the inputs and return the game result info thing
     def Inputs(self, path, name=None, external=False, create=False):
         if create:
-            [name, users, Location, online] = Create.create().inputs()
+            [name, users, Location, online] = Create.CreateData().getOption()
             return name, users, [False, False], Location, online
         print({'external': external})
         if not external:
