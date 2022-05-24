@@ -22,11 +22,11 @@ Size: {}
 Save Location: {}
 Multiplayer: {}
 '''.format(
-self.Gname, 
-self.usernames, 
-self.siZe, 
-self.Loc, 
-self.Multi))
+            self.Gname,
+            self.usernames,
+            self.siZe,
+            self.Loc,
+            self.Multi))
         print('''Options:
 0: Quit
 1: Game Name
@@ -62,7 +62,8 @@ self.Multi))
                 if result:
                     choice = 0  # end, result is good.
                 return [self.Gname, self.usernames, self.Loc, self.Multi]
-            # No need to add checks here as Functions.check().InputDigitCheck() should take care of it.
+            # No need to add checks here as Functions.check().InputDigitCheck()
+            # should take care of it.
 
     def name(self):
         # Gets the name of the game
@@ -86,10 +87,11 @@ self.Multi))
                         user2 = None
                         Functions.clear(1, "\033[F\rPlayer 2's name can not be the same as player 1!", False)  # noqa E501
                         print("\033[F\r                                                ")  # noqa E501
+                        # ^^ clears input, resets
                     if user2 == "":
                         user2 = None
                         Functions.clear(1, "\033[F\rPlayer 2's name can't be nothing!", False)  # noqa E501
-                        print("\033[F\r                                                ")  # noqa 
+                        print("\033[F\r                                                ")  # noqa
                 self.usernames = [user1, user2]
             else:
                 user1 = None
