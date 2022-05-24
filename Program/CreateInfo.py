@@ -78,13 +78,12 @@ Multiplayer: {}
                     user2 = input("\033[F\rPlease enter player 2's name: ")
                     if user2 == user1:
                         user2 = None
-                        Functions.clear(1, "Player 2's name can not be the same as player 1!", False)  # noqa E501
+                        Functions.clear(1, "\033[F\rPlayer 2's name can not be the same as player 1!", False)  # noqa E501
                         print("\033[F\r                                                ")  # noqa E501
                     if user2 == "":
                         user2 = None
-                        Functions.clear("Player 2's name can't be nothing!", False)  # noqa E501
-                        print("\033[F\r                                                ", end='')  # noqa E501
-                        print("\033[F\r")
+                        Functions.clear(1, "\033[F\rPlayer 2's name can't be nothing!", False)  # noqa E501
+                        print("\033[F\r                                                ")  # noqa 
                 self.usernames = [user1, user2]
             else:
                 user1 = None

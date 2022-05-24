@@ -90,6 +90,11 @@ def NumberRangeCheck(value, x):
 
 # Clears the console with a message before clear.
 def clear(timeS=0, message=None, clear=True):
+    if isinstance(message, bool):
+        print("Automatically fixed error! `message` was boolean instead of string!")
+        if clear is None:
+            clear = message
+
     if isinstance(timeS, str):
         print("Automatically fixed error! `timeS` was string instead of number!")  # noqa E501
         time.sleep(2)  # force wait
