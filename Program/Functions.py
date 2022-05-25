@@ -89,12 +89,7 @@ def NumberRangeCheck(value, x):
 
 
 # Clears the console with a message before clear.
-def clear(timeS=0, message=None, clear=True):
-    if isinstance(message, bool):
-        print("Automatically fixed error! `message` was boolean instead of string!")
-        if clear is None:
-            clear = message
-
+def clear(timeS=0, message=None):
     if isinstance(timeS, str):
         print("Automatically fixed error! `timeS` was string instead of number!")  # noqa E501
         time.sleep(2)  # force wait
@@ -108,11 +103,21 @@ def clear(timeS=0, message=None, clear=True):
     time.sleep(timeS)
     # Windows doesn't have 'clear' so having to use the other option.
     # Mac / Linux doesn't have 'cls' same issue as windows
-    if clear:
-        if os.name == "nt":
-            os.system("cls")
-        else:
-            os.system("clear")
+    if os.name == "nt":
+        os.system("cls")
+    else:
+        os.system("clear")
+
+# does the same as clear, just doesn't clear it.
+def warn(timeS=2, message=None):
+    if isinstance(timeS, str):
+        print("Automatically fixed! timeS was string instead of number")
+        message = timeS
+        timeS = 2
+    
+    if message:
+        print(message)
+    time.sleep(timeS)
 
 
 # Check if the input is a valid input using a whole bunch of data

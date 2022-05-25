@@ -59,11 +59,12 @@ class save:
         else:
             self.error = "No Data"
 
-        try:
-            self.writeFile("Hi")
-            self.Delete()
-        except PermissionError as e:
-            os.sys.exit('Failed to write to directory!')  # make better instead of quiting. At least we catch it
+        if False:
+            try:
+                self.writeFile("Hi")
+                self.Delete()
+            except PermissionError as e:
+                os.sys.exit('Failed to write to directory!')  # make better instead of quiting. At least we catch it
 
     """
     _FolderCheck()
