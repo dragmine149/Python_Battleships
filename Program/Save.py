@@ -300,7 +300,7 @@ class save:
         Npath = self.__replace__(path)
         if self.api:
             return self.api.checkIfExists(self.path, Npath)[0]
-        elif os.path.exists(os.path.join(self.path, Npath)):
+        if os.path.exists(os.path.join(self.path, Npath)):
             return True
         return False
 
@@ -319,8 +319,6 @@ class save:
             if os.path.exists(Npath):
                 os.remove(Npath)
                 return True
-            else:
-                print('Path not found! -> {}'.format(path))
-                return False
-        else:
-            return self.api.DeleteData(path)
+            print('Path not found! -> {}'.format(path))
+            return False
+        return self.api.DeleteData(path)
