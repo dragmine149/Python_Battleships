@@ -28,13 +28,14 @@ class game:
         print("""
 Other Options:
 -2: Remove Game (Deletes ALL files)
--1: Goes back to main screen
- 0: Loads external game\n""")
+-1: Loads external game
+ 0: Goes back to main screen
+""")
 
     def GameRangeCheck(self, value, list):
         if value >= 0 and value <= len(list):
             return True
-        elif value == -1:
+        if value == -1:
             return True
         return False
 
@@ -67,11 +68,11 @@ Other Options:
                                 save.save(self.path).Delete(deletePath)  # noqa
                             delGame = None
                     self.game = None
-                if self.game == -1:
+                if self.game == 0:
                     self.choice = None
                     self.game = None
                     return
-                if self.game == 0:
+                if self.game == -1:
                     self.game = None
                     Functions.clear()
                     self.external = None
@@ -121,14 +122,14 @@ Other Options:
             result = self.ProcessChoice()
             if result is None:
                 self.choice = None
-            if self.choice is not None:
-                return result
+                continue
+            return result
 
     def OptionsRead(self):
-        with open("Options.txt", "r") as options:
-            lines = options.readlines()
-            for line in lines:
-                print(line, end="")
+        print("""0. Quit
+1. Load Games
+2. Make New Game
+3. Settings""")
 
 
 if __name__ == "__main__":
