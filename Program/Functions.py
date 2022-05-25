@@ -108,13 +108,14 @@ def clear(timeS=0, message=None):
     else:
         os.system("clear")
 
+
 # does the same as clear, just doesn't clear it.
 def warn(timeS=2, message=None):
     if isinstance(timeS, str):
         print("Automatically fixed! timeS was string instead of number")
         message = timeS
         timeS = 2
-    
+
     if message:
         print(message)
     time.sleep(timeS)
@@ -190,7 +191,8 @@ class check:
     def InputDigitCheck(self):  # noqa
         while not self.Id:
             self._CallExtra()
-            self.Id = input(str(self.request))  # get input, make request a string.
+            # get input, make request a string.
+            self.Id = input(str(self.request))
             try:
                 int(self.Id)
                 return self._PassCheck()
@@ -420,6 +422,7 @@ def tests():
     print(r7)
     assert True
     return True
+
 
 if __name__ == "__main__":
     # result = search('.', 'credentials.json').Locate()

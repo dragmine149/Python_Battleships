@@ -2,7 +2,6 @@ import os
 import osFunc
 import Functions
 import json
-import platform
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -20,7 +19,7 @@ class save:
     """
 
     def __replace__(self, path):
-        if platform.system() != "Windows":
+        if os.name != "nt":
             # remove backslash from the path
             return path.replace("\\", "")
 
@@ -59,12 +58,14 @@ class save:
         else:
             self.error = "No Data"
 
-        if False:
-            try:
-                self.writeFile("Hi")
-                self.Delete()
-            except PermissionError as e:
-                os.sys.exit('Failed to write to directory!')  # make better instead of quiting. At least we catch it
+        # This seems to keep breaking other parts of the code.
+        # try:
+        #     self.writeFile("Hi")
+        #     self.Delete()
+        # except PermissionError as e:
+        #     print(e)
+        #     # make better instead of quiting. At least we catch it
+        #     os.sys.exit('Failed to write to directory!')
 
     """
     _FolderCheck()
@@ -78,6 +79,19 @@ class save:
             os.mkdir("Saves")
         if not os.path.exists("Saves/.Temp"):
             os.mkdir("Saves/.Temp")
+
+    """
+    _Json(data, save)
+    -- data: data to be converted
+    -- save: are we saving the data or not (different function)
+    - Returns json stuff
+    """
+    def _Json(self, data, save):
+        if self.json:
+            if not save:
+                return json.loads(data)
+            return json.dumps(data)
+        return data
 
     """
     makeFolder(sub)
@@ -100,7 +114,7 @@ class save:
             }, True)
             if sub is not None:
                 splitInfo = sub.split("/")
-                if platform.system() == "Windows":
+                if os.name == "nt":
                     splitInfo = sub.split("\\")
 
                 newFolder = folderId['id']
@@ -116,25 +130,24 @@ class save:
             if replace:
                 self.path = folderId
             return folderId['id'], item
-        else:
-            # Makes a local folder
-            path = self.path
-            if self.data['name'] != '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
-                path = os.path.join(self.path, self.data['name'])
-            name = None  # set for later when making new game name
-            Npath = self.__replace__(path)
-            if not os.path.exists(Npath):
-                os.mkdir(path)
-            if sub is not None:
-                osFunc.mkdir(path, os.path.realpath(__file__))
-            if replace:
-                self.path = path
-            return path, name
+
+        # Makes a local folder
+        path = self.path
+        if self.data['name'] != '':  # If empty data, makes the path the path to not add other folders and stuff  # noqa E501
+            path = os.path.join(self.path, self.data['name'])
+        name = None  # set for later when making new game name
+        Npath = self.__replace__(path)
+        if not os.path.exists(Npath):
+            os.mkdir(path)
+        if sub is not None:
+            osFunc.mkdir(path, os.path.realpath(__file__))
+        if replace:
+            self.path = path
+        return path, name
 
     """
-    writeFile({
-        'data' -> Data to save
-    },
+    writeFile(
+    data -> Data to save
     name -> A name different from the game name,
     overwrite -> Whever the overwrite the old file (USED FOR DRIVE)
     )
@@ -144,65 +157,56 @@ class save:
     Returns: path where saved
     """
 
-    def writeFile(self, data={
-        'data': None,
-    }, name=None, overwrite=False):
+    def writeFile(self, data, name=None, overwrite=False):
         if self.error is not None:
             return self.error
+
+        # why?
         if name:
             self.data['name'], self.name = name, self.data['name']
         # Check to make sure there actually IS data
-        writeData = None
-        if isinstance(data, dict):
-            writeData = data['data']
-            if writeData is None:
-                return False
-        else:
-            writeData = data
-            if data is None:
-                return False
+        if data is None:
+            return False
 
         # Makes the data in a file. (Both reasons)
-        with open("Saves/.Temp/{}".format(self.data['name']), 'w+') as tempFile:  # noqa
-            if self.json:
-                tempFile.write(json.dumps(writeData))
-            else:
-                tempFile.write(writeData)
+        tempLocation = "Saves/.Temp/{}".format(self.data['name'])
+        with open(tempLocation, 'w+') as tempFile:  # noqa
+            tempFile.write(self._Json(data, True))
 
         # Upload the data to google. Returns the dict
         if self.api:
             id = self.api.UploadData({
                 'name': self.data['name'],
-                'path': 'Saves/.Temp/{}'.format(self.data['name']),
+                'path': tempLocation,
                 'folder': self.path
             }, overwrite=overwrite)
-            os.system('rm Saves/.Temp/{}'.format(self.data['name']))
+
+            os.system('rm {}'.format(tempLocation))
             if name:
                 self.data['name'] = name
             return id
-        else:
-            # Saves the data to a file. Returns the file path.
-            command = "mv"
-            slash = "/"
-            if platform.system() == "Windows":
-                command = "move"
-                slash = "\\"
+        # Saves the data to a file. Returns the file path.
+        command = "mv"
+        slash = "/"
+        if os.name == "nt":
+            command = "move"
+            slash = "\\"
 
-            runCommand = '{} Saves{}.Temp{}{} {}{}{}'.format(command,
-                                                             slash,
-                                                             slash,
-                                                             self.data['name'],
-                                                             self.path,
-                                                             slash,
-                                                             self.data['name'])
-            print(runCommand)
-            os.system(runCommand)
+        runCommand = '{} Saves{}.Temp{}{} {}{}{}'.format(command,
+                                                         slash,
+                                                         slash,
+                                                         self.data['name'],
+                                                         self.path,
+                                                         slash,
+                                                         self.data['name'])
+        print(runCommand)
+        os.system(runCommand)
 
-            if name:
-                self.data['name'] = name
-            return "{}{}{}".format(self.path,
-                                   slash,
-                                   self.data['name'])
+        if name:
+            self.data['name'] = name
+        return "{}{}{}".format(self.path,
+                               slash,
+                               self.data['name'])
 
     """
     readFile(
@@ -219,7 +223,7 @@ class save:
             return self.error
 
         slash = "/"
-        if platform.system() == "Windows":
+        if os.name == "nt":
             slash = "\\"
 
         # Save location -> Where to save the file
@@ -247,21 +251,17 @@ class save:
             if isinstance(Id, str):
                 print({'saveId', Id})
                 with open(Id, 'r') as file:
-                    if self.json:
-                        return json.loads(file.read())
-                    return file.read()
+                    return self._Json(file.read(), False)
             return Id
         else:
-            if platform.system() != "Windows":
+            if os.name != "Windows":
                 # remove backslash from the path
                 path = path.replace("\\", "")
 
             # Checks before reading
             if os.path.exists(path):
                 with open(path, "r") as file:
-                    if self.json:
-                        return json.loads(file.read())
-                    return file.read()
+                    return self._Json(file.read(), False)
             print("Failed -> File to read from not found!"
                   + "\nPath: {}".format(path))
             return False
@@ -275,21 +275,22 @@ class save:
     """
 
     def ListDirectory(self, api=True, dir=False):
+        # return file from api
         if self.api is not False and api is True:
             return self.api.ListFolder(dir=dir)
-        else:
-            if not dir:
-                try:
-                    return os.listdir(self.path)
-                except NotADirectoryError:
-                    return False
-            else:
-                DirInfo = os.listdir(self.path)
-                newDirList = []
-                for item in DirInfo:
-                    if os.path.isdir(os.path.join(self.path, item)):
-                        newDirList.append(item)
-                return newDirList
+
+        dirData = []
+        try:
+            dirData = os.listdir(self.path)
+        except NotADirectoryError:
+            return False
+        if not dir:
+            return dirData
+        newDirList = []
+        for item in dirData:
+            if os.path.isdir(os.path.join(self.path, item)):
+                newDirList.append(item)
+        return newDirList
 
     """
     CheckForFile(path)
