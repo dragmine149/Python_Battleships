@@ -1,15 +1,14 @@
 import os
-import platform
 
 
-# mkdir(path, targetDir=os.path.realpath(__file__))
-# - path -> path of files to make, support subfolders (e.g. Test/Test/Test)
-# - targetDir -> Where to start making the files, Default this file directory
+"""
+mkdir(path, targetDir=os.path.realpath(__file__))
+- path -> path of files to make, support subfolders (e.g. Test/Test/Test)
+- targetDir -> Where to start making the files, Default this file directory
+"""
 def mkdir(path, targetDir=os.path.realpath(__file__)):
-    splitPath = []
-    if platform.system() != "Windows":  # ANNOYING WINDOWS
-        splitPath = path.split("/")  # gets all sub folders of path
-    else:
+    splitPath = path.split("/")  # gets all sub folders of path
+    if os.name != "nt":  # ANNOYING WINDOWS
         splitPath = path.split("\\")
 
     # Change to targetDir
@@ -24,6 +23,6 @@ def mkdir(path, targetDir=os.path.realpath(__file__)):
             os.mkdir(currentPath)
         # returns the result, should be the same to begin with.
         return currentPath
-    else:
-        # returns the result of making the directory
-        return os.mkdir(path)
+    # returns the result of making the directory
+    os.mkdir(path)
+    return path
