@@ -1,5 +1,4 @@
 import os
-import osFunc
 import Functions
 import json
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -86,6 +85,7 @@ class save:
     -- save: are we saving the data or not (different function)
     - Returns json stuff
     """
+
     def _Json(self, data, save):
         if self.json:
             if not save:
@@ -140,7 +140,7 @@ class save:
         if not os.path.exists(Npath):
             os.mkdir(path)
         if sub is not None:
-            osFunc.mkdir(path, os.path.realpath(__file__))
+            os.mkdirs(path, os.path.realpath(__file__))
         if replace:
             self.path = path
         return path, name
