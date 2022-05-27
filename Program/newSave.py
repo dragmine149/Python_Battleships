@@ -149,8 +149,8 @@ class save:
 
         if sub is not None:
             # change, make, change
-            if os.path.exists(sub):
-                os.chdir(path) 
+            if not os.path.exists(os.path.join(path, sub)):
+                os.chdir(path)
                 os.makedirs(sub)
                 os.chdir(filePath)
 
@@ -180,13 +180,19 @@ class save:
                 'path': tempLocation,
                 'folder': self.path,
             }, overwrite=overwrite)
-            os.remove(tempLocation) # remove local copy
+            os.remove(tempLocation)  # remove local copy
             return id
         slash = self.__slash()
         # moves file to where it should be saved
-        os.rename("Saves{}.Temp{}{}".format(slash, slash, self.data['name']), "{}{}{}".format(self.path, slash, self.data['name']))
+        os.rename("Saves{}.Temp{}{}".format(slash, slash, self.data['name']),
+                  "{}{}{}".format(self.path, slash, self.data['name']))
         return "{}{}{}".format(self.path, slash, self.data['name'])
 
+    """
+    readFile
+    - returns the data from a file.
+    - If not found, returns False
+    """
     def readFile(self):
         slash = self.__slash()
         path = "{}{}{}".format(self.path, slash, self.data['name'])
@@ -196,7 +202,7 @@ class save:
                 'Id': self.data['name'],
                 'path': saveLoc
             })
-            # If can't find file, attempt to search 
+            # If can't find file, attempt to search
             if Id is False:
                 files = self._api.ListFolder()
                 for file in files:
@@ -206,12 +212,12 @@ class save:
                             'path': saveLoc
                         })
                         break
-    
+
             if isinstance(Id, str):
                 with open(Id, 'r') as file:
                     return self._Json(file.read())
             return Id
-        
+
         # local read area
         path = self.__replace(path)
         if os.path.exists(path):
@@ -219,12 +225,75 @@ class save:
                 return self._Json(file.read())
         return False
 
+    """
+    ls(dir)
+    dir -> whever to include files (false) or not (true)
+    - Same as 'ls' on 'posix' (os.name) systems.
+    """
+    def ls(self, dir=False):
+        # use api if alvalible.
+        if self._api:
+            return self._api.ListFolder(dir=dir)
+
+        # Local area
+        if os.path.exists(self.path):
+            dirData = os.listdir(self.path)
+            if not dir:
+                # return if all files wanted
+                return dirData
+
+            # Removes all none files
+            newDirList = []
+            for item in dirData:
+                if os.path.isdir(os.path.join(self.path, item)):
+                    newDirList.append(item)
+            return newDirList
+        return None  # if directory not found
+
+    """
+    CheckForFile(path)
+    path -> the sub folder to check for.
+    - Checks if the file in path exists under self.path
+    """
+    def CheckForFile(self, path):
+        Npath = self.__replace(path)
+        if self._api:
+            return self._api.checkIfExissts(self.path, Npath)[0]
+        return os.path.exists(os.path.join(self.path, Npath))
+
+    """
+    Delete(path)
+    path -> path to delete
+    - Delets without questioning... in theory
+    """
+    def Delete(self, path=None):
+        if path is None:
+            path = self.path
+
+        if not self._api:
+            Npath = self.__replace(path)
+            if os.path.exists(Npath):
+                # NOOOOOOOOO
+                # this is going to be a pain to implement...
+                os.removedirs(Npath)
+                return True
+            print('Path not found! -> {}'.format(Npath))
+            return False
+        return self._api.DeleteData(path)
+
+
 if __name__ == "__main__":
-    ss = save({'name': 'Test', 'path': 'Saves'})
+    ss = save({'name': 'NSTTest', 'path': 'Saves'})
     print(vars(ss))
-    ss.makeFolder('test1/test2', True)
+    ss.makeFolder('1/2', True)
     print(vars(ss))
     path = ss.writeFile('Testinfo')
     print(path)
     data = ss.readFile()
     print(data)
+    folderData = ss.ls()
+    print(folderData)
+    file = ss.CheckForFile("1/2/3")
+    print(file)
+    deleted = ss.Delete()
+    print(deleted)
