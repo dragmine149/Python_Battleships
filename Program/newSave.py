@@ -13,16 +13,18 @@ class save:
         path -> where to save the file
         json -> whever to encode the data in json
     }
-    Api -> Forces use of api over normal data
     """
     def __init__(self, data={'name': '',
                              'path': '',
-                             'Json': False}, Api=False):
+                             'Json': False}):
         # removes characters from the path
         self.path = data['path'].rstrip()
         self._api = self.__loadApi()
-        self._Json = data['Json']
-        self.__Foldercheck(self)
+        try:
+            self._json = data['Json']
+        except KeyError:
+            self._json = False
+        self.__Foldercheck()
         if data['name'] is not None and data['path'] is not None:
             self.data = data
 
@@ -34,7 +36,7 @@ class save:
     def __loadApi(self):
         # Attempts to load Api
         # Remove api bypass?
-        if (self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves") or Api:  # noqa E501
+        if self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves":  # noqa E501
             # Import drive and do stuff
             try:
                 import DriveApi as d
@@ -70,8 +72,8 @@ class save:
     save -> to encode or to decode
     - Encodes data with json, this makes it harder to edit normally
     """
-    def _Json(self, data, save):
-        if self._Json:
+    def _Json(self, data, save=False):
+        if self._json:
             if not save:
                 return json.loads(data)
             return json.dumps(data)
@@ -109,9 +111,9 @@ class save:
     replace -> whever to set the last directory created
     """
     def makeFolder(self, sub=None, replace=False):
-        if self.api:
+        if self._api:
             # Makes folder on drive
-            folderId = self.api.UploadData({
+            folderId = self._api.UploadData({
                 'name': self.data['name'],
                 'folder': self.path
             }, True)
@@ -123,7 +125,7 @@ class save:
 
                 # Makes sub folders on drive
                 for item in splitInfo:
-                    newFolder = self.api.UploadData({
+                    newFolder = self._api.UploadData({
                         'name': item,
                         'path': newFolder
                     }, True)['id']
@@ -146,26 +148,83 @@ class save:
             os.mkdir(path)
 
         if sub is not None:
-            os.makedirs(sub)
+            # change, make, change
+            if os.path.exists(sub):
+                os.chdir(path) 
+                os.makedirs(sub)
+                os.chdir(filePath)
 
         if replace:
-            self.path = path
+            self.path = os.path.join(path, sub)
         return path, None
 
+    """
+    writeFile(data, overwrite=False)
+    data -> data to save
+    overwrite -> whever to overwrite the data on drive. Dones't work locally.
+    - Save data to a file
+    """
     def writeFile(self, data, overwrite=False):
         if data is None:
             return None
 
+        # Makes the file with the data in the temparay location
         tempLocation = "Saves/.Temp/{}".format(self.data['name'])
         with open(tempLocation, 'w+') as tempFile:
             tempFile.write(self._Json(data, True))
 
-        if self.api:
-            id = self.api.UploadData({
+        if self._api:
+            # uploads to drive
+            id = self._api.UploadData({
                 'name': self.data['name'],
                 'path': tempLocation,
                 'folder': self.path,
             }, overwrite=overwrite)
-            os.remove(tempLocation)
+            os.remove(tempLocation) # remove local copy
             return id
         slash = self.__slash()
+        # moves file to where it should be saved
+        os.rename("Saves{}.Temp{}{}".format(slash, slash, self.data['name']), "{}{}{}".format(self.path, slash, self.data['name']))
+        return "{}{}{}".format(self.path, slash, self.data['name'])
+
+    def readFile(self):
+        slash = self.__slash()
+        path = "{}{}{}".format(self.path, slash, self.data['name'])
+        if self._api:
+            saveLoc = "Saves/.Temp/{}".format(self.data['name'])
+            Id = self._api.DownloadData({
+                'Id': self.data['name'],
+                'path': saveLoc
+            })
+            # If can't find file, attempt to search 
+            if Id is False:
+                files = self._api.ListFolder()
+                for file in files:
+                    if file['name'] == self.data['name']:
+                        Id = self._api.DownloadData({
+                            'Id': file['id'],
+                            'path': saveLoc
+                        })
+                        break
+    
+            if isinstance(Id, str):
+                with open(Id, 'r') as file:
+                    return self._Json(file.read())
+            return Id
+        
+        # local read area
+        path = self.__replace(path)
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                return self._Json(file.read())
+        return False
+
+if __name__ == "__main__":
+    ss = save({'name': 'Test', 'path': 'Saves'})
+    print(vars(ss))
+    ss.makeFolder('test1/test2', True)
+    print(vars(ss))
+    path = ss.writeFile('Testinfo')
+    print(path)
+    data = ss.readFile()
+    print(data)
