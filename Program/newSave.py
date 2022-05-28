@@ -162,21 +162,24 @@ class save:
     writeFile(data, overwrite=False)
     data -> data to save
     overwrite -> whever to overwrite the data on drive. Dones't work locally.
+    name -> name of the file, just in case the file needs to be different from the current name inputted.
     - Save data to a file
-    """
-    def writeFile(self, data, overwrite=False):
+    """  # noqa E501
+    def writeFile(self, data, overwrite=False, name=""):
         if data is None:
             return None
+        if name == "":
+            name = self.data['name']
 
         # Makes the file with the data in the temparay location
-        tempLocation = "Saves/.Temp/{}".format(self.data['name'])
+        tempLocation = "Saves/.Temp/{}".format(name)
         with open(tempLocation, 'w+') as tempFile:
             tempFile.write(self._Json(data, True))
 
         if self._api:
             # uploads to drive
             id = self._api.UploadData({
-                'name': self.data['name'],
+                'name': name,
                 'path': tempLocation,
                 'folder': self.path,
             }, overwrite=overwrite)
@@ -184,9 +187,9 @@ class save:
             return id
         slash = self.__slash()
         # moves file to where it should be saved
-        os.rename("Saves{}.Temp{}{}".format(slash, slash, self.data['name']),
-                  "{}{}{}".format(self.path, slash, self.data['name']))
-        return "{}{}{}".format(self.path, slash, self.data['name'])
+        os.rename("Saves{}.Temp{}{}".format(slash, slash, name),
+                  "{}{}{}".format(self.path, slash, name))
+        return "{}{}{}".format(self.path, slash, name)
 
     """
     readFile

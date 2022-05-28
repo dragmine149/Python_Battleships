@@ -1,5 +1,5 @@
 import Functions
-import Save
+import newSave
 import random
 import string
 
@@ -142,9 +142,10 @@ Multiplayer: {}
             if Location != "Saves":
                 # attmepts to write file and read file from dir specified
                 # creates save obj
-                saveInfo = Save.save(Location, False, {
+                saveInfo = newSave.save({
                     'name': 'Test',
-                    'file': 'test'
+                    'path': Location,
+                    'Json': False
                 })
                 print(vars(saveInfo))
 
@@ -219,9 +220,10 @@ Multiplayer: {}
         board = Functions.board.CreateBoard(self.siZe)
 
         # Create folder for the game
-        gameData = Save.save(self.Loc, data={
+        gameData = newSave.save({
             'name': self.Gname,
-            'file': ''
+            'path': self.Loc,
+            'Json': True
         })
 
         gameFolder = gameData.makeFolder(replace=True)
@@ -231,26 +233,21 @@ Multiplayer: {}
         userFolders = []
         for user in self.usernames:
             # create user data
-            userData = Save.save(gameFolder, data={
+            userData = newSave.save({
                 'name': user,
-                'file': ''
+                'path': gameFolder,
+                'Json': True
             })
             # create user folder
             folder = userData.makeFolder(replace=True)
             userFolders.append(folder[0])
 
             # create files for users
-            userData.writeFile({
-                'data': board,
-            }, 'ships')
+            userData.writeFile(board, name='ships')
 
         # make turn file, notes whos turn it is.
-        gameData.writeFile({
-            'data': self.usernames[0]
-        }, 'turn')
-        gameData.writeFile({
-            'data': self.Multi[0]
-        }, 'multi')
+        gameData.writeFile(self.usernames[0], name='turn')
+        gameData.writeFile(self.Multi[0], name='multi')
 
         return True  # success!!!
 
