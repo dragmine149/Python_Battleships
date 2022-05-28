@@ -273,9 +273,11 @@ class save:
         if not self._api:
             Npath = self.__replace(path)
             if os.path.exists(Npath):
+                # want to change at some point
+                os.system('rm -r {}'.format(Npath))
                 # NOOOOOOOOO
                 # this is going to be a pain to implement...
-                os.removedirs(Npath)
+                # os.removedirs(Npath)
                 return True
             print('Path not found! -> {}'.format(Npath))
             return False
