@@ -166,7 +166,7 @@ Multiplayer: {}
                     Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
                     Location = None
 
-                saveInfo.Delete(folder[0])
+                saveInfo.Delete(folder)
 
         print({"Loc": Location})
         self.Loc = Location
@@ -229,7 +229,7 @@ Multiplayer: {}
 
         gameFolder = gameData.makeFolder(replace=True)
         print(gameFolder)
-        gameFolder = gameFolder[0]
+        gameFolder = gameFolder
 
         userFolders = []
         for user in self.usernames:

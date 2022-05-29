@@ -143,6 +143,7 @@ class Api:
                 f.write(html)
             return "{}{}".format(data['path'], fileEnd)
         except HttpError as error:
+            # If this fires and then the above files, do not worry.
             print("Error occured!: {}".format(error.reason))
             return False
 

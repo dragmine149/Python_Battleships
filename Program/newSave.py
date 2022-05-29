@@ -136,7 +136,7 @@ class save:
             # replace and return
             if replace:
                 self.path = folderId
-            return folderId
+            return folderId['id']
 
         # normal local folder
         path = self.path
@@ -160,7 +160,7 @@ class save:
             if sub is not None:
                 self.path = os.path.join(path, sub)
 
-        return path, None
+        return path
 
     """
     writeFile(data, overwrite=False)
