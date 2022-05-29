@@ -155,9 +155,10 @@ Multiplayer: {}
 
                 # creates file
                 savedLocation = saveInfo.writeFile("This is a test file")
+                print(savedLocation)
 
                 # reads file from same place
-                data = saveInfo.readFile('Test')
+                data = saveInfo.readFile()
                 print(data)
 
                 if data != "This is a test file":
@@ -165,7 +166,7 @@ Multiplayer: {}
                     Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
                     Location = None
 
-                saveInfo.Delete(savedLocation)
+                saveInfo.Delete(folder[0])
 
         print({"Loc": Location})
         self.Loc = Location

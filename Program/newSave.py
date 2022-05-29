@@ -1,6 +1,7 @@
 import os
 import Functions
 import json
+import shutil
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)
@@ -145,7 +146,7 @@ class save:
         # this is because os.path.exists doesn't like it but os.mkdir AAAAAAA
         Npath = self.__replace(path)
         if not os.path.exists(Npath):
-            os.mkdir(path)
+            os.mkdir(Npath)
 
         if sub is not None:
             # change, make, change
@@ -190,8 +191,8 @@ class save:
             return id
         slash = self.__slash()
         # moves file to where it should be saved
-        os.rename("Saves{}.Temp{}{}".format(slash, slash, name),
-                  "{}{}{}".format(self.path, slash, name))
+        shutil.move("Saves{}.Temp{}{}".format(slash, slash, name),
+                    "{}{}{}".format(self.__replace(self.path), slash, name))  # noqa E501
         return "{}{}{}".format(self.path, slash, name)
 
     """
@@ -279,11 +280,7 @@ class save:
         if not self._api:
             Npath = self.__replace(path)
             if os.path.exists(Npath):
-                # want to change at some point
-                os.system('rm -r {}'.format(Npath))
-                # NOOOOOOOOO
-                # this is going to be a pain to implement...
-                # os.removedirs(Npath)
+                shutil.rmtree(Npath)
                 return True
             print('Path not found! -> {}'.format(Npath))
             return False
