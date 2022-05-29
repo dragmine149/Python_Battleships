@@ -155,7 +155,10 @@ class save:
                 os.chdir(filePath)
 
         if replace:
-            self.path = os.path.join(path, sub)
+            self.path = path
+            if sub is not None:
+                self.path = os.path.join(path, sub)
+
         return path, None
 
     """
