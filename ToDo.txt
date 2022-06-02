@@ -21,6 +21,7 @@ Main:
 🅿️ Bug Fixes
 ✅ Code Rewrite
 ◾️ Save Game create inputs
+◾️ Archive Option
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training

@@ -32,7 +32,11 @@ class Process:
     # Gets the inputs and return the game result info thing
     def Inputs(self, path, name=None, external=False, create=False):
         if create:
-            [name, users, Location, online] = Create.CreateData().getOption()
+            Data = Create.CreateData().getOption()
+            # checks if no data before trying to return chaos
+            if Data is None:
+                return
+            [name, users, Location, online] = Data
             return name, users, [False, False], Location, online
         print({'external': external})
         if not external:

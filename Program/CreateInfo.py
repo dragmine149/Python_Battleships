@@ -43,7 +43,9 @@ Multiplayer: {}
         while choice != 0:
             result = True
             Functions.clear()
-            choice = Functions.check("What would you like to change?: ", self.showOptions, None, Functions.NumberRangeCheck, 6).InputDigitCheck()  # noqa E501
+            choice = Functions.check("What would you like to change?: ",
+                                     self.showOptions,
+                                     (0, 6)).getInput()
             if choice == 1:
                 self.name()
             if choice == 2:
@@ -64,6 +66,7 @@ Multiplayer: {}
                 return [self.Gname, self.usernames, self.Loc, self.Multi]
             # No need to add checks here as Functions.check().InputDigitCheck()
             # should take care of it.
+        return None
 
     def name(self):
         # Gets the name of the game
@@ -142,31 +145,7 @@ Multiplayer: {}
             if Location != "Saves":
                 # attmepts to write file and read file from dir specified
                 # creates save obj
-                saveInfo = newSave.save({
-                    'name': 'Test',
-                    'path': Location,
-                    'Json': False
-                })
-                print(vars(saveInfo))
-
-                # Creates test folder
-                folder = saveInfo.makeFolder(replace=True)
-                print(folder)
-
-                # creates file
-                savedLocation = saveInfo.writeFile("This is a test file")
-                print(savedLocation)
-
-                # reads file from same place
-                data = saveInfo.readFile()
-                print(data)
-
-                if data != "This is a test file":
-                    # Oh oh, doesn't work... Return error
-                    Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
-                    Location = None
-
-                saveInfo.Delete(folder)
+                Functions.LocationTest(Location)
 
         print({"Loc": Location})
         self.Loc = Location

@@ -157,7 +157,6 @@ class Api:
             if dir:
                 query += " and mimeType = 'application/vnd.google-apps.folder'"
 
-            # print(query)
             # Some things don't work...
             results = self.service.files().list(
                 q=query,

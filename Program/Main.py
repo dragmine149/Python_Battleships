@@ -216,13 +216,13 @@ Option can be one of the following:
 - String
   - Attempts to load game name of string, If not found will make game name of string
 - Number
-  - Calls that number
+  - Does that action (1 = load, 2 = make, 3 = settings). Quick form
 
 Other possible options:
 - help
   - Shows this menu
 ---------------------------------------------------------------------------------------
-""")
+""")  # noqa E501
 
     return 1
 

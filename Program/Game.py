@@ -4,12 +4,13 @@ import Functions
 import ProcessInput as pi
 import platform
 import Save as save
+import GameMenu
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class game:
     def __init__(self):
-        Functions.clear()
+        # Functions.clear()
         self.choice = None
         self.game = None
         self.path = "Saves"
@@ -43,73 +44,7 @@ Other Options:
         if self.choice == 0:
             sys.exit("Thank you for playing")
         if self.choice == 1:
-            apiExternal = False
-            while not self.game:
-                Functions.clear()
-                self.game = Functions.check("Enter game number to load: ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
-                if self.game == -2:
-                    delGame = None
-                    while not delGame:
-                        Functions.clear()
-                        delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
-                        if delGame != -1:
-                            deletePath = None
-                            if apiExternal:
-                                deletePath = Functions.RemoveNonGames(self.path)[delGame - 1]  # noqa
-                                for item in self.path:
-                                    if item['name'] == deletePath:
-                                        result = save.save(self.external).Delete(item['id'])  # noqa
-
-                                        # Reset ui to show new list instead of old  # noqa
-                                        self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
-                                        break
-                            else:
-                                deletePath = os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame - 1])  # noqa
-                                save.save(self.path).Delete(deletePath)  # noqa
-                            delGame = None
-                    self.game = None
-                if self.game == 0:
-                    self.choice = None
-                    self.game = None
-                    return
-                if self.game == -1:
-                    self.game = None
-                    Functions.clear()
-                    self.external = None
-                    while not self.external:
-                        try:
-                            self.external = input("Please enter location of storage (leave blank to go back): ").rstrip().replace('"', '')  # noqa
-                            if self.external != "":
-                                # Windows has different file structure AAA
-                                if platform.system() != "Windows":
-                                    self.external = self.external.replace("\\", "")  # noqa
-
-                                # Normal file check
-                                if self.external.find("\\") > -1 or self.external.find("/") > -1:  # noqa
-                                    # Directory check
-                                    if not os.path.isdir(self.external):
-                                        self.external = None
-                                        Functions.clear(2, "Provided directory is not a directory")  # noqa
-                                    else:
-                                        self.path = self.external
-                                else:
-                                    # Google api check
-                                    self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
-                                    apiExternal = True
-
-                                    # Reset if error in loading...
-                                    if self.path == "Error":
-                                        self.path = "Saves"
-                                        Functions.clear(2)
-                            else:
-                                self.external = self.path
-                                self.path = "Saves"
-                                self.external = "Saves"
-                        # Easy way to redo just in case mess up.
-                        except KeyboardInterrupt:
-                            self.external = None
-                            Functions.clear()
-            return pi.Process().Inputs(self.path, name=Functions.RemoveNonGames(self.path)[self.game - 1], external=apiExternal)  # noqa
+            return self.SelectGame()
         if self.choice == 2:
             return pi.Process().Inputs(self.game, create=True)
         if self.choice == 3:
@@ -118,14 +53,14 @@ Other Options:
     def GetInput(self):
         while not self.choice:
             Functions.clear()
-            self.choice = Functions.check("Your Choice (number): ", self.OptionsRead, None, Functions.NumberRangeCheck, 3).InputDigitCheck()  # noqa
+            self.choice = Functions.check("Your Choice (number): ", self.Options, None, Functions.NumberRangeCheck, 3).InputDigitCheck()  # noqa
             result = self.ProcessChoice()
             if result is None:
                 self.choice = None
                 continue
             return result
 
-    def OptionsRead(self):
+    def Options(self):
         print("""0. Quit
 1. Load Games
 2. Make New Game
@@ -133,6 +68,6 @@ Other Options:
 
 
 if __name__ == "__main__":
-    game = game()
-    gameInfo = game.GetInput()
+    Game = game()
+    gameInfo = Game.GetInput()
     print(gameInfo)

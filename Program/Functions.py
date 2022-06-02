@@ -1,7 +1,151 @@
 import time
 import os
-import Save as save
+import newSave
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+
+class Print:
+    """
+    Colours:
+    foreground : {
+        black, red, green, orange, blue, purple, cyan, light grey, dark grey,
+        light red, light green, yellow, light blue, pink, cyan
+    }
+    background : {
+        black, red, green, orange, blue, purple, cyan, light grey
+    }
+    options = [
+        reset, bold, disable, underline, reverse, strikethrough, invisible
+    ]
+    """
+
+    def __init__(self, msg, colour=[None, None], options=[
+        None, None, None, None, None, None, None
+    ]):
+        self.msg = msg
+
+        # gets the colour and checks it
+        self.colour = self.__ColourCheck(colour)
+        self.options = options
+        if not self.colour:
+            # print if no colour, saving time
+            print(msg)
+        else:
+            # print with colour
+            self.__defineColours()
+            self.__output()
+
+    def __ColourCheck(self, colour):
+        if colour is None:  # if none, return
+            return False
+        if isinstance(colour, list):
+            if len(colour) > 2:  # if more than 2, shrink
+                return colour[0:1]
+            if len(colour) == 2:
+                # only care if they are both none
+                if colour[0] is None and colour[1] is None:
+                    return False
+                return colour
+            # assume foreground
+            if len(colour) == 1:
+                return [colour[0], None]
+        return [colour, None]
+
+    def __getOptionValues(self):
+        optStr = ''
+        _FormatOptions = [
+            'reset',
+            'bold',
+            'disable',
+            'underline',
+            'reverse',
+            'strikethrough',
+            'invisible'
+        ]
+        # checks if string
+        if isinstance(self.options, str):
+            if self.options in _FormatOptions:
+                return self._format[self.options]
+
+        # loops through and get all the options
+        for option in self.options:
+            if option in _FormatOptions:
+                optStr += self._format[option]
+        return optStr
+
+    def __output(self):
+        # Take colour and message and print them correctly
+        colourValues = ['', '']
+
+        # get the foreground colour value
+        for i in range(2):
+            if self.colour[i] is None:
+                colourValues[i] = ''
+                break
+
+            # background and foreground colour set
+            try:
+                colourValue = self.colour[i].lower()
+                if i == 0:
+                    colourValues[i] = self._colours['fg'][colourValue]
+                if i == 1:
+                    colourValues[i] = self._colours['bg'][colourValue]
+
+            except KeyError:
+                colourValues[i] = ''  # don't include one if not present
+            except AttributeError:
+                colourValue[i] = ''
+
+        # print out colours
+        print('{}{}{}{}'.format(self.__getOptionValues(),
+                                colourValues[0],
+                                colourValues[1],
+                                self.msg),
+              end='')  # no end so it reset bg colour as well
+
+        # reset to normal afterwards
+        print(self._format['reset'])
+
+    def __defineColours(self):
+        # defines the colours and what they do
+        self._format = {
+            'reset': '\033[0m',
+            'bold': '\033[01m',
+            'disable': '\033[02m',
+            'underline': '\033[04m',
+            'reverse': '\033[07m',
+            'strikethrough': '\033[09m',
+            'invisible': '\033[08m',
+        }
+        self._colours = {
+            'fg': {
+                'black': '\033[30m',
+                'red': '\033[31m',
+                'green': '\033[32m',
+                'orange': '\033[33m',
+                'blue': '\033[34m',
+                'purple': '\033[35m',
+                'cyan': '\033[36m',
+                'light grey': '\033[37m',
+                'dark grey': '\033[90m',
+                'light red': '\033[91m',
+                'light green': '\033[92m',
+                'yellow': '\033[93m',
+                'light blue': '\033[94m',
+                'pink': '\033[95m',
+                'light cyan': '\033[96m'
+            },
+            'bg': {
+                'black': '\033[40m',
+                'red': '\033[41m',
+                'green': '\033[42m',
+                'orange': '\033[43m',
+                'blue': '\033[44m',
+                'purple': '\033[45m',
+                'cyan': '\033[46m',
+                'light grey': '\033[47m'
+            }
+        }
 
 
 # Converts the input to a valid location (a1 -> [0,0])
@@ -39,14 +183,16 @@ class LocationConvert:
                 return None, None
             # convert letters into numbers
             return self._decode(self.letters) - 1, (int(self.y) - 1)
-        else:
-            clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
-            return None, None
+        clear(1, "Must be at least two digits, a letter (x) and a number (y)")  # noqa
+        return None, None
 
 
 # Remove games that begin with '.' or '__' or are not directoies at all.
 # TODO: Better hidden folder check
 def RemoveNonGames(path="Saves"):
+    # returns empty if nothing put in.
+    if path is None:
+        return []
     games = None
     api = False
     if isinstance(path, list):
@@ -81,44 +227,33 @@ def RemoveNonGames(path="Saves"):
     return newlist
 
 
-# Checks if a number is within 0 and another value.
-def NumberRangeCheck(value, x):
-    if value >= 0 and value <= x:
-        return True
-    return False
-
-
-# Clears the console with a message before clear.
-def clear(timeS=0, message=None):
+def __messageSort(timeS=0, message=None, clear=False, colour=[None, None]):
     if isinstance(timeS, str):
-        print("Automatically fixed error! `timeS` was string instead of number!")  # noqa E501
+        Print("Automatically fixed error! `timeS` was string instead of number!", 'light red')  # noqa E501
         time.sleep(2)  # force wait
-        if message is None:
-            message = timeS
-        # else discard message
+        message = timeS
         timeS = 2  # default time, 2 seconds for message
 
     if message:
-        print(message)
+        Print(message, colour)
     time.sleep(timeS)
     # Windows doesn't have 'clear' so having to use the other option.
     # Mac / Linux doesn't have 'cls' same issue as windows
-    if os.name == "nt":
-        os.system("cls")
-    else:
-        os.system("clear")
+    if clear:
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            os.system("clear")
+
+
+# Clears the console with a message before clear.
+def clear(timeS=0, message=None, colour=[None, None]):
+    __messageSort(timeS, message, True, colour)
 
 
 # does the same as clear, just doesn't clear it.
-def warn(timeS=2, message=None):
-    if isinstance(timeS, str):
-        print("Automatically fixed! timeS was string instead of number")
-        message = timeS
-        timeS = 2
-
-    if message:
-        print(message)
-    time.sleep(timeS)
+def warn(timeS=2, message=None, colour=[None, None]):
+    __messageSort(timeS, message, False, colour)
 
 
 # Check if the input is a valid input using a whole bunch of data
@@ -126,78 +261,112 @@ class check:
     """
     request -> String
         - What you want to ask the user
-    extra -> String / function
-        - Any extra information you want to display to the user
-    extraValue -> value
-        - Information that the function needs
-    rangeCheck -> function
-        - A callable function that checks if the input is within 2 digits
-    rangeCheckValue -> Interager
-        - The other digit for the range check
+    extra -> (function, value)
+        - What you want to show the user. function arg can be string
+    rangeCheck -> (value, value)
+        - The 2 numbers to compair the input with
+        - INT CHECK ONLY
+    returnFunc -> (function, function, function)
+        - what happens after completion of running
+        - Yes No Check ONLY
     """
+    __slots__ = ("__input", "_request", "_extra", "_rangeCheck", "_returnFunc")
 
-    def __init__(self, request, extra=None, extraValue=None, rangeCheck=None, rangeCheckValue=None):  # noqa
-        self.request = request
-        self.extra = extra
-        self.extraValue = extraValue
-        self.rangeCheck = rangeCheck
-        self.rangeCheckValue = rangeCheckValue
-        self.Id = None
-        self.check = None
+    def __init__(self, request,
+                 extra=(None, None),  # function, value
+                 rangeCheck=(None, None),  # value, value
+                 returnFunc=(None, None, None)  # function, function, function
+                 ):
+        self._request = request
+        self._extra = extra
+        self._rangeCheck = rangeCheck  # int check
+        self._returnFunc = returnFunc  # ynCheck
 
-    def _PassCheck(self):
+        self.__input = None
+
+    def _IntCheck(self):
+        if self._rangeCheck[0] is None or self._rangeCheck[1] is None:
+            clear(1, "INVALID INPUT No values to check between", ['red'])
+            return "qiagho"  # try using this lol
         # Checks to see if the value is okay
-        self.Id = int(self.Id)
-        if self.rangeCheck is not None:  # checks if in certain range
-            # A lot of checks to call a function or not
-            if callable(self.rangeCheck):
-                if self.rangeCheckValue is None:
-                    self.check = self.rangeCheck(self.Id)
-                else:
-                    if callable(self.rangeCheckValue):
-                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue())  # noqa
-                    else:
-                        self.check = self.rangeCheck(self.Id, self.rangeCheckValue)  # noqa
-
-                if self.check:
-                    return self.Id
-                else:
-                    if self.Id == -1 or self.Id == -2:
-                        return self.Id
-                    clear(1, "Out of range.")
-                    self.Id = None
-                    return None
-            else:
-                print("ERROR, range check is not a function!")
-                return self.Id
-        else:
-            return self.Id
+        if IsDigit(self.__input):
+            self.__input = int(self.__input)
+            # inclusive of 2 end values
+            if self.__input >= self._rangeCheck[0]:
+                if self.__input <= self._rangeCheck[1]:
+                    return self.__input
+                clear(1, "Out of range. (above max value: {})".format(self._rangeCheck[1]), [None, 'red'])  # noqa E501
+                return None
+            clear(1, "Out of range. (below min value: {})".format(self._rangeCheck[0]), [None, 'red'])  # noqa E501
+            return None
+        self._FailCheck()
 
     def _FailCheck(self):
         # user notification
-        clear(1, "Please enter a valid input")
-        self.Id = None
+        clear(1, "Please enter a valid input", 'light red')
+        self.__input = None
 
     def _CallExtra(self):  # repeats any information the user needs to know
-        if self.extra is not None:
-            if callable(self.extra):
-                if self.extraValue is None:
-                    self.extra()  # call function
-                else:
-                    self.extra(self.extraValue)
-            else:
-                print(self.extra)
+        # check if any extra information to show
+        if self._extra is not None:
+            function = self._extra
+            functionVars = None
 
-    def InputDigitCheck(self):  # noqa
-        while not self.Id:
-            self._CallExtra()
-            # get input, make request a string.
-            self.Id = input(str(self.request))
-            try:
-                int(self.Id)
-                return self._PassCheck()
-            except ValueError:
-                self._FailCheck()
+            # checks if function can be called
+            if callable(function):
+                return function()
+
+            # checks for more info
+            if len(self._extra) == 2:
+                if self._extra[0] is None and self._extra[1] is None:
+                    return
+                function = self._extra[0]
+                functionVars = self._extra[1]
+
+            # tries again
+            if callable(function):
+                if functionVars is not None:
+                    return function(functionVars)
+                return function()
+
+            print(function)
+            return
+
+    def _ynCheck(self):
+        # remove all spaces, make lower, get first character
+        self.__input = self.__input[0].replace(" ", "").lower()
+
+        # yes check
+        if self.__input == "y":
+            if callable(self._returnFunc[0]):
+                return self._returnFunc[0]()
+            return self._returnFunc[0]
+
+        # no check
+        if self.__input == "n":
+            if callable(self._returnFunc[1]):
+                return self._returnFunc[1]()
+            return self._returnFunc[1]
+
+        # unknown check
+        if callable(self._returnFunc[2]):
+            return self._returnFunc[2]()
+        return self._returnFunc[2]
+
+    def getInput(self, check="Int"):
+        while not self.__input:
+            # gets inputs
+            self._CallExtra()  # show information as needed
+            self.__input = input(str(self._request))
+
+            # sorts out inputs
+            if check == "Int":
+                self.__input = self._IntCheck()
+                if self.__input is not None:
+                    return self.__input
+
+            if check == "ynCheck":
+                return self._ynCheck()
 
 
 # Everything to do with the board. Prints it and creates it.
@@ -291,33 +460,6 @@ class userData:
                 return userData
 
 
-"""
-ynCheck
-Check if the result is "y" or "n" and calls the function based on it
-- yesFunc: function to call if true,
-- noFunc: function to call if false,
-- returnFunc: function to call if neither, default None (resets)
-"""
-
-
-def ynCheck(result, yesFunc, noFunc, returnFunc=None):
-    result = result.replace(" ", "")  # remove all spaces
-    result = result.lower()  # lower case
-    result = result[0]  # gets first character
-    if result == "y":
-        if callable(yesFunc):  # checks if callable and stuff
-            return yesFunc()
-        return yesFunc
-    elif result == "n":
-        if callable(noFunc):
-            return noFunc()
-        return noFunc
-    else:
-        if callable(returnFunc()):
-            return returnFunc()
-        return returnFunc
-
-
 class search:
     """
     directory -> where to start search
@@ -406,25 +548,66 @@ class search:
             return "Failed!", None
 
 
+def LocationTest(Location):
+    saveInfo = newSave.save({
+        'name': 'Test',
+        'path': Location,
+        'Json': False
+    })
+    print(vars(saveInfo))
+
+    # Creates test folder
+    folder = saveInfo.makeFolder(replace=True)
+    print(folder)
+
+    # creates file
+    savedLocation = saveInfo.writeFile("This is a test file")
+    print(savedLocation)
+
+    # reads file from same place
+    data = saveInfo.readFile()
+    print(data)
+
+    if data != "This is a test file":
+        # Oh oh, doesn't work... Return error
+        Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
+        Location = None
+
+    saveInfo.Delete(folder)
+
+    return True, saveInfo._api
+
+
+def IsDigit(var):
+    # returns true if interger
+    if isinstance(var, int):
+        return True
+
+    # Checks to see if negative or not
+    try:
+        if var[0] == '-':
+            # negative
+            return var[1:].isdigit()
+        return var.isdigit()
+    except IndexError:  # if error, return false
+        return False
+
+
 def tests():
     # Run a series of tests for all things
     r1 = LocationConvert('A1').Convert()
     r2 = RemoveNonGames('.')
-    r3 = NumberRangeCheck(10, 5)
     r5 = board.CreateBoard([10, 10])
     r6 = board.DisplayBoard(r5)
-    r7 = ynCheck('y', True, False, None)
     print(r1)
     print(r2)
-    print(r3)
     print(r5)
     print(r6)
-    print(r7)
     assert True
     return True
 
 
 if __name__ == "__main__":
     # result = search('.', 'credentials.json').Locate()
-    # print({'result': result})
+    # print({'result': self.input})
     tests()
