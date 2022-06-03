@@ -607,6 +607,60 @@ def tests():
     return True
 
 
+# lets the user select the path of where to view the games
+def changePath():
+    games = None
+    path = None
+    external = None
+    apiExternal = None
+    clear()
+    while not external:
+        try:
+            external = input("Please enter location of storage (leave blank to reset, Keyboard Interrupt to reset input): ").rstrip().replace('"', '')  # noqa
+            if external != "":
+                # Windows has different file structure AAA
+                if os.name != "nt":
+                    external = external.replace("\\", "")  # noqa
+
+                # test and tells us
+                result = LocationTest(external)
+
+                # set the path to the new external location
+                path = external
+
+                # tells the code to use different location
+                if result[1]:
+                    apiExternal = True
+
+                    # get the files
+                    games = newSave.save({
+                        'name': '',
+                        'path': external
+                    }).ls()
+                    games = games
+
+                    # checks if there is game data
+                    if games is None:
+                        external = None
+                        path = "Saves"
+                        Functions.clear(2, "No games found in desired location!")  # noqa E501
+                        continue
+                    return games, path, apiExternal
+
+                apiExternal = False
+                games = path
+                return games, path, apiExternal
+            path = "Saves"
+            games = "Saves"
+            apiExternal = False
+            return games, path, apiExternal
+
+        # Easy way to redo just in case mess up.
+        except KeyboardInterrupt:
+            external = None
+            clear()
+
+
 if __name__ == "__main__":
     # result = search('.', 'credentials.json').Locate()
     # print({'result': self.input})

@@ -39,60 +39,15 @@ class Loader:
                 delGame = None
         self.game = None
 
-    # lets the user select the path of where to view the games
-    def changePath(self):
-        self.game = None
-        Functions.clear()
-        external = None
-        while not external:
-            try:
-                external = input("Please enter location of storage (leave blank to reset, Keyboard Interrupt to reset input): ").rstrip().replace('"', '')  # noqa
-                if external != "":
-                    # Windows has different file structure AAA
-                    if os.name != "nt":
-                        external = external.replace("\\", "")  # noqa
-
-                    # test and tells us
-                    result = Functions.LocationTest(external)
-
-                    # set the path to the new external location
-                    self.path = external
-
-                    # tells the code to use different location
-                    if result[1]:
-                        self.apiExternal = True
-
-                        # get the files
-                        games = newSave.save({
-                            'name': '',
-                            'path': external
-                        }).ls()
-                        self.games = games
-
-                        # checks if there is game data
-                        if self.games is None:
-                            external = None
-                            self.path = "Saves"
-                            Functions.clear(2, "No games found in desired location!")  # noqa E501
-                            continue
-                        return "Changed"
-
-                    self.apiExternal = False
-                    self.games = self.path
-                    return "NAS"
-                self.path = "Saves"
-                self.games = "Saves"
-                self.apiExternal = False
-                return
-
-            # Easy way to redo just in case mess up.
-            except KeyboardInterrupt:
-                external = None
-                Functions.clear()
-
     # go back to previous menu
     def back(self):
         return "Returned"
+
+    def changePath(self):
+        data = Functions.changePath()
+        self.game = None
+        self.games, self.path, self.apiExternal = data
+        return "Changed"
 
     def loadMenu(self):
         # sets the message so the user knows where it is better
