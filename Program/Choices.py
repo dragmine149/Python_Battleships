@@ -2,6 +2,7 @@ import sys
 import Functions
 import Loader
 import ProcessInput as pi
+import Settings
 
 
 # Main menu choices, not a lot.
@@ -37,4 +38,5 @@ class Choices:
         return self.Process.Inputs(self.path, create=True)
 
     def settings(self):
+        Settings.Settings().showDisplay()
         return "Comming soon..."

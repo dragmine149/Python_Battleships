@@ -291,7 +291,7 @@ class check:
         # Checks to see if the value is okay
         if IsDigit(self.__input):
             self.__input = int(self.__input)
-            # inclusive of 2 end values
+            # inclusive of 2 end values
             if self.__input >= self._rangeCheck[0]:
                 if self.__input <= self._rangeCheck[1]:
                     return self.__input
