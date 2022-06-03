@@ -7,8 +7,12 @@ import newSave
 class Settings:
     def __init__(self):
         print("Loading settings")
+    
+    def back(self):
+        return "Returned"
 
-    def changeLocation(self):
+    def changeLocation(self, args):
+        print(args)
         print("Changing location")
 
     def showDisplay(self):
@@ -17,13 +21,15 @@ class Settings:
     --------------------------------------------------------------------
     """
         options = """01: Deafult Location ->
-        02: WIP
+02: WIP
         """
         choices = {
-            1: self.showDisplay
+            0: self.back,
+            1: self.changeLocation
         }
         self.display = GameMenu.menu(info,
                                      options,
                                      choices,
                                      back="Return to main menu")
-        self.display.getInput(.5, (0, 1))
+        result = self.display.getInput(-0.5, (0, 1))
+        return result

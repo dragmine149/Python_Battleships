@@ -38,5 +38,6 @@ class Choices:
         return self.Process.Inputs(self.path, create=True)
 
     def settings(self):
+        print("Settings being loaded")
         Settings.Settings().showDisplay()
-        return "Comming soon..."
+        return "Work In Process"

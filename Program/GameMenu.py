@@ -53,8 +53,8 @@ Other Options:
         except NameError:
             Functions.warn(2, "Error in calling function! -> {}".format(self.choiceData[choice]))  # noqa E501
             return None
-        except TypeError:
-            Functions.clear(2, "Error in calling function! Missing arguments", "light red")  # noqa E501
+        except TypeError as TE:
+            Functions.clear(2, "Error in calling function! Missing arguments\n\n{}".format(TE), "light red")  # noqa E501
             return None
 
     def getInput(self, choice=-0.5, values=()):
