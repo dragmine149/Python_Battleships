@@ -9,6 +9,7 @@ import Settings
 class Choices:
     def __init__(self):
         self.Loader = Loader.Loader()
+        self.Settings = Settings.Settings()
         self.Process = pi.Process()
         self.path = self.Loader.path
 
@@ -38,6 +39,6 @@ class Choices:
         return self.Process.Inputs(self.path, create=True)
 
     def settings(self):
-        print("Settings being loaded")
-        Settings.Settings().showDisplay()
-        return "Work In Process"
+        result = self.Settings.showDisplay()
+        print(result)
+        return result

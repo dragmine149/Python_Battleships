@@ -9,12 +9,12 @@ menu = GameMenu.menu
 
 if __name__ == "__main__":
     # banner
-    info = """--------------------------------------------------------------------
+    info = """\033[32m--------------------------------------------------------------------
 Python Battleships by drag
 
 Github: https://www.github.com/dragmine149/Python_Battleships
 --------------------------------------------------------------------
-"""
+\033[0m"""
 
     options = """01: Load Games
 02: Make New Game

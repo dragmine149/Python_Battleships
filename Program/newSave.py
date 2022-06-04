@@ -37,7 +37,7 @@ class save:
     def __loadApi(self):
         # Attempts to load Api
         # Remove api bypass?
-        if self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves":  # noqa E501
+        if self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves" and self.path != "Data":  # noqa E501
             # Import drive and do stuff
             try:
                 import DriveApi as d
