@@ -200,20 +200,22 @@ class save:
     - returns the data from a file.
     - If not found, returns False
     """
-    def readFile(self):
+    def readFile(self, name=""):
+        if name == "":
+            name = self.data['name']
         slash = self.__slash()
-        path = "{}{}{}".format(self.path, slash, self.data['name'])
+        path = "{}{}{}".format(self.path, slash, name)
         if self._api:
-            saveLoc = "Saves/.Temp/{}".format(self.data['name'])
+            saveLoc = "Saves/.Temp/{}".format(name)
             Id = self._api.DownloadData({
-                'Id': self.data['name'],
+                'Id': name,
                 'path': saveLoc
             })
             # If can't find file, attempt to search
             if Id is False:
                 files = self._api.ListFolder()
                 for file in files:
-                    if file['name'] == self.data['name']:
+                    if file['name'] == name:
                         Id = self._api.DownloadData({
                             'Id': file['id'],
                             'path': saveLoc
@@ -226,6 +228,7 @@ class save:
             return Id
 
         # local read area
+        # Don't need to add name here as done eariler
         path = self.__replace(path)
         if os.path.exists(path):
             with open(path, 'r') as file:

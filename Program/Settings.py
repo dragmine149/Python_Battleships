@@ -19,6 +19,7 @@ class Settings:
         if not self.save.CheckForFile('Settings'):
             self.data = {
                 "path": "Saves",
+                "Colour": "reset"
             }
             self.saveSettings()
         self.loadSettings()

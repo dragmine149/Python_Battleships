@@ -9,9 +9,9 @@ import Settings
 class Choices:
     def __init__(self):
         self.Loader = Loader.Loader()
-        self.Settings = Settings.Settings()
-        self.Process = pi.Process()
         self.path = self.Loader.path
+        self.Settings = Settings.Settings()
+        self.Process = pi.Process(self.path)
 
     # doesn't really generate, hard coded list
     def generate(self, mode="main"):
@@ -36,7 +36,7 @@ class Choices:
 
     def makeGame(self):
         self.path = self.Loader.path
-        return self.Process.Inputs(self.path, create=True)
+        return self.Process.Inputs(create=True)
 
     def settings(self):
         result = self.Settings.showDisplay()

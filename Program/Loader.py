@@ -14,6 +14,7 @@ class Loader:
         self.games = Settings.request("path")
         self.path = Settings.request("path")
         self.apiExternal = False
+        self.gameList = None
 
     # deletes a game
     def deleteGame(self):
@@ -66,11 +67,11 @@ Games found in: {} ({})
 
         # alvalible options
         options = ""
-        gameList = Functions.RemoveNonGames(self.games)
-        gameList.sort()
+        self.gameList = Functions.RemoveNonGames(self.games)
+        self.gameList.sort()
 
-        for game in range(len(gameList)):
-            options += "{}: {}\n".format(game + 1, gameList[game])
+        for game in range(len(self.gameList)):
+            options += "{}: {}\n".format(game + 1, self.gameList[game])
 
         def all(choice):
             Functions.Print('ALL OBJECT CALLED', 'green', 'bold')
@@ -88,7 +89,7 @@ Games found in: {} ({})
         }
         # generates menu
         self.menu = Menu.menu(info, options, choices, external, "Back")
-        inResult = self.menu.getInput(values=(-2, len(gameList)))
+        inResult = self.menu.getInput(values=(-2, len(self.gameList)))
         return inResult
 
     # returns data from loading the games
@@ -104,6 +105,5 @@ Games found in: {} ({})
                 self.game = None
 
             if self.game is not None:
-                return pi.Process().Inputs(self.path,
-                                           Functions.RemoveNonGames(self.path)[self.game - 1],  # noqa E501
-                                           self.apiExternal)
+                pathInfo = self.gameList[self.game - 1]
+                return pi.Process(self.path, pathInfo).Inputs(self.apiExternal)

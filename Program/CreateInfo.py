@@ -5,9 +5,9 @@ import string
 
 
 class CreateData:
-    def __init__(self, path):
+    def __init__(self, path="Saves", name=None):
         # Load the class and all it's data
-        self.Gname = None
+        self.Gname = name
         self.usernames = [None, None]
         self.siZe = [10, 10]
         self.Loc = path
@@ -225,6 +225,7 @@ Multiplayer: {}
 
             # create files for users
             userData.writeFile(board, name='ships')
+# userData.writeFile(board, name='shots')
 
         # make turn file, notes whos turn it is.
         gameData.writeFile(self.usernames[0], name='turn')

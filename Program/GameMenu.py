@@ -1,4 +1,5 @@
 import Functions
+import traceback
 
 
 class menu:
@@ -31,6 +32,11 @@ Other Options:
             for item in self.external:
                 print("{}: {}".format(item, self.external[item]))
 
+    def __PrintTraceback(self):
+        print('\033[41m----')
+        traceback.print_exc()
+        print('----\033[0m')
+
     # gets their choice and does stuff
     def process(self, choice):
         print(choice)
@@ -47,13 +53,16 @@ Other Options:
             try:
                 return self.choiceData['All'](choice)
             except KeyError:
+                self.__PrintTraceback()
                 Functions.Print('Key Error 2', 'red', 'bold')
                 return None
             return None
-        except NameError:
-            Functions.warn(2, "Error in calling function! -> {}".format(self.choiceData[choice]))  # noqa E501
+        except NameError as NE:
+            self.__PrintTraceback()
+            Functions.warn(2, "Error in calling function! -> {}\n\n{}".format(self.choiceData[choice], NE), "light red")  # noqa E501
             return None
         except TypeError as TE:
+            self.__PrintTraceback()
             Functions.clear(2, "Error in calling function! Missing arguments\n\n{}".format(TE), "light red")  # noqa E501
             return None
 
