@@ -32,7 +32,7 @@ class Process:
     # Gets the inputs and return the game result info thing
     def Inputs(self, path, name=None, external=False, create=False):
         if create:
-            Data = Create.CreateData().getOption()
+            Data = Create.CreateData(path).getOption()
             # checks if no data before trying to return chaos
             if Data is None:
                 return

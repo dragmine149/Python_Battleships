@@ -348,10 +348,14 @@ class check:
                 return self._returnFunc[1]()
             return self._returnFunc[1]
 
-        # unknown check
-        if callable(self._returnFunc[2]):
-            return self._returnFunc[2]()
-        return self._returnFunc[2]
+        try:
+            # unknown check
+            if callable(self._returnFunc[2]):
+                return self._returnFunc[2]()
+            return self._returnFunc[2]
+        except KeyError:  # if we only supply 2 arguments
+            clear(2, "Invalid input, please enter y or n!", "red")
+            return "Invalid"
 
     def getInput(self, check="Int"):
         while not self.__input:
@@ -366,7 +370,9 @@ class check:
                     return self.__input
 
             if check == "ynCheck":
-                return self._ynCheck()
+                result = self._ynCheck()
+                if result != "Invalid":
+                    return result
 
 
 # Everything to do with the board. Prints it and creates it.

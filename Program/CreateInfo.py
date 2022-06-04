@@ -5,12 +5,12 @@ import string
 
 
 class CreateData:
-    def __init__(self):
+    def __init__(self, path):
         # Load the class and all it's data
         self.Gname = None
         self.usernames = [None, None]
         self.siZe = [10, 10]
-        self.Loc = "Saves"
+        self.Loc = path
         self.Multi = "no"
 
     def showOptions(self):
@@ -158,7 +158,7 @@ Multiplayer: {}
                 Functions.clear(2, "Please enter y or n!")
                 return None
 
-            multi = Functions.ynCheck(input("Online Multiplayer (y = 2 people on different devices. n = 2 people on same device): "), "yes", "no", returnFunc)  # noqa E501
+            multi = Functions.check("Online Multiplayer (y = 2 players on different devices, n = 2 players on the same device): ", returnFunc=("yes", "no", returnFunc)).getInput("ynCheck")  # noqa E501
         self.Multi = multi
 
     def check(self):
@@ -183,7 +183,8 @@ Multiplayer: {}
                 Functions.clear(0, "Please enter a new game name!")
                 return "Name"
 
-            if Functions.ynCheck(input("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd)), yesFunc, noFunc) == "Name":  # noqa E501
+            result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
+            if result == "Name":
                 return "Name"
 
         if self.Loc == "Saves" and self.Multi == "yes":
@@ -233,6 +234,6 @@ Multiplayer: {}
 
 
 if __name__ == '__main__':
-    c = CreateData()
+    c = CreateData("Saves")
     result = c.getOption()
     print(result)

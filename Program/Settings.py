@@ -6,12 +6,16 @@ import json
 
 
 class Settings:
+
+    # does some pre loading of settings
     def __init__(self):
         print("Loading settings")
         self.save = newSave.save({
             'name': 'Settings',
             'path': 'Data',
         })
+
+        # checks and makes file if doesn't exist.
         if not self.save.CheckForFile('Settings'):
             self.data = {
                 "path": "Saves",
@@ -24,6 +28,7 @@ class Settings:
     def back(self):
         return "Returned"
 
+    # Changes default location
     def changeLocation(self):
         data = Functions.changePath()
         self.data["path"] = data[1]
@@ -31,16 +36,19 @@ class Settings:
         self.saveSettings()
         self.display.options = self.unformatedOptions.format(self.data["path"])
 
+    # Loads settings stored
     def loadSettings(self):
         Print("Loading settings... ", 'blue')
         self.data = json.loads(self.save.readFile())
         Print("Successfully loaded settings", 'green')
 
+    # Saves settings
     def saveSettings(self):
         Print("Saving settings...", 'blue')
         self.save.writeFile(json.dumps(self.data))
         Print("Successfully saved settings", "green")
 
+    # Shows the settings menu
     def showDisplay(self):
         info = """\033[32m--------------------------------------------------------------------
 Your personal settings.
@@ -59,3 +67,11 @@ Your personal settings.
         if result == "Returned":
             return "back"
         return result
+
+
+# Takes the input data and returns the output
+# useful for quick access to settings
+def request(data):
+    setObj = Settings()
+    setObj.loadSettings()
+    return setObj.data[data]

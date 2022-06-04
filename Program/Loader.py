@@ -3,6 +3,7 @@ import GameMenu as Menu
 import newSave
 import os
 import ProcessInput as pi
+import Settings
 
 
 class Loader:
@@ -10,8 +11,8 @@ class Loader:
         # loads
         print("Loading games...")
         self.game = None
-        self.games = "Saves"
-        self.path = "Saves"
+        self.games = Settings.request("path")
+        self.path = Settings.request("path")
         self.apiExternal = False
 
     # deletes a game
