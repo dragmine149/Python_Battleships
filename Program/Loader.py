@@ -52,7 +52,7 @@ class Loader:
         self.games, self.path, self.apiExternal = data
         return "Changed"
 
-    def loadMenu(self):
+    def getGames(self):
         # sets the message so the user knows where it is better
         msg = "Local"
         if self.path != "Saves":
@@ -88,8 +88,11 @@ Games found in: {} ({})
             -1: 'Delete Game',
             -2: 'Change Path'
         }
+        return info, options, choices, external
+
+    def loadMenu(self):
         # generates menu
-        self.menu = Menu.menu(info, options, choices, external, "Back")
+        self.menu = Menu.menu(self.getGames, back="Back")
         inResult = self.menu.getInput(values=(-2, len(self.gameList)))
         return inResult
 

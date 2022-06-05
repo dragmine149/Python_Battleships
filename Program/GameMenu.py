@@ -12,8 +12,23 @@ class menu:
     external -> options that aren't included (like -1)
     Back -> the message to go back. default: quit
     """
-    def __init__(self, info, options, choiceData, external=None, back="Quit"):
+    def __init__(self,
+                 info,
+                 options=None,
+                 choiceData=None,
+                 external=None,
+                 back="Quit"):
         Functions.clear(.25, "Loading data...")
+
+        empty = options is None and choiceData is None and external is None
+        if not callable(info) and empty:
+            raise TypeError("Failed to find callable function!")
+
+        self.callableFunction = None
+        if callable(info):
+            self.callableFunction = info
+            info, options, choiceData, external = info()
+
         self.info = info
         self.options = options
         self.choiceData = choiceData
@@ -22,6 +37,8 @@ class menu:
 
     # shows menu using user inputs
     def showMenu(self):
+        if self.callableFunction is not None:
+            self.info, self.options, self.choiceData, self.external = self.callableFunction()  # noqa E501
         print("""{}
 Options:
 {}
@@ -77,7 +94,7 @@ Other Options:
 
             # process
             choice = Functions.check("Your choice (number): ",
-                                     extra=(self.showMenu(), None),
+                                     (self.showMenu, None),
                                      rangeCheck=(values[0], values[1])).getInput()  # noqa E501
             result = self.process(choice)
             if result is None or result == "back":

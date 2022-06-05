@@ -310,29 +310,28 @@ class check:
 
     def _CallExtra(self):  # repeats any information the user needs to know
         # check if any extra information to show
-        if self._extra is not None:
-            function = self._extra
-            functionVars = None
+        function = self._extra
+        functionVars = None
 
-            # checks if function can be called
-            if callable(function):
-                return function()
+        # checks if function can be called
+        if callable(function):
+            return function()
 
-            # checks for more info
-            if len(self._extra) == 2:
-                if self._extra[0] is None and self._extra[1] is None:
-                    return
-                function = self._extra[0]
-                functionVars = self._extra[1]
+        # checks for more info
+        if len(self._extra) == 2:
+            if self._extra[0] is None and self._extra[1] is None:
+                return
+            function = self._extra[0]
+            functionVars = self._extra[1]
 
-            # tries again
-            if callable(function):
-                if functionVars is not None:
-                    return function(functionVars)
-                return function()
+        # tries again
+        if callable(function):
+            if functionVars is not None:
+                return function(functionVars)
+            return function()
 
-            print(function)
-            return
+        print(function)
+        return
 
     def _ynCheck(self):
         # remove all spaces, make lower, get first character
