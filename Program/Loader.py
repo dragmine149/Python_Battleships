@@ -11,8 +11,9 @@ class Loader:
         # loads
         print("Loading games...")
         self.game = None
-        self.games = Settings.request("path")
-        self.path = Settings.request("path")
+        path = Settings.request("path")
+        self.games = path
+        self.path = path
         self.apiExternal = False
         self.gameList = None
 

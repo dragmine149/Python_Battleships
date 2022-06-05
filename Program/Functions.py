@@ -4,6 +4,49 @@ import newSave
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
+def ConsoleFormat():
+    # defines the colours and what they do
+    format = {
+        'reset': '\033[0m',
+        'bold': '\033[01m',
+        'disable': '\033[02m',
+        'underline': '\033[04m',
+        'reverse': '\033[07m',
+        'strikethrough': '\033[09m',
+        'invisible': '\033[08m',
+    }
+    colours = {
+        'fg': {
+            'black': '\033[30m',
+            'red': '\033[31m',
+            'green': '\033[32m',
+            'orange': '\033[33m',
+            'blue': '\033[34m',
+            'purple': '\033[35m',
+            'cyan': '\033[36m',
+            'light grey': '\033[37m',
+            'dark grey': '\033[90m',
+            'light red': '\033[91m',
+            'light green': '\033[92m',
+            'yellow': '\033[93m',
+            'light blue': '\033[94m',
+            'pink': '\033[95m',
+            'light cyan': '\033[96m'
+        },
+        'bg': {
+            'black': '\033[40m',
+            'red': '\033[41m',
+            'green': '\033[42m',
+            'orange': '\033[43m',
+            'blue': '\033[44m',
+            'purple': '\033[45m',
+            'cyan': '\033[46m',
+            'light grey': '\033[47m'
+        }
+    }
+    return format, colours
+
+
 class Print:
     """
     Colours:
@@ -32,7 +75,7 @@ class Print:
             print(msg)
         else:
             # print with colour
-            self.__defineColours()
+            self._format, self._colours = ConsoleFormat()
             self.__output()
 
     def __ColourCheck(self, colour):
@@ -105,47 +148,6 @@ class Print:
 
         # reset to normal afterwards
         print(self._format['reset'])
-
-    def __defineColours(self):
-        # defines the colours and what they do
-        self._format = {
-            'reset': '\033[0m',
-            'bold': '\033[01m',
-            'disable': '\033[02m',
-            'underline': '\033[04m',
-            'reverse': '\033[07m',
-            'strikethrough': '\033[09m',
-            'invisible': '\033[08m',
-        }
-        self._colours = {
-            'fg': {
-                'black': '\033[30m',
-                'red': '\033[31m',
-                'green': '\033[32m',
-                'orange': '\033[33m',
-                'blue': '\033[34m',
-                'purple': '\033[35m',
-                'cyan': '\033[36m',
-                'light grey': '\033[37m',
-                'dark grey': '\033[90m',
-                'light red': '\033[91m',
-                'light green': '\033[92m',
-                'yellow': '\033[93m',
-                'light blue': '\033[94m',
-                'pink': '\033[95m',
-                'light cyan': '\033[96m'
-            },
-            'bg': {
-                'black': '\033[40m',
-                'red': '\033[41m',
-                'green': '\033[42m',
-                'orange': '\033[43m',
-                'blue': '\033[44m',
-                'purple': '\033[45m',
-                'cyan': '\033[46m',
-                'light grey': '\033[47m'
-            }
-        }
 
 
 # Converts the input to a valid location (a1 -> [0,0])
