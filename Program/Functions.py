@@ -476,12 +476,14 @@ class search:
     sti -> how long to wait between messages and stuff, just for fun.
            Recommendation don't add.
     """
-    def __init__(self, directory, target, layers=3, sti=0):
+    def __init__(self, directory, target, layers=3, sti=0, List=False):
         self.directory = directory
         self.target = target
         self.searched = ''
         self.layers = layers
         self.sti = sti
+        self.list = List
+        self.FoundList = []
 
     def Locate(self):
         return self.__searchDirectory(self.directory)
@@ -500,17 +502,20 @@ class search:
             # checks if in current directory, returns if it is.
             targetFile = os.path.join(directory, self.target)
             if os.path.exists(targetFile):
-                print("Found file: {}".format(targetFile))
-
-                def yes():
-                    return "Found!", targetFile
-
-                def no():
-                    return None
-
-                checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
-                if checkResult is not None:
-                    return checkResult
+                if not self.list:
+                    print("Found file: {}".format(targetFile))
+    
+                    def yes():
+                        return "Found!", targetFile
+    
+                    def no():
+                        return None
+    
+                    checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
+                    if checkResult is not None:
+                        return checkResult
+                else:
+                    self.FoundList.append(targetFile)
 
             # get files in current directory and remove the folder the user
             # just came out of (doesn't search the folder again)

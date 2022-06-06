@@ -3,6 +3,7 @@ import Functions
 from Functions import Print
 import newSave
 import json
+import os
 
 
 class Settings:
@@ -27,7 +28,8 @@ class Settings:
         self.loadSettings()
 
         self.unformatedOptions = """01: Deafult Location -> {}
-02: Colour -> {}"""
+02: Colour -> {}
+03: Clear Cache"""
 
     def back(self):
         return "Returned"
@@ -68,6 +70,18 @@ class Settings:
 
         # save
         self.updateSave("colour", colour)
+    
+    def deleteCache(self):
+        Print("Deleting cache...", "Red")
+        localDirList = os.listdir('.')
+        for file in localDirList:
+            if file == "__pycache__":
+                print(file)
+                newSave.save({
+                    'name': '',
+                    'path': 'Saves'
+                }).Delete(os.path.join(".", file))
+        Functions.warn(2, "Waiting...", "green")
 
     # Loads settings stored
     def loadSettings(self):
@@ -109,13 +123,14 @@ Your personal settings.
         choices = {
             0: self.back,
             1: self.changeLocation,
-            2: self.changeColour
+            2: self.changeColour,
+            3: self.deleteCache
         }
         self.display = GameMenu.menu(info,
                                      options,
                                      choices,
                                      back="Return to main menu")
-        result = self.display.getInput(values=(0, 2))
+        result = self.display.getInput(values=(0, 3))
         if result == "Returned":
             return "back"
         return result
