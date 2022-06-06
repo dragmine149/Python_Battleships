@@ -19,11 +19,14 @@ class Loader:
 
     # deletes a game
     def deleteGame(self):
-        delGame = None
-        while not delGame:
+        delGameIndex = None
+        while delGameIndex is None:
             Functions.clear()
-            delGame = Functions.check("Please enter game to delete (-1 to stop): ", self.LoadGames, self.path, self.GameRangeCheck, Functions.RemoveNonGames(self.path)).InputDigitCheck()  # noqa
-            if delGame != -1:
+            info, options, choices, external = self.getGames()
+            ui = info + "\n" + options
+            delGameIndex = Functions.check("Please enter game number to delete (-1 to stop): ", ui, (-1, len(self.gameList))).getInput()
+            print(delGameIndex)
+            if delGameIndex != -1:
                 deletePath = None
                 # if apiExternal:
                 #     deletePath = Functions.RemoveNonGames(self.path)[delGame - 1]  # noqa
@@ -35,11 +38,11 @@ class Loader:
                 #             self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
                 #             break
                 #     continue
-                deletePath = os.path.join(self.path, Functions.RemoveNonGames(self.path)[delGame - 1])  # noqa
+                deletePath = self.gameList[delGameIndex - 1]
                 newSave.save({
                             'name': '',
-                            'path': self.path}).Delete(deletePath)
-                delGame = None
+                            'path': self.path}).Delete(os.path.join("Saves", deletePath))
+                delGameIndex = None
         self.game = None
 
     # go back to previous menu
