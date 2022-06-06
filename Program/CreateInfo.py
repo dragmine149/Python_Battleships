@@ -2,13 +2,14 @@ import Functions
 import newSave
 import random
 import string
+import getpass
 
 
 class CreateData:
     def __init__(self, path="Saves", name=None):
         # Load the class and all it's data
         self.Gname = name
-        self.usernames = [None, None]
+        self.usernames = [getpass.getuser(), 'None']
         self.siZe = [10, 10]
         self.Loc = path
         self.Multi = "no"
@@ -42,61 +43,62 @@ Password: {}
 7: Save and make game
 ''')
 
+    def quit(self):
+        return
+
     def getOption(self):
         # Get the option inputed and do the command required / called.
         choice = None
         while choice != 0:
             options = {
+                0: self.quit,
                 1: self.name,
                 2: self.username,
                 3: self.size,
                 4: self.saveLoc,
-                5: self.Multiplayer,
+                5: self.MultiPlayer,
                 6: self.Password,
                 7: self.save
             }
-            
-            
-            result = True
+
             Functions.clear()
             choice = Functions.check("What would you like to change?: ",
                                      self.showOptions,
                                      (0, 7)).getInput()
-            result = options[choice]()
-            if result:
+
+            choiceFunction = options[choice]
+            result = choiceFunction()
+            if result == "Save":
                 return [self.Gname, self.usernames, self.Loc, self.Multi]
-#            if choice == 5:
-#                if self.Loc == "Saves":
-#                    Functions.clear(2, "Disabled! Please use a directory other than the default!")  # noqa E501
-#                    continue
-#                self.MultiPlayer()
-#            if choice == 6:
-#                result = self.save()
-#                if result:
-#                    choice = 0  # end, result is good.
-#                return [self.Gname, self.usernames, self.Loc, self.Multi]
-            # No need to add checks here as Functions.check().InputDigitCheck()
-            # should take care of it.
         return None
 
     def name(self):
         # Gets the name of the game
         self.Gname = None
         while self.Gname is None:
-            self.Gname = input("Please enter the game name: ")
+            self.Gname = input("Please enter the game name\033[%d;%dH" % (2, 7))  # noqa
 
     def username(self):
         # Get the players names
         self.usernames = []
 
         while len(self.usernames) < 2:
-            user1 = input("Please enter player 1's name: ")
+            user1 = input("Please enter player 1's name")
+            if user1 == "me":
+                # sets them to use the username on their account.
+                user1 = getpass.getuser()
+                print("\033[F\rPlease enter player 1's name: {}".format(user1))
             if user1 != "":
                 user2 = None
                 while user2 is None:
                     # \033[F\r -> Sends the cursor back to the start of the previous line  # noqa E501
                     # In this case, overwrites previous input with new input
+                    extra = " " * len(user1)
+                    print("\033[F\rPlease enter player 2's name: {}".format(extra))
                     user2 = input("\033[F\rPlease enter player 2's name: ")
+                    if user2 == "me":
+                        user2 = getpass.getuser()
+
                     if user2 == user1:
                         user2 = None
                         Functions.warn(1, "\033[F\rPlayer 2's name can not be the same as player 1!")  # noqa E501
@@ -113,24 +115,43 @@ Password: {}
 
     def size(self):
         # get the size of the game board.
+        oldSize = self.siZe
         self.siZe = []
         while len(self.siZe) < 2:
-            gridSize = input("Please enter board size (Format: XxY): ")
-            if gridSize.find('x') > -1:
-                gridSize = gridSize.split("x")
-                notDigit = None
-                if not gridSize[0].isdigit() or not gridSize[1].isdigit():
-                    notDigit = "Neither inputs are digits!"
-                elif not gridSize[0].isdigit():
-                    notDigit = "First value is not a digit!"
-                elif not gridSize[1].isdigit():
-                    notDigit = "Second value is not a digit!"
-                else:
-                    self.siZe = [int(gridSize[0]), int(gridSize[1])]
-                if notDigit is not None:
-                    Functions.clear(2, notDigit)
-            else:
-                Functions.clear(2, "Invalid format! 'x' was not found in the input")  # noqa E501
+            # Formatting and moving cursor (PAIN kinda)
+            print("\033[%d;%dHSize: [{}".format(" " * len(str(oldSize))) % (4, 0))  # noqa E501
+            print("\033[%d;%dH" % (19, 0))
+            x = input("Please enter X coordinate\033[%d;%dHSize: [" % (4, 0))
+            print("\033[%d;%dH" % (19, 0))
+            y = input("Please enter Y coordinate\033[%d;%dHSize: [{}, ".format(x) % (4, 0))  # noqa E501
+            print("]\033[%d;%dH" % (19, 0))
+
+            # processing inputs
+            notDigit = ""
+            if not x.isdigit():
+                notDigit = "X is not a digit! "
+            if not y.isdigit():
+                notDigit += "Y is not a digit!"
+
+            if not notDigit:
+                small = ""
+                x = int(x)
+                y = int(y)
+                if x < 5:
+                    small = "X is too small! "
+                if y < 5:
+                    small += "Y is too small!"
+                if not small:
+                    self.siZe = [x, y]
+                    return
+
+                Functions.warn(2, small + "\033[F\r", "red")
+                print("{}\033[F\r".format(" " * len(small)))
+
+            if notDigit:
+                Functions.warn(2, notDigit + "\033[F\r", "red")
+                print("{}\033[F\r".format(" " * len(notDigit)))
+            oldSize = str([x, y])
 
     def saveLoc(self):
         # get the game save location
@@ -162,6 +183,9 @@ Password: {}
         self.Loc = Location
 
     def MultiPlayer(self):
+        if self.Loc == "Saves":
+            Functions.clear(2, "Disabled! Save location is default, Please change to have multiplayer support!", "red")  # noqa E501
+            return
         # get if multiplayer or not
         multi = None
         while multi is None:
@@ -171,15 +195,26 @@ Password: {}
 
             multi = Functions.check("Online Multiplayer (y = 2 players on different devices, n = 2 players on the same device): ", returnFunc=("yes", "no", returnFunc)).getInput("ynCheck")  # noqa E501
         self.Multi = multi
-    
+
     def Password(self):
-        while self.password is not None:
-            self.password = input("Please enter a password (leave blank to have no password): ")
-            if self.password != ""
-                check = input("Please reenter the password (confirmation): ")
-                if check == self.password:
+        self.password = None  # change to ask for password?
+        self.VisiblePassword = "Disabled"
+
+        while self.password is None:
+            password = getpass.getpass("Enter a password (blank for no passwords): ")  # noqa E501
+            if password.rstrip() == "":
+                self.password = None
+                self.VisiblePassword = "Disabled"
+                return
+            check = None
+            while check is None:
+                check = getpass.getpass("Please re-enter the password (-1 to change password): ")  # noqa E501
+                if check == password:
                     self.VisiblePassword = "Enabled"
-        
+                    return True
+                if check == -1:
+                    self.VisiblePassword = "Disabled"
+                    self.password = None
 
     def check(self):
         # Checks if all fields are valid.
@@ -248,10 +283,14 @@ Password: {}
 # userData.writeFile(board, name='shots')
 
         # make turn file, notes whos turn it is.
-        gameData.writeFile(self.usernames[0], name='turn')
-        gameData.writeFile(self.Multi[0], name='multi')
+        data = {
+            'turn': self.usernames[0],
+            'multi': self.Multi[0],
+            'password': self.password[0]
+        }
+        gameData.writeFile(data, name="GameData")
 
-        return True  # success!!!
+        return "Save"  # success!!!
 
 
 if __name__ == '__main__':
