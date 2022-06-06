@@ -12,6 +12,8 @@ class CreateData:
         self.siZe = [10, 10]
         self.Loc = path
         self.Multi = "no"
+        self.password = None
+        self.VisiblePassword = "Disabled"
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
@@ -21,12 +23,14 @@ Players: {}
 Size: {}
 Save Location: {}
 Multiplayer: {}
+Password: {}
 '''.format(
             self.Gname,
             self.usernames,
             self.siZe,
             self.Loc,
-            self.Multi))
+            self.Multi,
+            self.VisiblePassword))
         print('''Options:
 0: Quit
 1: Game Name
@@ -34,36 +38,43 @@ Multiplayer: {}
 3: Board Size
 4: Save Location
 5: Multiplayer (both on same device, or different devices)
-6: Save and make game
+6: Password
+7: Save and make game
 ''')
 
     def getOption(self):
         # Get the option inputed and do the command required / called.
         choice = None
         while choice != 0:
+            options = {
+                1: self.name,
+                2: self.username,
+                3: self.size,
+                4: self.saveLoc,
+                5: self.Multiplayer,
+                6: self.Password,
+                7: self.save
+            }
+            
+            
             result = True
             Functions.clear()
             choice = Functions.check("What would you like to change?: ",
                                      self.showOptions,
-                                     (0, 6)).getInput()
-            if choice == 1:
-                self.name()
-            if choice == 2:
-                self.username()
-            if choice == 3:
-                self.size()
-            if choice == 4:
-                self.saveLoc()
-            if choice == 5:
-                if self.Loc == "Saves":
-                    Functions.clear(2, "Disabled! Please use a directory other than the default!")  # noqa E501
-                    continue
-                self.MultiPlayer()
-            if choice == 6:
-                result = self.save()
-                if result:
-                    choice = 0  # end, result is good.
+                                     (0, 7)).getInput()
+            result = options[choice]()
+            if result:
                 return [self.Gname, self.usernames, self.Loc, self.Multi]
+#            if choice == 5:
+#                if self.Loc == "Saves":
+#                    Functions.clear(2, "Disabled! Please use a directory other than the default!")  # noqa E501
+#                    continue
+#                self.MultiPlayer()
+#            if choice == 6:
+#                result = self.save()
+#                if result:
+#                    choice = 0  # end, result is good.
+#                return [self.Gname, self.usernames, self.Loc, self.Multi]
             # No need to add checks here as Functions.check().InputDigitCheck()
             # should take care of it.
         return None
@@ -160,6 +171,15 @@ Multiplayer: {}
 
             multi = Functions.check("Online Multiplayer (y = 2 players on different devices, n = 2 players on the same device): ", returnFunc=("yes", "no", returnFunc)).getInput("ynCheck")  # noqa E501
         self.Multi = multi
+    
+    def Password(self):
+        while self.password is not None:
+            self.password = input("Please enter a password (leave blank to have no password): ")
+            if self.password != ""
+                check = input("Please reenter the password (confirmation): ")
+                if check == self.password:
+                    self.VisiblePassword = "Enabled"
+        
 
     def check(self):
         # Checks if all fields are valid.
