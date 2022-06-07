@@ -1,6 +1,7 @@
 import time
 import os
 import newSave
+from colours import Print
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -358,13 +359,13 @@ class search:
             if os.path.exists(targetFile):
                 if not self.list:
                     print("Found file: {}".format(targetFile))
-    
+
                     def yes():
                         return "Found!", targetFile
-    
+
                     def no():
                         return None
-    
+
                     checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
                     if checkResult is not None:
                         return checkResult

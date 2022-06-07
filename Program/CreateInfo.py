@@ -99,11 +99,10 @@ Password: {}{}\033[0m
 
             def noFunc():
                 self.colours[0] = '\033[33m'
-                #Functions.clear(0, "Please enter a new game name!")
-                #return "Name"
+                # Functions.clear(0, "Please enter a new game name!")
+                # return "Name"
 
             result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
-                
 
     def username(self):
         # Get the players names
@@ -121,7 +120,7 @@ Password: {}{}\033[0m
                     # \033[F\r -> Sends the cursor back to the start of the previous line  # noqa E501
                     # In this case, overwrites previous input with new input
                     extra = " " * len(user1)
-                    print("\033[F\rPlease enter player 2's name: {}".format(extra))
+                    print("\033[F\rPlease enter player 2's name: {}".format(extra))  # noqa E501
                     user2 = input("\033[F\rPlease enter player 2's name: ")
                     if user2 == "me":
                         user2 = getpass.getuser()
@@ -254,7 +253,7 @@ Password: {}{}\033[0m
 
         games = Functions.RemoveNonGames(self.Loc)
         if self.Gname in games:
-            
+
             if result == "Name":
                 return "Name"
 
