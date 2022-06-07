@@ -15,22 +15,29 @@ class CreateData:
         self.Multi = "no"
         self.password = None
         self.VisiblePassword = "Disabled"
+        self.colours = ['', '', '', '', '', '']
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
         print('''Current Settings:
-Name: {}
-Players: {}
-Size: {}
-Save Location: {}
-Multiplayer: {}
-Password: {}
+Name: {}{}\033[0m
+Players: {}{}\033[0m
+Size: {}{}\033[0m
+Save Location: {}{}\033[0m
+Multiplayer: {}{}\033[0m
+Password: {}{}\033[0m
 '''.format(
+            self.colours[0],
             self.Gname,
+            self.colours[1],
             self.usernames,
+            self.colours[2],
             self.siZe,
+            self.colours[3],
             self.Loc,
+            self.colours[4],
             self.Multi,
+            self.colours[5],
             self.VisiblePassword))
         print('''Options:
 0: Quit
@@ -77,6 +84,26 @@ Password: {}
         self.Gname = None
         while self.Gname is None:
             self.Gname = input("Please enter the game name\033[%d;%dH" % (2, 7))  # noqa
+            games = Functions.RemoveNonGames(self.Loc)
+            if self.Gname not in games:
+                self.colours[0] = '\033[32m'
+                return
+
+            randomEnd = ''
+            for _ in range(10):
+                randomEnd += random.choice(string.ascii_letters)
+
+            def yesFunc():
+                self.Gname = '{}_{}'.format(self.Gname, randomEnd)
+                self.colours[0] = '\033[32m'
+
+            def noFunc():
+                self.colours[0] = '\033[33m'
+                #Functions.clear(0, "Please enter a new game name!")
+                #return "Name"
+
+            result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
+                
 
     def username(self):
         # Get the players names
@@ -227,18 +254,7 @@ Password: {}
 
         games = Functions.RemoveNonGames(self.Loc)
         if self.Gname in games:
-            randomEnd = ''
-            for _ in range(10):
-                randomEnd += random.choice(string.ascii_letters)
-
-            def yesFunc():
-                self.Gname = '{}_{}'.format(self.Gname, randomEnd)
-
-            def noFunc():
-                Functions.clear(0, "Please enter a new game name!")
-                return "Name"
-
-            result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
+            
             if result == "Name":
                 return "Name"
 
