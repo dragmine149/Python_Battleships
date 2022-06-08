@@ -1,6 +1,8 @@
 """
 colours.py, the best file to print colours out in the console!
 
+NOTE: Console only!! This does not work in an IDE
+
 Usage:
 import colours
 from colours import * (advanced recommended)
