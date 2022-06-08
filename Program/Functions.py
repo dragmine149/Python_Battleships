@@ -1,7 +1,7 @@
 import time
 import os
 import newSave
-from colours import Print
+from colours import *
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 

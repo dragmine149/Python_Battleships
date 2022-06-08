@@ -8,21 +8,20 @@ from colours import c (recommended)
 
 Functions:
 ConsoleFormat -- returns 2 lists of codes, not recommended use for quick.
-Print(msg, colour, options) -- prints message out using colour and options.
+Print(msg, colour, options) -- prints message out using selected colour and options.
 c(colour) -- returns the format for the code inputted.
 
 Extra help:
 - Look at the functions test_Test() for example on how to run the program
 - Copy codes from ConsoleFormat if needed.
 """
-
-
 def ConsoleFormat():
     # defines the colours and what they do
     format = {
         'reset': '\033[0m',
         'bold': '\033[01m',
         'disable': '\033[02m',
+        'italic': '\033[03m',
         'underline': '\033[04m',
         'reverse': '\033[07m',
         'strikethrough': '\033[09m',
@@ -177,8 +176,6 @@ Example usage:
 print(c('fgr') + 'Hello' + c() + c('bgg') + 'World' + c())
 - prints "Hello" in red, "World" in white with a green background.
 """
-
-
 def c(choice=None):
     cR = colourRetrieve(choice)
     return cR.colourCode
@@ -186,11 +183,11 @@ def c(choice=None):
 
 class colourRetrieve:
     """
-    Please refer to the usage of 'c' for this class
+    Usage: [f, bg, fg][colour, result]
     """
     def __init__(self, choice=None):
         self.format, self.colours = ConsoleFormat()
-
+        
         # reset if no input
         if choice is None or len(choice) == 0:
             self.colourCode = self.format['reset']
@@ -202,13 +199,13 @@ class colourRetrieve:
                 self.colourCode = self.__getColour(choice, mode)
             if mode[0] == 'format':
                 self.colourCode = self.__getFormat(choice)
-
+    
     def __getMode(self, choice):
         # take first 2 and get result
         if len(choice) == 1:
             return 'c', 'fg'
         f2L = choice[0] + choice[1]
-
+        
         # process result
         if f2L == 'bg':
             return 'colours', 'bg'
@@ -217,7 +214,7 @@ class colourRetrieve:
         if choice[0] == 'f':
             return 'format', ''
         return 'c', 'fg'  # default
-
+        
     def __getColour(self, choice, mode):
         # checks what needs to be found
         if mode[0] != 'c':
@@ -226,39 +223,37 @@ class colourRetrieve:
         # checks if whole word
         if choice in self.colours[mode[1]]:
             return self.colours[mode[1]][choice]
-
+        
         # checks for first letter
         for option in self.colours[mode[1]]:
             if option[:len(choice)] == choice:
                 return self.colours[mode[1]][option]
-
+        
             # checks for multi word
+            spltStr = option.split(' ')
             if choice[0] == 'l':
                 if option[6:6 + len(choice[1:])] == choice[1:]:
                     return self.colours[mode[1]][option]
-
-            if choice[0] == 'd':
-                if option[5:5 + len(choice[1:])] == choice[1:]:
-                    return self.colours[mode[1]][option]
-
+        
         raise ValueError("Invalid colour inputted!")
-
+    
     def __getFormat(self, choice):
         choice = choice[1:]
         # check if word
         if choice in self.format:
             return self.format[choice]
-
+            
         # check for letter
         for option in self.format:
             if option[:len(choice)] == choice:
                 return self.format[option]
-
+        
         raise ValueError('Invalid format option inputted!')
 
 
 # run python colours.py to see the results from this
 def test_Test():
+    print("Normal Colour")
     print('{}Hello{}World{}'.format(c('fgr'), c() + c('bgg'), c()))
     Print("Hello World", ["dark grey", "cyan"], ["bold", "underline"])
     return True
