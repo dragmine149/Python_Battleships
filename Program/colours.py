@@ -19,10 +19,6 @@ Extra help:
 """
 
 
-from colorama import Fore, Style
-Fore.RED
-
-
 def ConsoleFormat():
     # defines the colours and what they do
     format = {
