@@ -1,8 +1,8 @@
 import time
 import os
 import newSave
-from colours import *
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+from colours import *
 
 
 # Converts the input to a valid location (a1 -> [0,0])
