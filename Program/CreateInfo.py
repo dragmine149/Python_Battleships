@@ -15,7 +15,7 @@ class CreateData:
         self.Multi = "no"
         self.password = None
         self.VisiblePassword = "Disabled"
-        self.colours = ['', '', '', '', '', '']
+        self.colours = ['', '', '\033[32m', '', '\033[32m', '\033[33m']
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
@@ -143,41 +143,41 @@ Password: {}{}\033[0m
         # get the size of the game board.
         oldSize = self.siZe
         self.siZe = []
-        while len(self.siZe) < 2:
-            # Formatting and moving cursor (PAIN kinda)
+        x = None
+        y = None
+
+        while x is None:
             print("\033[%d;%dHSize: [{}".format(" " * len(str(oldSize))) % (4, 0))  # noqa E501
             print("\033[%d;%dH" % (19, 0))
-            x = input("Please enter X coordinate\033[%d;%dHSize: [" % (4, 0))
+            x = input("Please enter X coordinate \033[%d;%dHSize: [" % (4, 0))
             print("\033[%d;%dH" % (19, 0))
+
+            if not x.isdigit():
+                Functions.warn(2, "X is not a digit!{}".format(" " * 25), "red")  # noqa E501
+                x = None
+
+            if x.isdigit():
+                x = int(x)
+                if x < 5:
+                    Functions.warn(2, "X is too small!", "red")
+                    x = None
+
+        while y is None:
             y = input("Please enter Y coordinate\033[%d;%dHSize: [{}, ".format(x) % (4, 0))  # noqa E501
             print("]\033[%d;%dH" % (19, 0))
 
-            # processing inputs
-            notDigit = ""
-            if not x.isdigit():
-                notDigit = "X is not a digit! "
             if not y.isdigit():
-                notDigit += "Y is not a digit!"
+                Functions.warn(2, "Y is not a digit!{}".format(" " * 25), "red")  # noqa E501
+                y = None
 
-            if not notDigit:
-                small = ""
-                x = int(x)
+            if y.isdigit():
                 y = int(y)
-                if x < 5:
-                    small = "X is too small! "
                 if y < 5:
-                    small += "Y is too small!"
-                if not small:
-                    self.siZe = [x, y]
-                    return
+                    Functions.warn(2, "Y is too small!", "red")
+                    y = None
 
-                Functions.warn(2, small + "\033[F\r", "red")
-                print("{}\033[F\r".format(" " * len(small)))
-
-            if notDigit:
-                Functions.warn(2, notDigit + "\033[F\r", "red")
-                print("{}\033[F\r".format(" " * len(notDigit)))
-            oldSize = str([x, y])
+        self.siZe = [x, y]
+        self.colours[2] = '\033[32m'
 
     def saveLoc(self):
         # get the game save location
@@ -207,6 +207,7 @@ Password: {}{}\033[0m
 
         print({"Loc": Location})
         self.Loc = Location
+        self.colours[4] = "\033[32m"
 
     def MultiPlayer(self):
         if self.Loc == "Saves":
