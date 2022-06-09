@@ -18,6 +18,8 @@ Extra help:
 - Copy codes from ConsoleFormat if needed.
 """
 
+import importlib
+colorama = importlib.import_module('colorama.colorama')
 
 def ConsoleFormat():
     # defines the colours and what they do
@@ -207,7 +209,7 @@ class colourRetrieve:
     def __getMode(self, choice):
         # take first 2 and get result
         if len(choice) == 1:
-            return 'c', 'fg'
+            return 'colours', 'fg'
         f2L = choice[0] + choice[1]
 
         # process result
@@ -217,7 +219,7 @@ class colourRetrieve:
             return 'colours', 'fg'
         if choice[0] == 'f':
             return 'format', ''
-        return 'c', 'fg'  # default
+        return 'colours', 'fg'  # default
 
     def __getColour(self, choice, mode):
         # checks what needs to be found
