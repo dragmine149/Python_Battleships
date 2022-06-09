@@ -17,6 +17,12 @@ Extra help:
 - Look at the functions test_Test() for example on how to run the program
 - Copy codes from ConsoleFormat if needed.
 """
+
+
+from colorama import Fore, Style
+Fore.RED
+
+
 def ConsoleFormat():
     # defines the colours and what they do
     format = {
@@ -189,7 +195,7 @@ class colourRetrieve:
     """
     def __init__(self, choice=None):
         self.format, self.colours = ConsoleFormat()
-        
+
         # reset if no input
         if choice is None or len(choice) == 0:
             self.colourCode = self.format['reset']
@@ -201,13 +207,13 @@ class colourRetrieve:
                 self.colourCode = self.__getColour(choice, mode)
             if mode[0] == 'format':
                 self.colourCode = self.__getFormat(choice)
-    
+
     def __getMode(self, choice):
         # take first 2 and get result
         if len(choice) == 1:
             return 'c', 'fg'
         f2L = choice[0] + choice[1]
-        
+
         # process result
         if f2L == 'bg':
             return 'colours', 'bg'
@@ -216,7 +222,7 @@ class colourRetrieve:
         if choice[0] == 'f':
             return 'format', ''
         return 'c', 'fg'  # default
-        
+
     def __getColour(self, choice, mode):
         # checks what needs to be found
         if mode[0] != 'c':
@@ -225,31 +231,31 @@ class colourRetrieve:
         # checks if whole word
         if choice in self.colours[mode[1]]:
             return self.colours[mode[1]][choice]
-        
+
         # checks for first letter
         for option in self.colours[mode[1]]:
             if option[:len(choice)] == choice:
                 return self.colours[mode[1]][option]
-        
+
             # checks for multi word
             spltStr = option.split(' ')
             if choice[0] == 'l':
                 if option[6:6 + len(choice[1:])] == choice[1:]:
                     return self.colours[mode[1]][option]
-        
+
         raise ValueError("Invalid colour inputted!")
-    
+
     def __getFormat(self, choice):
         choice = choice[1:]
         # check if word
         if choice in self.format:
             return self.format[choice]
-            
+
         # check for letter
         for option in self.format:
             if option[:len(choice)] == choice:
                 return self.format[option]
-        
+
         raise ValueError('Invalid format option inputted!')
 
 

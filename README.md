@@ -18,3 +18,7 @@ I plan to keep maintain this program and updating it in the future. However due 
 
 # Other information
   [How to use](Documentation/Usage.md)
+
+# Credits (External modules used)
+- Google API
+- Colorama
