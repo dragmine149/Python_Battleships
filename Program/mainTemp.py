@@ -2,6 +2,7 @@ import Functions
 import sys
 import GameMenu
 import Choices
+import Game
 
 # loads info
 c = Choices.Choices()
@@ -53,3 +54,5 @@ Github: https://www.github.com/dragmine149/Python_Battleships
 
     result = main.getInput(choice, values=(0, 3))
     print({'main temp result': result})
+    result = Game.Game(result).Main()
+    print({'Game result': result})
