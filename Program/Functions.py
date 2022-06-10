@@ -190,6 +190,9 @@ class check:
 
     def _ynCheck(self):
         # remove all spaces, make lower, get first character
+        if self.__input == '':
+            clear(2, "Invalid input, please enter y or n!", "red")
+            return "Invalid"
         self.__input = self.__input[0].replace(" ", "").lower()
 
         # yes check
@@ -416,33 +419,36 @@ class search:
 
 
 def LocationTest(Location):
-    saveInfo = newSave.save({
-        'name': 'Test',
-        'path': Location,
-        'Json': False
-    })
-    print(vars(saveInfo))
-
-    # Creates test folder
-    folder = saveInfo.makeFolder(replace=True)
-    print(folder)
-
-    # creates file
-    savedLocation = saveInfo.writeFile("This is a test file")
-    print(savedLocation)
-
-    # reads file from same place
-    data = saveInfo.readFile()
-    print(data)
-
-    if data != "This is a test file":
-        # Oh oh, doesn't work... Return error
-        Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
-        Location = None
-
-    saveInfo.Delete(folder)
-
-    return True, saveInfo._api
+    try:
+        saveInfo = newSave.save({
+            'name': 'Test',
+            'path': Location,
+            'Json': False
+        })
+        print(vars(saveInfo))
+    
+        # Creates test folder
+        folder = saveInfo.makeFolder(replace=True)
+        print(folder)
+    
+        # creates file
+        savedLocation = saveInfo.writeFile("This is a test file")
+        print(savedLocation)
+    
+        # reads file from same place
+        data = saveInfo.readFile()
+        print(data)
+    
+        if data != "This is a test file":
+            # Oh oh, doesn't work... Return error
+            Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
+            Location = None
+    
+        saveInfo.Delete(folder)
+    
+        return True, saveInfo._api
+    except Exception:
+        return False, False
 
 
 def IsDigit(var):
