@@ -63,8 +63,9 @@ class Settings:
                 return
 
             # get possible list
-            format, colours = Functions.ConsoleFormat()
-            if colour not in colours["fg"]:
+            try:
+                colourCode = Functions.c(colour)
+            except ValueError:
                 Print("Invalid colour chosen!", "red")
                 colour = None
 

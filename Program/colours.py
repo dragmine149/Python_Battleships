@@ -223,13 +223,14 @@ class colourRetrieve:
 
     def __getColour(self, choice, mode):
         # checks what needs to be found
-        if mode[0] != 'c':
+        if mode[0] != 'colours':
             choice = choice[2:]
 
         # checks if whole word
         if choice in self.colours[mode[1]]:
             return self.colours[mode[1]][choice]
 
+        # import ipdb; ipdb.set_trace()
         # checks for first letter
         for option in self.colours[mode[1]]:
             if option[:len(choice)] == choice:
@@ -237,7 +238,7 @@ class colourRetrieve:
 
             # checks for multi word
             spltStr = option.split(' ')
-            if choice[0] == 'l':
+            if choice[0] == 'l' or choice[0] == 'd':
                 if option[6:6 + len(choice[1:])] == choice[1:]:
                     return self.colours[mode[1]][option]
 
