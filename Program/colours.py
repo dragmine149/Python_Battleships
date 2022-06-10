@@ -193,6 +193,7 @@ class colourRetrieve:
     """
     def __init__(self, choice=None):
         self.format, self.colours = ConsoleFormat()
+        self.fullName = None
 
         # reset if no input
         if choice is None or len(choice) == 0:
@@ -233,6 +234,7 @@ class colourRetrieve:
         # import ipdb; ipdb.set_trace()
         # checks for first letter
         for option in self.colours[mode[1]]:
+            self.fullName = option
             if option[:len(choice)] == choice:
                 return self.colours[mode[1]][option]
 
@@ -252,6 +254,7 @@ class colourRetrieve:
 
         # check for letter
         for option in self.format:
+            self.fullName = option
             if option[:len(choice)] == choice:
                 return self.format[option]
 

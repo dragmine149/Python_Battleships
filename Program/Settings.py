@@ -64,7 +64,8 @@ class Settings:
 
             # get possible list
             try:
-                colourCode = Functions.c(colour)
+                code = Functions.colourRetrieve(colour)
+                colour = code.fullName
             except ValueError:
                 Print("Invalid colour chosen!", "red")
                 colour = None
