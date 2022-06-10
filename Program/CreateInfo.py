@@ -11,17 +11,22 @@ class CreateData:
         self.Gname = name
         self.usernames = [getpass.getuser(), 'None']
         self.siZe = [10, 10]
+
         self.Loc = path
+        result = Functions.LocationTest(path)
+        if not result:
+            self.Loc = "Saves"
+
         self.Multi = "no"
         self.password = None
         self.VisiblePassword = "Disabled"
-        self.colours = ['', '', '\033[32m', '', '\033[32m', '\033[33m']
+        self.colours = ['\033[31m', ['\033[32m', '\033[31m'], '\033[32m', '\033[32m', '\033[32m', '\033[33m']
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
         print('''Current Settings:
 Name: {}{}\033[0m
-Players: {}{}\033[0m
+Players: [{}{}, {}{}\033[0m]
 Size: {}{}\033[0m
 Save Location: {}{}\033[0m
 Multiplayer: {}{}\033[0m
@@ -29,8 +34,10 @@ Password: {}{}\033[0m
 '''.format(
             self.colours[0],
             self.Gname,
-            self.colours[1],
-            self.usernames,
+            self.colours[1][0],
+            self.usernames[0],
+            self.colours[1][1],
+            self.usernames[1],
             self.colours[2],
             self.siZe,
             self.colours[3],
@@ -83,6 +90,7 @@ Password: {}{}\033[0m
         # Gets the name of the game
         self.Gname = None
         while self.Gname is None:
+            # get input
             self.Gname = input("Please enter the game name\033[%d;%dH" % (2, 7))  # noqa
             games = Functions.RemoveNonGames(self.Loc)
             if self.Gname not in games:
@@ -104,40 +112,65 @@ Password: {}{}\033[0m
 
             result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
 
+    def __nameCheck(self, name, old, other=None):
+        newName = name
+        
+        # Use system name if 'me'
+        if name.rstrip().lower()[:2] == 'me':
+            newName = getpass.getuser()
+            if name[2:] != '':
+                newName += '({})'.format(name[2:])
+        
+        # check for blank
+        if name.rstrip() == '':
+            newName = old
+        
+        # Add (2) is both names same
+        if other is not None:
+            if other == newName:
+                newName += '(2)'
+        
+        if str(newName) == "None":
+            return False
+        return newName
+
     def username(self):
         # Get the players names
-        self.usernames = []
+        oldUsers = self.usernames
+        self.usernames = [None, None]
+        
+        # loop
+        for i in range(2):
+            while self.usernames[i] is None:
+                
+                # get the last name
+                pastName = None
+                pastNameText = ''
+                if i >= 1:
+                    pastName = self.usernames[i - 1]
+                    pastNameText = pastName + ', '
+                
+                
+                # Move cursor and stuff
+                print("\033[%d;%dH" % (19, 0))
+                space = " " * (len(str(oldUsers)) - 1)
+                self.usernames[i] = input("Please enter player {}'s name (Blank to keep same)\033[%d;%dHPlayers: [{}\033[%d;%dH{}".format(i + 1, space, pastNameText) % (3,0,3,11))
+                print("\033[%d;%dH" % (19, 0))
 
-        while len(self.usernames) < 2:
-            user1 = input("Please enter player 1's name")
-            if user1 == "me":
-                # sets them to use the username on their account.
-                user1 = getpass.getuser()
-                print("\033[F\rPlease enter player 1's name: {}".format(user1))
-            if user1 != "":
-                user2 = None
-                while user2 is None:
-                    # \033[F\r -> Sends the cursor back to the start of the previous line  # noqa E501
-                    # In this case, overwrites previous input with new input
-                    extra = " " * len(user1)
-                    print("\033[F\rPlease enter player 2's name: {}".format(extra))  # noqa E501
-                    user2 = input("\033[F\rPlease enter player 2's name: ")
-                    if user2 == "me":
-                        user2 = getpass.getuser()
-
-                    if user2 == user1:
-                        user2 = None
-                        Functions.warn(1, "\033[F\rPlayer 2's name can not be the same as player 1!")  # noqa E501
-                        print("\033[F\r                                                ")  # noqa E501
-                        # ^^ clears input, resets
-                    if user2 == "":
-                        user2 = None
-                        Functions.warn(1, "\033[F\rPlayer 2's name can't be nothing!")  # noqa E501
-                        print("\033[F\r                                                ")  # noqa
-                self.usernames = [user1, user2]
-            else:
-                user1 = None
-                Functions.clear("Player 1's name can't be nothing!")
+                # Process input
+                nameResult = self.__nameCheck(self.usernames[i], oldUsers[i], pastName)
+                    
+                # annoyed
+                if not nameResult:
+                    self.usernames[i] = None
+                    print("Player {} name is not allowed!".format(i + 1))
+                    continue
+                
+                # save
+                self.usernames[i] = nameResult
+        
+        # finish
+        self.colours[1] = ['\033[32m', '\033[32m']
 
     def size(self):
         # get the size of the game board.
@@ -194,6 +227,7 @@ Password: {}{}\033[0m
             # Saves is the default location, only chosen if the input is blank.
             if Location == "":
                 Location = "Saves"
+                self.Multi = "no"  # automatically reset multiplayer
 
             # If default, don't need to do much
             # If drive, run test
@@ -232,15 +266,19 @@ Password: {}{}\033[0m
             if password.rstrip() == "":
                 self.password = None
                 self.VisiblePassword = "Disabled"
+                self.colours[5] = '\033[33m'
                 return
             check = None
             while check is None:
                 check = getpass.getpass("Please re-enter the password (-1 to change password): ")  # noqa E501
                 if check == password:
                     self.VisiblePassword = "Enabled"
+                    self.colours[5] = '\033[32m'
+                    self.password = password
                     return True
                 if check == -1:
                     self.VisiblePassword = "Disabled"
+                    self.colours[5] = '\033[31m'
                     self.password = None
 
     def check(self):
@@ -249,25 +287,28 @@ Password: {}{}\033[0m
         if self.Gname is None:
             Functions.clear(2, "Please enter a name!")
             return "Name"
-        if self.usernames is None:
+        if self.usernames[0] is None or self.usernames[1] is None:
             Functions.clear(2, "Please enter player names!")
-
-        games = Functions.RemoveNonGames(self.Loc)
-        if self.Gname in games:
-
-            if result == "Name":
-                return "Name"
-
-        if self.Loc == "Saves" and self.Multi == "yes":
-            print("Automatically set multiplayer to false because you are using the default directory")  # noqa E051
-            self.Multi = "no"
-            return "Multi"
+        
+        # Password better than no password, Check
+        if self.password is None:
+            continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")
+            if continueChoice != None:
+                return continueChoice
         return True
 
     def save(self):
         if self.check() is not True:
             Functions.clear(2, "Please check settings")
             return False
+        
+        # Get the user to enter the password to save
+        if self.password is not None:
+            check = getpass.getpass("Please enter the password to save the game: ")
+            if check != self.password:
+                Functions.clear(2, "Please make sure you can remeber the password")
+                return False
+
         # Create board
         board = Functions.board.CreateBoard(self.siZe)
 
