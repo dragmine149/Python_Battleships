@@ -169,6 +169,40 @@ class Print:
 
 
 """
+reverse(code)
+-- Returns the name of a colour code.
+
+-- usage: [code]
+--- code: the code you want to find the name of.
+"""
+class reverse:
+    def __init__(self, code):
+        
+        # Checks for valid code
+        try:
+            self.code = code.split('[')[1]
+        except IndexError:
+            self.code = None
+    
+    def reverse(self):
+        # if invalid, false
+        if self.code is None:
+            return False
+
+        # loops though data and sources to try and find the code        
+        format, colours = ConsoleFormat()
+        for dictonary in colours.values():
+            for value in dictonary.values():
+                if value.split('[')[1] == self.code:
+                    return True
+
+        for value in format.values():
+            if value.split('[')[1] == self.code:
+                return True
+
+        # return false if can't find
+        return False
+"""
 c(choice)
 -- returns the code of the choice, breaks if fails to find.
 -- if multiple options, returns the first one found.
