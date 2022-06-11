@@ -4,6 +4,7 @@ from Functions import Print
 import newSave
 import json
 import os
+import Setup
 
 
 class Settings:
@@ -29,7 +30,8 @@ class Settings:
 
         self.unformatedOptions = """01: Deafult Location -> {}
 02: Colour -> {}
-03: Clear Cache"""
+03: Clear Cache
+04: Setup (Install optional modules)"""
 
     def back(self):
         return "Returned"
@@ -72,7 +74,7 @@ class Settings:
 
         # save
         self.updateSave("colour", colour)
-    
+
     def deleteCache(self):
         Print("Deleting cache...", "Red")
         localDirList = os.listdir('.')
@@ -84,6 +86,16 @@ class Settings:
                     'path': 'Saves'
                 }).Delete(os.path.join(".", file))
         Functions.warn(2, "Waiting...", "green")
+
+    def setup(self):
+        path, changed = Setup.env()
+        Functions.clear(1)
+        _, changed1 = Setup.uiCheck(path)
+        Functions.clear(1)
+        _, changed2 = Setup.google(path)
+        Functions.clear(1)
+        if changed or changed1 or changed2:
+            os.sys.exit("Please run `{} mainTemp.py` to use new modules.".format(path))  # noqa E501
 
     # Loads settings stored
     def loadSettings(self):
@@ -126,13 +138,14 @@ Your personal settings.
             0: self.back,
             1: self.changeLocation,
             2: self.changeColour,
-            3: self.deleteCache
+            3: self.deleteCache,
+            4: self.setup,
         }
         self.display = GameMenu.menu(info,
                                      options,
                                      choices,
                                      back="Return to main menu")
-        result = self.display.getInput(values=(0, 3))
+        result = self.display.getInput(values=(0, 4))
         if result == "Returned":
             return "back"
         return result
