@@ -20,7 +20,12 @@ class CreateData:
         self.Multi = "no"
         self.password = None
         self.VisiblePassword = "Disabled"
-        self.colours = ['\033[31m', ['\033[32m', '\033[31m'], '\033[32m', '\033[32m', '\033[32m', '\033[33m']
+        self.colours = ['\033[31m',
+                        ['\033[32m', '\033[31m'],
+                        '\033[32m',
+                        '\033[32m',
+                        '\033[32m',
+                        '\033[33m']
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
@@ -114,22 +119,22 @@ Password: {}{}\033[0m
 
     def __nameCheck(self, name, old, other=None):
         newName = name
-        
+
         # Use system name if 'me'
         if name.rstrip().lower()[:2] == 'me':
             newName = getpass.getuser()
             if name[2:] != '':
                 newName += '({})'.format(name[2:])
-        
+
         # check for blank
         if name.rstrip() == '':
             newName = old
-        
+
         # Add (2) is both names same
         if other is not None:
             if other == newName:
                 newName += '(2)'
-        
+
         if str(newName) == "None":
             return False
         return newName
@@ -138,37 +143,39 @@ Password: {}{}\033[0m
         # Get the players names
         oldUsers = self.usernames
         self.usernames = [None, None]
-        
+
         # loop
         for i in range(2):
             while self.usernames[i] is None:
-                
+
                 # get the last name
                 pastName = None
                 pastNameText = ''
                 if i >= 1:
                     pastName = self.usernames[i - 1]
                     pastNameText = pastName + ', '
-                
-                
+
                 # Move cursor and stuff
                 print("\033[%d;%dH" % (19, 0))
                 space = " " * (len(str(oldUsers)) - 1)
-                self.usernames[i] = input("Please enter player {}'s name (Blank to keep same)\033[%d;%dHPlayers: [{}\033[%d;%dH{}".format(i + 1, space, pastNameText) % (3,0,3,11))
+                print("Please enter player {}'s name (Blank to keep same)".format(i + 1), end='')  # noqa E501
+                print("\033[%d;%dHPlayers: [{}".format(space) % (3, 0), end='')
+                self.usernames[i] = input("\033[%d;%dH{}".format(pastNameText) % (3, 11))  # noqa E501
                 print("\033[%d;%dH" % (19, 0))
 
                 # Process input
-                nameResult = self.__nameCheck(self.usernames[i], oldUsers[i], pastName)
-                    
+                nameResult = self.__nameCheck(self.usernames[i],
+                                              oldUsers[i], pastName)
+
                 # annoyed
                 if not nameResult:
                     self.usernames[i] = None
                     print("Player {} name is not allowed!".format(i + 1))
                     continue
-                
+
                 # save
                 self.usernames[i] = nameResult
-        
+
         # finish
         self.colours[1] = ['\033[32m', '\033[32m']
 
@@ -289,11 +296,11 @@ Password: {}{}\033[0m
             return "Name"
         if self.usernames[0] is None or self.usernames[1] is None:
             Functions.clear(2, "Please enter player names!")
-        
+
         # Password better than no password, Check
         if self.password is None:
-            continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")
-            if continueChoice != None:
+            continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")  # noqa E501
+            if continueChoice is not None:
                 return continueChoice
         return True
 
@@ -301,12 +308,12 @@ Password: {}{}\033[0m
         if self.check() is not True:
             Functions.clear(2, "Please check settings")
             return False
-        
+
         # Get the user to enter the password to save
         if self.password is not None:
-            check = getpass.getpass("Please enter the password to save the game: ")
+            check = getpass.getpass("Please enter the password to save the game: ")  # noqa E501
             if check != self.password:
-                Functions.clear(2, "Please make sure you can remeber the password")
+                Functions.clear(2, "Please make sure you can remeber the password")  # noqa E501
                 return False
 
         # Create board
