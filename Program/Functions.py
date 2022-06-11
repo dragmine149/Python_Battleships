@@ -1,8 +1,8 @@
 import time
 import os
 import newSave
+from colours import Print
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-from colours import *
 
 
 # Converts the input to a valid location (a1 -> [0,0])
@@ -246,8 +246,15 @@ class board:
         return board
 
     def DisplayBoard(board):
-        for y in board:
-            for x in y:
+        print("  ABCDEFGHIJ")
+        for y in range(len(board)):
+
+            yIndex = str(y + 1)
+            if len(yIndex) == 1:
+                yIndex = "0" + yIndex
+            print(yIndex, end="")
+
+            for x in board[y]:
                 print(x, end="")
             print()
 
@@ -426,26 +433,26 @@ def LocationTest(Location):
             'Json': False
         })
         print(vars(saveInfo))
-    
+
         # Creates test folder
         folder = saveInfo.makeFolder(replace=True)
         print(folder)
-    
+
         # creates file
         savedLocation = saveInfo.writeFile("This is a test file")
         print(savedLocation)
-    
+
         # reads file from same place
         data = saveInfo.readFile()
         print(data)
-    
+
         if data != "This is a test file":
             # Oh oh, doesn't work... Return error
             Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
             Location = None
-    
+
         saveInfo.Delete(folder)
-    
+
         return True, saveInfo._api
     except Exception:
         return False, False

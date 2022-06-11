@@ -3,6 +3,7 @@ import newSave
 import random
 import string
 import getpass
+import ShipInfo
 
 
 class CreateData:
@@ -344,6 +345,13 @@ Password: {}{}\033[0m
 
             # create files for users
             userData.writeFile(board, name='ships')
+
+            placedData = {}
+            for ship in ShipInfo.getShips():
+                placedData[ship.Name] = False
+
+            print(placedData)
+            userData.writeFile(placedData, name="placedData")
 # userData.writeFile(board, name='shots')
 
         # make turn file, notes whos turn it is.

@@ -200,9 +200,13 @@ class save:
     - returns the data from a file.
     - If not found, returns False
     """
-    def readFile(self, name=""):
+    def readFile(self, name="", joint=False):
+        # Multi use case
         if name == "":
             name = self.data['name']
+        if name != "" and joint:
+            name = os.path.join(self.data['name'], name)
+
         slash = self.__slash()
         path = "{}{}{}".format(self.path, slash, name)
         if self._api:
@@ -233,6 +237,7 @@ class save:
         if os.path.exists(path):
             with open(path, 'r') as file:
                 return self._Json(file.read())
+        Functions.Print("Failed to find data in path: {}".format(path), "red")
         return False
 
     """

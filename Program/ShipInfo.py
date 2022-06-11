@@ -35,7 +35,8 @@ Arguments:
     - Required: No
     - Value: String (result from colours.c)
 """
-from colours import *
+from colours import c, reverse
+
 
 class Short:
     def __init__(self):
@@ -147,7 +148,7 @@ class shipInfo:
             # set health
             ship.Health = self.calculate(ship)
             goodShips.append(ship)  # If reach, then good ship
-            
+
             # colour check
             try:
                 reversedCode = reverse(ship.Colour).reverse()
