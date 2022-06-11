@@ -2,7 +2,7 @@
 Index:
 ✅ = done
 🅿️ = In Progress
-◾️ = To do
+◾ = To do
 --------------------------------------------------------------------------------
 Main:
 ✅ Generate Board
@@ -13,16 +13,21 @@ Main:
 🅿️ View info about ships
 ✅ More than one game
 ✅ Multiplayer
-◾️ Network
-  ◾️ Extra file support
-  ◾️ Google Drive Support
+🅿️ Network
+  🅿️ Extra file support
+  ✅ Google Drive Support
 ◾️ Settings
 ◾️ UI (optional for user)
 🅿️ Bug Fixes
 ✅ Code Rewrite
+◾️ Save Game create inputs
+◾️ Archive Option
 --------------------------------------------------------------------------------
 AI:
 ◾️ Training
 ◾️ Auto place
 ◾️ Auto Shoot
 ◾️ Levels to what your level is.
+--------------------------------------------------------------------------------
+Bugs:
+◾️ Breaks when attempting to make file in location not found by system

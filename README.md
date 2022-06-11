@@ -1,37 +1,24 @@
-# Battleships
- Normal battleships made in a python terminal... or is it?
+q# Battleships
+ Normal battleships made in a python terminal
 
- Project made for fun, and also to learn things about neural networks (and ai)
+ Project made for fun, and also to learn things about neural networks (and ai) (still wip)
 
 # Features
- Battleships, Fully working game in python
- - Place Ships
- - Fire at opponents
- - Automatic win checking
- - Automatic destroyed checking
- - Orginised folders for viewing of save file (ifw)
- - Multiple folders to have multiple games
- - Load games
-
- More features are planned to come
-
-# How to run this program
-There are multiple ways that you can run this program, some require extra steps.
-## Local Install
-	1. Install python
-	2. Download the code
-	3. Run `Main.py`
-	This is the main and easy way to play battleships. Do Note not all the functionality will be alvalible. For Example: google drive api support, GUI support.
-
-### Optional Install
-	1. Run `Setup.py`
-	2. Run `.env\Scripts\Activate`
-	3. Run `Main.py`
-	This is an alternate way to play battleships, This will automatically install all requirements modules (into a virtual enviroment) before running. As long as you run it in the virtual enviroment, all the modules will be initalised.
-
-# NOTE
- Please note not all IDLE will give you the full experience due to not being able to run the command. For the best experience, run this program in a terminal window (instead of an IDLE)
+ Normal battleships working in python PLUS:
+ - Automatic saving of game.
+ - Network support, Play a game on the same network as someone else.
 
 # Helping
  Anyone can help, just make a new branch and submit a pull request. Not all requests will be accepted though.
  Depending on the request and what it does, depends on if it will get accepted.
+
+# Future Updates and maintainability
+I plan to keep maintain this program and updating it in the future. However due to the complex of this program not all things will be implemented, Below are some of the things that i personally will not work on.
+- Using other file servers than google drive, Possible but going to be hard and annoying to setup. I also don't use other services mainly.
+
+# Other information
+  [How to use](Documentation/Usage.md)
+
+# Credits (External modules used)
+- Google API
+- Colorama

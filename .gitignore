@@ -1,9 +1,18 @@
-Saves
 __pycache__
 .DS_Store
+
 .BattleshipsVenv
+
+Program/Data/Settings
+
+desktop.ini
+
+Saves
+Data
 ApiFiles
 
-Tests/data.txt
+DownloadFileTest.txt
+TabletPath.txt
+
+Tests/*.txt
 .pytest_cache
-Program/Data/Settings

@@ -1,4 +1,0 @@
-0. Quit
-1. Load Games
-2. Make New Game
-3. Settings

@@ -1,4 +1,4 @@
-import save
+qimport save
 import ShipInfo as ship
 import Functions
 import copy
