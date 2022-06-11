@@ -3,14 +3,14 @@ colours.py, the best file to print colours out in the console!
 
 NOTE: Console only!! This does not work in an IDE
 
-Usage:
+Usage (this will also import colorama by default so that it works on windows):
 import colours
 from colours import * (advanced recommended)
 from colours import c (recommended)
 
 Functions:
 ConsoleFormat -- returns 2 lists of codes, not recommended use for quick.
-Print(msg, colour, options) -- prints message out using selected colour and options.
+Print(msg, colour, options) -- Prints msg using colour and options
 c(colour) -- returns the format for the code inputted.
 
 Extra help:
@@ -20,6 +20,7 @@ Extra help:
 
 import importlib
 colorama = importlib.import_module('colorama', 'Program.colorama')
+
 
 def ConsoleFormat():
     # defines the colours and what they do
@@ -168,28 +169,27 @@ class Print:
         print(self._format['reset'])
 
 
-"""
-reverse(code)
--- Returns the name of a colour code.
-
--- usage: [code]
---- code: the code you want to find the name of.
-"""
 class reverse:
+    """
+    reverse(code)
+    -- Returns the name of a colour code.
+
+    -- usage: [code]
+    --- code: the code you want to find the name of.
+    """
     def __init__(self, code):
-        
         # Checks for valid code
         try:
             self.code = code.split('[')[1]
         except IndexError:
             self.code = None
-    
+
     def reverse(self):
         # if invalid, false
         if self.code is None:
             return False
 
-        # loops though data and sources to try and find the code        
+        # loops though data and sources to try and find the code
         format, colours = ConsoleFormat()
         for dictonary in colours.values():
             for value in dictonary.values():
@@ -202,6 +202,8 @@ class reverse:
 
         # return false if can't find
         return False
+
+
 """
 c(choice)
 -- returns the code of the choice, breaks if fails to find.
@@ -216,6 +218,8 @@ Example usage:
 print(c('fgr') + 'Hello' + c() + c('bgg') + 'World' + c())
 - prints "Hello" in red, "World" in white with a green background.
 """
+
+
 def c(choice=None):
     cR = colourRetrieve(choice)
     return cR.colourCode
@@ -273,7 +277,6 @@ class colourRetrieve:
                 return self.colours[mode[1]][option]
 
             # checks for multi word
-            spltStr = option.split(' ')
             if choice[0] == 'l' or choice[0] == 'd':
                 if option[6:6 + len(choice[1:])] == choice[1:]:
                     return self.colours[mode[1]][option]
