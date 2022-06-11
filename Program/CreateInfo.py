@@ -350,7 +350,7 @@ Password: {}{}\033[0m
         data = {
             'turn': self.usernames[0],
             'multi': self.Multi[0],
-            'password': self.password[0]
+            'password': self.password
         }
         gameData.writeFile(data, name="GameData")
 
