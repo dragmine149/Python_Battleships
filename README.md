@@ -1,4 +1,4 @@
-q# Battleships
+# Battleships
  Normal battleships made in a python terminal
 
  Project made for fun, and also to learn things about neural networks (and ai) (still wip)
