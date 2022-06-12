@@ -28,13 +28,15 @@ class Place:
     def ShowDisplay(self):
         print("{}'s turn to place!\n".format(self.user))
         Functions.board.DisplayBoard(self.boardData)
-        print("\nAlvalible Options:")
+        print("\nAlvalible Ships to place:")
 
         index = 1
         for item in self.placedData:
             if not self.placedData[item]:
                 print("{}: {}".format(index, item))
-                index += 1
+            else:
+                print("{}: {} (move)".format(index, item))
+            index += 1
 
     # Custom check for the rotation
     def _rotationCheck(self):
@@ -58,6 +60,53 @@ class Place:
                 except KeyError:
                     string = None
                     Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
+
+    def AttemptPlace(self, ships, place, y, x, rot):
+        try:
+            breaked = False
+            for i in range(ships[place].Length):
+                squareId = [0, 0]
+                if rot == 0:
+                    if y - i >= 0:
+                        squareId = [y - i, x]
+                    else:
+                        # Error, doesn't fit on board
+                        self._ShipError()
+                elif rot == 90:
+                    if x + i >= 0:
+                        squareId = [y, x + i]
+                    else:
+                        self._ShipError()
+                elif rot == 180:
+                    if y + i >= 0:
+                        squareId = [y + i, x]
+                    else:
+                        self._ShipError()
+                elif rot == 270:
+                    if x - i >= 0:
+                        squareId = [y, x - i]
+                    else:
+                        self._ShipError()
+                else:  # Fail safe check.
+                    Functions.clear(1, "Error in placing ship, Please try again")  # noqa
+                    self.placed = False
+                    break
+                if self.gameBoard[squareId[0]][squareId[1]] == "-":
+                    self.gameBoard[squareId[0]][squareId[1]] = str(ships[place].Symbol)  # noqa
+                else:
+                    self._Error("Ship collides with another ship!")
+                    self.gameBoard = deep
+                    break
+
+            if not self.breaked:
+                self.placed = True
+            else:
+                Functions.board.DisplayBoard(self.gameBoard)
+                print("{}'s Turn to place ships\n\nShip placing: {}".format(self.user, ships[place].Name))  # noqa
+        except IndexError:  # reset if ship can't go there
+            self._Error("Ship does not fit on board")
+            self.gameBoard = deep
+            self.placed = False
 
     # Main part of placing
     def Place(self):
