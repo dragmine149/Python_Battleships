@@ -164,6 +164,10 @@ class check:
         self.__input = None
 
     def _CallExtra(self):  # repeats any information the user needs to know
+
+        # TODO: Find a way to update the values if the list of options
+        #     : has changed.
+
         # check if any extra information to show
         function = self._extra
         functionVars = None

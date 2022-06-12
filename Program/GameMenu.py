@@ -88,7 +88,14 @@ Other Options:
             return "Values length is not 2"
         if choice != -0.5:
             # complete Choice
-            return self.process(choice)
+            result = self.process(choice)
+
+            # Fix issue with going back after having a different choice input
+            if result is None or result == "back":
+                choice = -0.5
+            else:
+                return result
+
         while choice == -0.5:
             Functions.clear()  # clears
 
