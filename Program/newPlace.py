@@ -61,7 +61,18 @@ class Place:
                     string = None
                     Functions.clear(1, "Please enter a valid direction (North, East, South, West)")  # noqa
 
-    def AttemptPlace(self, ships, place, y, x, rot):
+    # fLoatcation -> Curtestly of sophie
+    def AttemptPlace(self, board, ship, fLoatcation, roatation):
+        # board       -> copy of the current board.
+        # ship        -> ship with data to place.
+        # fLoatcation -> position to place ship.
+        # rotation    -> rotation of ship.
+        works = False
+        try:
+            for i in range(ship.Length):
+                placeId = [fLoatcation[0]. fLoatcation[1]]
+                if rotation ==
+        
         try:
             breaked = False
             for i in range(ships[place].Length):
