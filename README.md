@@ -22,3 +22,4 @@ I plan to keep maintain this program and updating it in the future. However due 
 # Credits (External modules used)
 - Google API
 - Colorama
+All other modules used are built into python*
