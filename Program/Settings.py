@@ -1,6 +1,6 @@
 import GameMenu
 import Functions
-from Functions import Print
+from colours import Print, colourRetrieve, reverse
 import newSave
 import os
 import Setup
@@ -28,7 +28,7 @@ class Settings:
             self.saveSettings()
         self.loadSettings()
 
-        self.unformatedOptions = """01: Deafult Location -> {}
+        self.unformatedOptions = """01: Deafult Location (game saves) -> {}
 02: Colour -> {}
 03: Clear Cache
 04: Setup (Install optional modules)"""
@@ -66,7 +66,7 @@ class Settings:
 
             # get possible list
             try:
-                code = Functions.colourRetrieve(colour)
+                code = colourRetrieve(colour)
                 colour = code.fullName
             except ValueError:
                 Print("Invalid colour chosen!", "red")
