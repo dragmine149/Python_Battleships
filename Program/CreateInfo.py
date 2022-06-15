@@ -10,7 +10,7 @@ class CreateData:
     def __init__(self, path="Saves", name=None):
         # Load the class and all it's data
         self.Gname = name
-        self.usernames = [getpass.getuser(), 'None']
+        self.usernames = [getpass.getuser(), None]
         self.siZe = [10, 10]
 
         self.Loc = path
@@ -297,7 +297,13 @@ Password: {}{}\033[0m
             return "Name"
         if self.usernames[0] is None or self.usernames[1] is None:
             Functions.clear(2, "Please enter player names!")
+            return "Username"
 
+        for user in self.usernames:
+            if user.find('/') > -1 or user.find('\\') > -1:
+                Functions.clear(2, "Username cannot have '/' or '\\' in!")
+                return "Invalid Name"
+            
         # Password better than no password, Check
         if self.password is None:
             continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")  # noqa E501
