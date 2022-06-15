@@ -2,7 +2,6 @@ import GameMenu
 import Functions
 from Functions import Print
 import newSave
-import json
 import os
 import Setup
 
@@ -15,6 +14,7 @@ class Settings:
         self.save = newSave.save({
             'name': 'Settings',
             'path': 'Data',
+            'Json': True
         })
 
         self.data = {
@@ -100,7 +100,7 @@ class Settings:
     # Loads settings stored
     def loadSettings(self):
         Print("Loading settings... ", 'blue')
-        self.data = json.loads(self.save.readFile())
+        self.data = self.save.readFile()
 
         # checks for missing data in the dictonary of data
         missing = []
@@ -124,7 +124,7 @@ class Settings:
     # Saves settings
     def saveSettings(self):
         Print("Saving settings...", 'blue')
-        self.save.writeFile(json.dumps(self.data))
+        self.save.writeFile(self.data, True)
         Print("Successfully saved settings", "green")
 
     # Shows the settings menu

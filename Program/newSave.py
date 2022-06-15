@@ -74,18 +74,16 @@ class save:
     save -> to encode or to decode
     - Encodes data with json, this makes it harder to edit normally
     """
-    def _Json(self, data, fileData, save=False):
-        oldData = data # backup
-        
+    def _Json(self, data, save=False):
         if not save:  # loading
-            data = pickle.loads(fileData)  #  decode binary first
+            data = pickle.loads(data)  # decode binary first
             if self._json:
                 data = json.loads(data)
             return data
-        
+
         if self._json:
             data = json.dumps(data)  # encode json first
-        data = pickle.dump(data, fileData)
+        data = pickle.dumps(data)
         return data
 
     """
@@ -185,7 +183,7 @@ class save:
 
         # Makes the file with the data in the temparay location
         tempLocation = "Saves/.Temp/{}".format(name)
-        with open(tempLocation, 'w+') as tempFile:
+        with open(tempLocation, 'wb') as tempFile:
             tempFile.write(self._Json(data, True))
 
         if self._api:
@@ -235,7 +233,7 @@ class save:
                         break
 
             if isinstance(Id, str):
-                with open(Id, 'r') as file:
+                with open(Id, 'rb') as file:
                     return self._Json(file.read())
             return Id
 
@@ -243,7 +241,7 @@ class save:
         # Don't need to add name here as done eariler
         path = self.__replace(path)
         if os.path.exists(path):
-            with open(path, 'r') as file:
+            with open(path, 'rb') as file:
                 return self._Json(file.read())
         Functions.Print("Failed to find data in path: {}".format(path), "red")
         return False
