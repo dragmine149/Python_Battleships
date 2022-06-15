@@ -2,6 +2,7 @@ import os
 import Functions
 import json
 import shutil
+import pickle
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)
@@ -73,11 +74,18 @@ class save:
     save -> to encode or to decode
     - Encodes data with json, this makes it harder to edit normally
     """
-    def _Json(self, data, save=False):
+    def _Json(self, data, fileData, save=False):
+        oldData = data # backup
+        
+        if not save:  # loading
+            data = pickle.loads(fileData)  #  decode binary first
+            if self._json:
+                data = json.loads(data)
+            return data
+        
         if self._json:
-            if not save:
-                return json.loads(data)
-            return json.dumps(data)
+            data = json.dumps(data)  # encode json first
+        data = pickle.dump(data, fileData)
         return data
 
     """
