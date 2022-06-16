@@ -98,6 +98,10 @@ Password: {}{}\033[0m
         while self.Gname is None:
             # get input
             self.Gname = input("Please enter the game name\033[%d;%dH" % (2, 7))  # noqa
+            if self.Gname == "None":
+                self.Gname = None
+                continue
+
             games = Functions.RemoveNonGames(self.Loc)
             if self.Gname not in games:
                 self.colours[0] = '\033[32m'

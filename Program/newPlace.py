@@ -175,7 +175,7 @@ class Place:
         Finished = False
         while not Finished:
             Functions.clear()
-            if self.PlacedAll():
+            if not self.PlacedAll():
                 return 0
             # Gets ship to place
             place = Functions.check("Enter ship number you want to place: ",
@@ -200,5 +200,5 @@ class Place:
 
     def Main(self):
         Functions.clear()
-        self.Place()
+        data = self.Place()
         return False

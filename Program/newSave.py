@@ -1,6 +1,5 @@
 import os
 import Functions
-import json
 import shutil
 import pickle
 import sys
@@ -14,19 +13,13 @@ class save:
     data -> {
         name -> name of the file to create (supports subdirs)
         path -> where to save the file
-        json -> whever to encode the data in json
     }
     """
     def __init__(self, data={'name': '',
-                             'path': '',
-                             'Json': False}):
+                             'path': ''}):
         # removes characters from the path
         self.path = data['path'].rstrip()
         self._api = self.__loadApi()
-        try:
-            self._json = data['Json']
-        except KeyError:
-            self._json = False
         self.__Foldercheck()
         if data['name'] is not None and data['path'] is not None:
             self.data = data
@@ -80,23 +73,18 @@ class save:
             print("Data already exists yet doesn't exists...")
 
     """
-    _Json(data, save)
-    data -> data to jsonify
+    _Encode(data, save)
+    data -> data to binarify
     save -> to encode or to decode
-    - Encodes data with json, this makes it harder to edit normally
+    - Encodes data with binary, this makes it harder to edit normally
     """
-    def _Json(self, data, save=False):
+    def _Encode(self, data, save=False):
         try:
+
             if not save:  # loading
-                data = pickle.loads(data)  # decode binary first
-                if self._json:
-                    data = json.loads(data)
-                return data
-    
-            if self._json:
-                data = json.dumps(data)  # encode json first
-            data = pickle.dumps(data)
-            return data
+                return pickle.loads(data)  # decode binary first
+            return pickle.dumps(data)
+
         except Exception as e:
             Functions.clear()
             Functions.warn(3, "Please check the data stored! If this keeps happening please reset your data with 'python mainTemp.py +-delete'.")
@@ -202,7 +190,7 @@ class save:
         # Makes the file with the data in the temparay location
         tempLocation = "Saves/.Temp/{}".format(name)
         with open(tempLocation, 'wb+') as tempFile:
-            tempFile.write(self._Json(data, True))
+            tempFile.write(self._Encode(data, True))
 
         if self._api:
             # uploads to drive
@@ -252,7 +240,7 @@ class save:
 
             if isinstance(Id, str):
                 with open(Id, 'rb') as file:
-                    return self._Json(file.read())
+                    return self._Encode(file.read())
             return Id
 
         # local read area
@@ -260,7 +248,7 @@ class save:
         path = self.__replace(path)
         if os.path.exists(path):
             with open(path, 'rb') as file:
-                return self._Json(file.read())
+                return self._Encode(file.read())
         Functions.Print("Failed to find data in path: {}".format(path), "red")
         return False
 

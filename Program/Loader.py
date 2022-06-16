@@ -4,6 +4,7 @@ import newSave
 import os
 import ProcessInput as pi
 import Settings
+from colours import c
 
 
 class Loader:
@@ -76,6 +77,9 @@ Games found in: {} ({})
 
         for game in range(len(self.gameList)):
             options += "{}: {}\n".format(game + 1, self.gameList[game])
+        
+        if options == "":
+            options = c('r') + "\nNo games found!\nPlease reload by giving no input, Choose a different location or make a game." + c()
 
         def all(choice):
             Functions.Print('ALL OBJECT CALLED', 'green', 'bold')

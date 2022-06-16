@@ -14,7 +14,6 @@ class Settings:
         self.save = newSave.save({
             'name': 'Settings',
             'path': 'Data',
-            'Json': True
         })
 
         self.data = {

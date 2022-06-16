@@ -15,7 +15,6 @@ class Game:
         self.gameData = newSave.save({
             'name': self.name,
             'path': self.location,
-            'Json': True
         })
 
     def Place(self):
@@ -23,6 +22,7 @@ class Game:
             if not self.placed[user]:
                 userPlace = newPlace.Place(self.name, self.location, self.users[user])
                 userPlace.Main()
+        return "Completed place"
 
     def Password(self):
         gameData = self.gameData.readFile('{}/GameData'.format(self.name))
