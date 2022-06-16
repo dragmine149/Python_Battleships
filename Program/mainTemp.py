@@ -20,7 +20,7 @@ Other possible options:
 """)  # noqa E501
 
     return 1
-    
+
 
 def options():
     if len(sys.argv) > 1:
@@ -36,26 +36,25 @@ def options():
                 newSave.save.Delete('Saves')
                 newSave.save.Delete('Data')
                 sys.exit('Deleted old data. Please rerun')
-            
+
             def no():
                 sys.exit('Aborted!')
-            
-            Functions.check('Are you sure you want to delete all data stored?: ',
+
+            Functions.check('Are you sure you want to delete all data?: ',
                             returnFunc=(yes, no)).getInput('ynCheck')
 
 
 if __name__ == "__main__":
     # goes into menu
-    choice = options() or .5
-    
+    choice = options() or -0.5
+
     import GameMenu
     import Choices
     import Game
-    
+
     # loads info
     c = Choices.Choices()
     menu = GameMenu.menu
-
 
     # banner
     info = """\033[32m--------------------------------------------------------------------
