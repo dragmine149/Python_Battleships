@@ -2,6 +2,7 @@ import time
 import os
 import newSave
 from colours import Print
+import traceback
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
@@ -344,6 +345,7 @@ class search:
               Default 3: '../../../' (WIP)
     sti -> how long to wait between messages and stuff, just for fun.
            Recommendation don't add.
+    List -> Returns a list of all files found
     """
     def __init__(self, directory, target, layers=3, sti=0, List=False):
         self.directory = directory
@@ -355,7 +357,10 @@ class search:
         self.FoundList = []
 
     def Locate(self):
-        return self.__searchDirectory(self.directory)
+        result = self.__searchDirectory(self.directory)
+        if self.list:
+            return self.FoundList
+        return result
 
     """
     __searchDirectory(self, directory, sub)
@@ -391,6 +396,7 @@ class search:
             try:
                 files = os.listdir(directory)
             except PermissionError:
+                print('Permission not granted for {}'.format(directory))
                 return
             if self.searched in files:
                 files.remove(self.searched)
@@ -543,6 +549,11 @@ def changePath():
         except KeyboardInterrupt:
             external = None
             clear()
+
+def PrintTraceback():
+    print('\033[41m----')
+    traceback.print_exc()
+    print('----\033[0m')
 
 
 if __name__ == "__main__":

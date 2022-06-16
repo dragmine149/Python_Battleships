@@ -3,6 +3,7 @@ import Functions
 import json
 import shutil
 import pickle
+import sys
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)
@@ -59,14 +60,24 @@ class save:
     """
     def __Foldercheck(self):
         # Data for files
-        if not os.path.exists("Saves"):
-            os.mkdir("Saves")
-        if not os.path.exists("Saves/.Temp"):
-            os.mkdir("Saves")
+        try:
+            if not os.path.exists("Saves"):
+                os.mkdir("Saves")
+        except FileExistsError:
+            print("Saves already exists yet doesn't exists...")
+        
+        try:
+            if not os.path.exists("Saves/.Temp"):
+                os.mkdir("Saves/.Temp")
+        except FileExistsError:
+            print("Saves/.Temp already exists yet doesn't exists...")
 
-        # Settings and other data
-        if not os.path.exists("Data"):
-            os.mkdir("Data")
+        try:
+            # Settings and other data
+            if not os.path.exists("Data"):
+                os.mkdir("Data")
+        except FileExistsError:
+            print("Data already exists yet doesn't exists...")
 
     """
     _Json(data, save)
@@ -75,16 +86,23 @@ class save:
     - Encodes data with json, this makes it harder to edit normally
     """
     def _Json(self, data, save=False):
-        if not save:  # loading
-            data = pickle.loads(data)  # decode binary first
+        try:
+            if not save:  # loading
+                data = pickle.loads(data)  # decode binary first
+                if self._json:
+                    data = json.loads(data)
+                return data
+    
             if self._json:
-                data = json.loads(data)
+                data = json.dumps(data)  # encode json first
+            data = pickle.dumps(data)
             return data
-
-        if self._json:
-            data = json.dumps(data)  # encode json first
-        data = pickle.dumps(data)
-        return data
+        except Exception as e:
+            Functions.clear()
+            Functions.warn(3, "Please check the data stored! If this keeps happening please reset your data with 'python mainTemp.py +-delete'.")
+            print('Logs: ')
+            Functions.PrintTraceback()
+            sys.exit('Error in reading data')
 
     """
     __replace(path)
@@ -183,7 +201,7 @@ class save:
 
         # Makes the file with the data in the temparay location
         tempLocation = "Saves/.Temp/{}".format(name)
-        with open(tempLocation, 'wb') as tempFile:
+        with open(tempLocation, 'wb+') as tempFile:
             tempFile.write(self._Json(data, True))
 
         if self._api:
@@ -293,13 +311,20 @@ class save:
 
         if not self._api:
             Npath = self.__replace(path)
-            if os.path.exists(Npath):
-                shutil.rmtree(Npath)
-                return True
-            print('Path not found! -> {}'.format(Npath))
-            return False
+            Delete(Npath)
         return self._api.DeleteData(path)
 
+    """
+    Delete(path)
+    - Static method, Deletes without questions
+    """
+    @staticmethod
+    def Delete(path):
+        if os.path.exists(path):
+            shutil.rmtree(path)
+            return True
+        print('Path not found! -> {}'.format(path))
+        return False
 
 if __name__ == "__main__":
     ss = save({'name': 'NSTTest', 'path': 'Saves'})

@@ -9,6 +9,7 @@ from apiclient.http import MediaFileUpload, MediaIoBaseDownload  # type: ignore
 
 
 import os
+import sys
 import io
 import DriveSetup as setup
 import Functions
@@ -45,6 +46,8 @@ class Api:
                     token.write(creds.to_json())
 
             return build('drive', 'v3', credentials=creds)
+        except KeyboardInterrupt:
+            sys.exit('Bad drive... Please restart the program and try again.')
         except:  # noqa  Try and find error handle 'RefreshError'
             if os.path.exists('ApiFiles/token.json'):
                 os.system('rm ApiFiles/token.json')

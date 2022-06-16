@@ -77,14 +77,15 @@ class Settings:
 
     def deleteCache(self):
         Print("Deleting cache...", "Red")
-        localDirList = os.listdir('.')
-        for file in localDirList:
-            if file == "__pycache__":
-                print(file)
-                newSave.save({
-                    'name': '',
-                    'path': 'Saves'
-                }).Delete(os.path.join(".", file))
+
+        Data = Functions.search('..', '__pycache__', 1, 0, True).Locate()
+        for file in Data:
+            newSave.save.Delete(file)
+
+        Data = Functions.search('..', '.pytest_cache', 1, 0, True).Locate()
+        for file in Data:
+            newSave.save.Delete(file)
+
         Functions.warn(2, "Waiting...", "green")
 
     def setup(self):

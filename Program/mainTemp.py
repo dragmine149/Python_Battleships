@@ -1,12 +1,5 @@
 import Functions
 import sys
-import GameMenu
-import Choices
-import Game
-
-# loads info
-c = Choices.Choices()
-menu = GameMenu.menu
 
 
 def help():
@@ -27,9 +20,43 @@ Other possible options:
 """)  # noqa E501
 
     return 1
+    
+
+def options():
+    if len(sys.argv) > 1:
+        if Functions.IsDigit(sys.argv[1]):
+            return int(sys.argv[1])  # fix?
+
+        if sys.argv[1].lower()[0] == "h":
+            sys.exit(help())
+
+        if sys.argv[1] == '+-delete':
+            def yes():
+                import newSave
+                newSave.save.Delete('Saves')
+                newSave.save.Delete('Data')
+                sys.exit('Deleted old data. Please rerun')
+            
+            def no():
+                sys.exit('Aborted!')
+            
+            Functions.check('Are you sure you want to delete all data stored?: ',
+                            returnFunc=(yes, no)).getInput('ynCheck')
 
 
 if __name__ == "__main__":
+    # goes into menu
+    choice = options() or .5
+    
+    import GameMenu
+    import Choices
+    import Game
+    
+    # loads info
+    c = Choices.Choices()
+    menu = GameMenu.menu
+
+
     # banner
     info = """\033[32m--------------------------------------------------------------------
 Python Battleships by drag
@@ -41,16 +68,8 @@ Github: https://www.github.com/dragmine149/Python_Battleships
     options = """01: Load Games
 02: Make New Game
 03: Settings"""
-
     main = menu(info, options, c.generate("main"))
 
-    # goes into menu
-    choice = -.5
-    if len(sys.argv) > 1:
-        if Functions.IsDigit(sys.argv[1]):
-            choice = int(sys.argv[1])  # fix
-        if sys.argv[1].lower()[0] == "h":
-            sys.exit(help())
 
     result = main.getInput(choice, values=(0, 3))
     print({'main temp result': result})

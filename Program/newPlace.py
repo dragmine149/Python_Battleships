@@ -4,6 +4,7 @@ import copy
 import ShipInfo
 import os
 import colours
+import Settings
 
 
 class Place:
@@ -171,8 +172,11 @@ class Place:
 
     # Main part of placing
     def Place(self):
-        while self.PlacedAll:
+        Finished = False
+        while not Finished:
             Functions.clear()
+            if self.PlacedAll():
+                return 0
             # Gets ship to place
             place = Functions.check("Enter ship number you want to place: ",
                                     (self.ShowDisplay),
@@ -188,6 +192,11 @@ class Place:
 
                 self.boardData = self.PlaceData(place)
                 self.placedData[self.ships[place].Name] = True
+                self.info.writeFile(self.boardData, True, "ships")
+                self.info.writeFile(self.placedData, True, "placedData")
+        
+        self.info.writeFile(Settings.request('colour'), "UserColour")
+        
 
     def Main(self):
         Functions.clear()
