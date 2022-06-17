@@ -43,6 +43,8 @@ def options():
             Functions.check('Are you sure you want to delete all data?: ',
                             returnFunc=(yes, no)).getInput('ynCheck')
 
+        if isinstance(sys.argv[1], str):
+            sys.exit("Comming soon (Probably in Update 3)")
 
 if __name__ == "__main__":
     # goes into menu
