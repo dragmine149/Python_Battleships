@@ -83,7 +83,6 @@ class Place:
         # rotation    -> rotation of ship.
         while True:
             try:
-                empty = copy.deepcopy(board)
                 for i in range(ship.Length):
                     placeId = [fLoatcation[0], fLoatcation[1]]
 
@@ -111,13 +110,14 @@ class Place:
 
                         placeId = [placeId[0], placeId[1] - i]
 
+                    # Two boards stored in ram, this takes up more but makes it look better... Any way to change?
                     # Place ship, Change?
                     if board[placeId[1]][placeId[0]] == "-":
                         board[placeId[1]][placeId[0]] = "\033[33m{}\033[0m".format(str(ship.Symbol))  # noqa E501
-                    if empty[placeId[1]][placeId[0]] == "-":
-                        empty[placeId[1]][placeId[0]] = ship.Colour + str(ship.Symbol) + colours.c()  # noqa E501
+                    else:
+                        raise IndexError('Collides with another ship!')
 
-                return board, empty
+                return board
             except IndexError as ie:
                 # Report error, reget input
                 print("Invalid ship placement -> {}".format(ie))
@@ -132,6 +132,13 @@ class Place:
             Location = Functions.LocationConvert(input("Please enter location to place ship: "))  # noqa E501
             Location = Location.Convert()
         return Location
+        
+    def _ChangeColour(self, board, ship):
+        for y in range(len(board)):
+            for x in range(len(board[y])):
+                sy = str(ship.Symbol)
+                board[y][x] = ship.Colour + sy + colours.c() if board[y][x].find(sy) > -1 else board[y][x]
+        return board
 
     def PlaceData(self, place):
         Functions.clear()
@@ -144,24 +151,23 @@ class Place:
         backupCopy = copy.deepcopy(self.boardData)
 
         # Attempts to place the ship on the map and show the board.
-        board, empty = self.AttemptPlace(backupCopy, self.ships[place], self.__GetLocation, self._rotationCheck)  # noqa E501
+        board = self.AttemptPlace(backupCopy, self.ships[place], self.__GetLocation, self._rotationCheck)  # noqa E501
         Functions.clear()
         self.ShowDisplay(False, board)
 
         # Checks if the board and what has been placed is correct.
         def yes():
-            return True
+            return True, True
 
         def no():
-            return self.boardData
+            return self.boardData, False
 
-        cont = Functions.check("\nDoes this look correct? (y or n): ",
+        cont, saved = Functions.check("\nDoes this look correct? (y or n): ",
                                returnFunc=(yes, no)).getInput('ynCheck')
-
-        # Translate and use inputs
         if cont is True:
-            return empty
-        return cont
+            cont = self._ChangeColour(board, self.ships[place])
+
+        return cont, saved
 
     # Checks if all ships have been placed
     def PlacedAll(self):
@@ -184,16 +190,17 @@ class Place:
             if place == 0:
                 return 0
             if place is not None:
+                place -= 1
+
                 if self.placedData[self.ships[place].Name]:
                     Functions.clear(2, "Moving ships comming in Update 3 (Sorry, big task to do atm.)")  # noqa E501
                     continue
 
-                place -= 1
-
-                self.boardData = self.PlaceData(place)
-                self.placedData[self.ships[place].Name] = True
-                self.info.writeFile(self.boardData, True, "ships")
-                self.info.writeFile(self.placedData, True, "placedData")
+                self.boardData, saved = self.PlaceData(place)
+                if saved:
+                    self.placedData[self.ships[place].Name] = True
+                    self.info.writeFile(self.boardData, True, "ships")
+                    self.info.writeFile(self.placedData, True, "placedData")
         
         self.info.writeFile(Settings.request('colour'), "UserColour")
         
