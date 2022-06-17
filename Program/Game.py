@@ -21,7 +21,8 @@ class Game:
         for user in range(len(self.users)):
             if not self.placed[user]:
                 userPlace = newPlace.Place(self.name, self.location, self.users[user])
-                userPlace.Main()
+                self.placed[user] = userPlace.Main()
+        self.gameData.writeFile()
         return "Completed place"
 
     def Password(self):

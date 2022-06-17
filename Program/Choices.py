@@ -31,7 +31,6 @@ class Choices:
         Functions.clear()
         self.Loader.game = None
         result = self.Loader.selectGame()
-        print(result)
         return result
 
     def makeGame(self):
@@ -40,5 +39,4 @@ class Choices:
 
     def settings(self):
         result = self.Settings.showDisplay()
-        print(result)
         return result

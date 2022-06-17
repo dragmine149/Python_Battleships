@@ -21,7 +21,6 @@ class Place:
         self.info = newSave.save({
             'name': os.path.join(self.name, self.user),
             'path': self.location,
-            'Json': True
         })
         self.placedData = self.info.readFile("placedData", True)
         self.boardData = self.info.readFile("ships", True)
@@ -182,12 +181,17 @@ class Place:
         while not Finished:
             Functions.clear()
             if not self.PlacedAll():
-                return 0
+                return -2
             # Gets ship to place
             place = Functions.check("Enter ship number you want to place: ",
                                     (self.ShowDisplay),
                                     (0, len(self.ships))).getInput()
             if place == 0:
+                self.info.writeFile(Settings.request('colour'), True, "UserColour")
+                
+                boardSize = self.info.readFile('../GameData', True)
+                self.info.writeFile(Functions.board.CreateBoard(boardSize['size']))
+                self.info.writeFile("shots")
                 return 0
             if place is not None:
                 place -= 1
@@ -201,11 +205,9 @@ class Place:
                     self.placedData[self.ships[place].Name] = True
                     self.info.writeFile(self.boardData, True, "ships")
                     self.info.writeFile(self.placedData, True, "placedData")
-        
-        self.info.writeFile(Settings.request('colour'), "UserColour")
-        
+
 
     def Main(self):
         Functions.clear()
         data = self.Place()
-        return False
+        return data == -2

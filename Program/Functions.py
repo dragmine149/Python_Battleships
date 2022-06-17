@@ -217,7 +217,7 @@ class check:
             if callable(self._returnFunc[2]):
                 return self._returnFunc[2]()
             return self._returnFunc[2]
-        except KeyError:  # if we only supply 2 arguments
+        except (KeyError, IndexError):  # if we only supply 2 arguments
             clear(2, "Invalid input, please enter y or n!", "red")
             return "Invalid"
 
@@ -237,6 +237,7 @@ class check:
                 result = self._ynCheck()
                 if result != "Invalid":
                     return result
+                self.__input = None
 
 
 # Everything to do with the board. Prints it and creates it.
