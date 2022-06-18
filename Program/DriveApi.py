@@ -11,8 +11,9 @@ from apiclient.http import MediaFileUpload, MediaIoBaseDownload  # type: ignore
 import os
 import sys
 import io
-import DriveSetup as setup
-import Functions
+import importlib
+setup = importlib.import_module('DriveSetup', 'Program')
+Functions = importlib.import_module('Functions', 'Program')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 SCOPES = ['https://www.googleapis.com/auth/drive']

@@ -1,9 +1,10 @@
-import Functions
-import newSave
-import random
-import string
 import getpass
-import ShipInfo
+import string
+import random
+import importlib
+Functions = importlib.import_module('Functions', 'Program')
+newSave = importlib.import_module('newSave', 'Program')
+ShipInfo = importlib.import_module('ShipInfo', 'Program')
 
 
 class CreateData:
