@@ -1,4 +1,5 @@
-import Functions
+import importlib
+Functions = importlib.import_module('Functions')
 
 
 class menu:
@@ -50,7 +51,6 @@ Other Options:
 
     # gets their choice and does stuff
     def process(self, choice):
-        print(choice)
         if len(self.choiceData) == 1:
             for i in self.choiceData.values():
                 return i(choice)

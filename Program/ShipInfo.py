@@ -35,7 +35,10 @@ Arguments:
     - Required: No
     - Value: String (result from colours.c)
 """
-from colours import c, reverse
+import importlib
+colours = importlib.import_module('colours')
+c = colours.c
+reverse = colours.reverse
 
 
 class Short:

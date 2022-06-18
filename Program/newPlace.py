@@ -1,10 +1,11 @@
-import newSave
-import Functions
-import copy
-import ShipInfo
 import os
-import colours
-import Settings
+import importlib
+import copy
+newSave = importlib.import_module('newSave')
+Functions = importlib.import_module('Functions')
+ShipInfo = importlib.import_module('ShipInfo')
+colours = importlib.import_module('colours')
+Settings = importlib.import_module('Settings')
 
 
 class Place:
@@ -109,8 +110,6 @@ class Place:
 
                         placeId = [placeId[0], placeId[1] - i]
 
-                    # Two boards stored in ram, this takes up more but makes it look better... Any way to change?
-                    # Place ship, Change?
                     if board[placeId[1]][placeId[0]] == "-":
                         board[placeId[1]][placeId[0]] = "\033[33m{}\033[0m".format(str(ship.Symbol))  # noqa E501
                     else:
@@ -131,12 +130,13 @@ class Place:
             Location = Functions.LocationConvert(input("Please enter location to place ship: "))  # noqa E501
             Location = Location.Convert()
         return Location
-        
+
     def _ChangeColour(self, board, ship):
         for y in range(len(board)):
             for x in range(len(board[y])):
                 sy = str(ship.Symbol)
-                board[y][x] = ship.Colour + sy + colours.c() if board[y][x].find(sy) > -1 else board[y][x]
+                rSt = ship.Colour + sy + colours.c()
+                board[y][x] = rSt if board[y][x].find(sy) > -1 else board[y][x]
         return board
 
     def PlaceData(self, place):
@@ -162,7 +162,7 @@ class Place:
             return self.boardData, False
 
         cont, saved = Functions.check("\nDoes this look correct? (y or n): ",
-                               returnFunc=(yes, no)).getInput('ynCheck')
+                                      returnFunc=(yes, no)).getInput('ynCheck')
         if cont is True:
             cont = self._ChangeColour(board, self.ships[place])
 
@@ -187,10 +187,11 @@ class Place:
                                     (self.ShowDisplay),
                                     (0, len(self.ships))).getInput()
             if place == 0:
-                self.info.writeFile(Settings.request('colour'), True, "UserColour")
-                
+                self.info.writeFile(Settings.request('colour'),
+                                    True, "UserColour")
+
                 boardSize = self.info.readFile('../GameData', True)
-                self.info.writeFile(Functions.board.CreateBoard(boardSize['size']))
+                self.info.writeFile(Functions.board.CreateBoard(boardSize['size']))  # noqa E501
                 self.info.writeFile("shots")
                 return 0
             if place is not None:
@@ -205,7 +206,6 @@ class Place:
                     self.placedData[self.ships[place].Name] = True
                     self.info.writeFile(self.boardData, True, "ships")
                     self.info.writeFile(self.placedData, True, "placedData")
-
 
     def Main(self):
         Functions.clear()

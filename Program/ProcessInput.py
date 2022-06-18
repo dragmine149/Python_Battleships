@@ -1,8 +1,9 @@
-import CreateInfo as Create
-import newSave
-import Functions
-from Functions import Print
+import importlib
 import os
+Create = importlib.import_module('CreateInfo')
+newSave = importlib.import_module('newSave')
+Functions = importlib.import_module('Functions')
+Print = Functions.Print
 
 
 class Process:

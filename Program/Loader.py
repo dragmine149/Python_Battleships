@@ -1,10 +1,14 @@
-import Functions
-import GameMenu as Menu
-import newSave
 import os
-import ProcessInput as pi
-import Settings
-from colours import c
+import importlib
+
+Functions = importlib.import_module('Functions')
+Menu = importlib.import_module('GameMenu')
+newSave = importlib.import_module('newSave')
+pi = importlib.import_module('ProcessInput')
+Settings = importlib.import_module('Settings')
+colours = importlib.import_module('colours')
+
+c = colours.c
 
 
 class Loader:
@@ -77,9 +81,11 @@ Games found in: {} ({})
 
         for game in range(len(self.gameList)):
             options += "{}: {}\n".format(game + 1, self.gameList[game])
-        
+
         if options == "":
-            options = c('r') + "\nNo games found!\nPlease reload by giving no input, Choose a different location or make a game." + c()
+            options = c('r') + """No games found!
+Please reload by giving no input, Choose a different location or make a game.
+""" + c()
 
         def all(choice):
             Functions.Print('ALL OBJECT CALLED', 'green', 'bold')

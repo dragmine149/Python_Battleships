@@ -1,5 +1,6 @@
 import os
-import Functions
+import importlib
+Functions = importlib.import_module('Functions')
 
 
 # Checks and installs all required ui modules

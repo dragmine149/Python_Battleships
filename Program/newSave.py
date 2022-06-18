@@ -1,8 +1,9 @@
+import importlib
 import os
-import Functions
 import shutil
 import pickle
 import sys
+Functions = importlib.import_module('Functions')
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)
@@ -58,7 +59,7 @@ class save:
                 os.mkdir("Saves")
         except FileExistsError:
             print("Saves already exists yet doesn't exists...")
-        
+
         try:
             if not os.path.exists("Saves/.Temp"):
                 os.mkdir("Saves/.Temp")
@@ -85,9 +86,9 @@ class save:
                 return pickle.loads(data)  # decode binary first
             return pickle.dumps(data)
 
-        except Exception as e:
+        except Exception:
             Functions.clear()
-            Functions.warn(3, "Please check the data stored! If this keeps happening please reset your data with 'python mainTemp.py +-delete'.")
+            Functions.warn(3, "Please check the data stored! If this keeps happening please reset your data with 'python mainTemp.py +-delete'.")  # noqa E501
             print('Logs: ')
             Functions.PrintTraceback()
             sys.exit('Error in reading data')
@@ -313,6 +314,7 @@ class save:
             return True
         print('Path not found! -> {}'.format(path))
         return False
+
 
 if __name__ == "__main__":
     ss = save({'name': 'NSTTest', 'path': 'Saves'})

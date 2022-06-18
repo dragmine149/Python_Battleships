@@ -1,7 +1,8 @@
-import Save as save
-import Functions
-import ShipInfo as ship
+import importlib
 import os
+Functions = importlib.import_module('Functions')
+newSave = importlib.import_module('newSave')
+ShipInfo = importlib.import_module('ShipInfo')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 

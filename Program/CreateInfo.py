@@ -2,9 +2,9 @@ import getpass
 import string
 import random
 import importlib
-Functions = importlib.import_module('Functions', 'Program')
-newSave = importlib.import_module('newSave', 'Program')
-ShipInfo = importlib.import_module('ShipInfo', 'Program')
+Functions = importlib.import_module('Functions')
+newSave = importlib.import_module('newSave')
+ShipInfo = importlib.import_module('ShipInfo')
 
 
 class CreateData:
@@ -308,7 +308,7 @@ Password: {}{}\033[0m
             if user.find('/') > -1 or user.find('\\') > -1:
                 Functions.clear(2, "Username cannot have '/' or '\\' in!")
                 return "Invalid Name"
-            
+
         # Password better than no password, Check
         if self.password is None:
             continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")  # noqa E501

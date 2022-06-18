@@ -1,5 +1,6 @@
 import os
-import Functions
+import importlib
+Functions = importlib.import_module('Functions')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 

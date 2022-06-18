@@ -1,9 +1,14 @@
-import GameMenu
-import Functions
-from colours import Print, colourRetrieve, reverse
-import newSave
 import os
-import Setup
+import importlib
+
+GameMenu = importlib.import_module('GameMenu')
+Functions = importlib.import_module('Functions')
+colours = importlib.import_module('colours')
+newSave = importlib.import_module('newSave')
+Setup = importlib.import_module('Setup')
+
+Print = colours.Print
+colourRetrieve = colours.colourRetrieve
 
 
 class Settings:

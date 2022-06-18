@@ -1,7 +1,8 @@
-import newSave
-import Functions
-import newPlace
+import importlib
 import getpass
+newSave = importlib.import_module('newSave')
+Functions = importlib.import_module('Functions')
+newPlace = importlib.import_module('newPlace')
 
 
 class Game:
@@ -20,7 +21,9 @@ class Game:
     def Place(self):
         for user in range(len(self.users)):
             if not self.placed[user]:
-                userPlace = newPlace.Place(self.name, self.location, self.users[user])
+                userPlace = newPlace.Place(self.name,
+                                           self.location,
+                                           self.users[user])
                 self.placed[user] = userPlace.Main()
         self.gameData.writeFile()
         return "Completed place"

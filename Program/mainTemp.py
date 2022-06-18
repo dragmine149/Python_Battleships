@@ -1,5 +1,6 @@
-import Functions
+import importlib
 import sys
+Functions = importlib.import_module('Functions')
 
 
 def help():
@@ -46,13 +47,14 @@ def options():
         if isinstance(sys.argv[1], str):
             sys.exit("Comming soon (Probably in Update 3)")
 
+
 if __name__ == "__main__":
     # goes into menu
     choice = options() or -0.5
 
-    import GameMenu
-    import Choices
-    import Game
+    GameMenu = importlib.import_module('GameMenu')
+    Choices = importlib.import_module('Choices')
+    Game = importlib.import_module('Game')
 
     # loads info
     c = Choices.Choices()
@@ -70,7 +72,6 @@ Github: https://www.github.com/dragmine149/Python_Battleships
 02: Make New Game
 03: Settings"""
     main = menu(info, options, c.generate("main"))
-
 
     result = main.getInput(choice, values=(0, 3))
     print({'main temp result': result})

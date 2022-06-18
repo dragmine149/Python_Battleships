@@ -1,9 +1,13 @@
+import importlib
 import time
 import os
-import newSave
-from colours import Print
 import traceback
+newSave = importlib.import_module('newSave')
+colours = importlib.import_module('colours')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# set import from colours (from colours import Print)
+Print = colours.Print
 
 
 # Converts the input to a valid location (a1 -> [0,0])
@@ -237,7 +241,6 @@ class check:
                 result = self._ynCheck()
                 if result != "Invalid":
                     return result
-                self.__input = None
 
 
 # Everything to do with the board. Prints it and creates it.
@@ -264,6 +267,8 @@ class board:
                 print(x, end="")
             print()
 
+"""
+OLD DATA, THIS DOES NOT WORK AND WILL BE REWRITTEN.
 
 # Gets board information
 # This function is annoying with the ammount of checks and stuff
@@ -302,12 +307,10 @@ class userData:
         self.data = data
 
     def getBoard(self):
-        """
         Process of getting a board
         - Find user folder
         - Find user file
         - Return request board data
-        """
         userData = self.getUserFolder()
         for file in userData:
             if file == self.data:
@@ -336,6 +339,7 @@ class userData:
                 # Get user data and return it
                 userData = save.save(self.EndPath).ListDirectory()
                 return userData
+"""
 
 
 class search:
@@ -363,6 +367,25 @@ class search:
             return self.FoundList
         return result
 
+    def __FindFile(self, directory, file):
+        targetFile = os.path.join(directory, file)
+        if os.path.exists(targetFile):
+            if not self.list:
+                print("Found file: {}".format(targetFile))
+
+                def yes():
+                    return "Found!", targetFile
+
+                def no():
+                    return None
+
+                checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
+                if checkResult is not None:
+                    return checkResult
+            else:
+                self.FoundList.append(targetFile)
+        return
+
     """
     __searchDirectory(self, directory, sub)
     - Searches for a file in directory
@@ -375,22 +398,11 @@ class search:
             time.sleep(self.sti)  # makes it look cool
 
             # checks if in current directory, returns if it is.
-            targetFile = os.path.join(directory, self.target)
-            if os.path.exists(targetFile):
-                if not self.list:
-                    print("Found file: {}".format(targetFile))
-
-                    def yes():
-                        return "Found!", targetFile
-
-                    def no():
-                        return None
-
-                    checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
-                    if checkResult is not None:
-                        return checkResult
-                else:
-                    self.FoundList.append(targetFile)
+            if isinstance(self.target, tuple):
+                for file in self.target:
+                    result = self.__FindFile(directory, file)
+                    if result is not None:
+                        return
 
             # get files in current directory and remove the folder the user
             # just came out of (doesn't search the folder again)
@@ -550,6 +562,7 @@ def changePath():
         except KeyboardInterrupt:
             external = None
             clear()
+
 
 def PrintTraceback():
     print('\033[41m----')
