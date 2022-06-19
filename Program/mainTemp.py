@@ -48,7 +48,7 @@ def options():
             sys.exit("Comming soon (Probably in Update 3)")
 
 
-if __name__ == "__main__":
+def Main():
     # goes into menu
     choice = options() or -0.5
 
@@ -77,3 +77,7 @@ Github: https://www.github.com/dragmine149/Python_Battleships
     print({'main temp result': result})
     result = Game.Game(result).Main()
     print({'Game result': result})
+
+
+if __name__ == "__main__":
+    Main()
