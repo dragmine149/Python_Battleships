@@ -1,56 +1,48 @@
 import importlib
 import sys
+import argparse
 Functions = importlib.import_module('Functions')
 
 
-def help():
-    print("""USAGE:
---------------------------------------------------------------------------------------
-\033[90mpython \033[32mMain.py \033[33m[Option]\033[0m
-
-Option can be one of the following:
-- String
-  - Attempts to load game name of string, If not found will make game name of string
-- Number
-  - Does that action (1 = load, 2 = make, 3 = settings). Quick form
-
-Other possible options:
-- help
-  - Shows this menu
----------------------------------------------------------------------------------------
-""")  # noqa E501
-
-    return 1
+def praser():
+    parser = argparse.ArgumentParser(description="Battleships, in python in a python terminal.")  # noqa E501
+    parser.add_argument('menu', default=-.5, type=int,
+                        help="The menu to load into.", choices=[-.5, 1, 2, 3],
+                        metavar="MENU", nargs='?')
+    parser.add_argument('--delete',
+                        help="Delete old game data.",
+                        action='store_true')
+    parser.add_argument("game name", default="", type=str,
+                        help="Load into that game, comming in U3",
+                        metavar="GAME_NAME", nargs='?')
+    args = vars(parser.parse_args())
+    return args
 
 
-def options():
-    if len(sys.argv) > 1:
-        if Functions.IsDigit(sys.argv[1]):
-            return int(sys.argv[1])  # fix?
+def command_options():
+    args = praser()
+    if args['delete']:
+        def yes():
+            import newSave
+            newSave.save.Delete('Saves')
+            newSave.save.Delete('Data')
+            sys.exit('Deleted old data. Please rerun')
 
-        if sys.argv[1].lower()[0] == "h":
-            sys.exit(help())
+        def no():
+            sys.exit('Aborted!')
 
-        if sys.argv[1] == '+-delete':
-            def yes():
-                import newSave
-                newSave.save.Delete('Saves')
-                newSave.save.Delete('Data')
-                sys.exit('Deleted old data. Please rerun')
+        Functions.check('Are you sure you want to delete all data?: ',
+                        returnFunc=(yes, no)).getInput('ynCheck')
 
-            def no():
-                sys.exit('Aborted!')
+    if args['game name'] != '':
+        sys.exit("Comming soon (Probably in Update 3)")
 
-            Functions.check('Are you sure you want to delete all data?: ',
-                            returnFunc=(yes, no)).getInput('ynCheck')
-
-        if isinstance(sys.argv[1], str):
-            sys.exit("Comming soon (Probably in Update 3)")
+    return args['menu']
 
 
 def Main():
     # goes into menu
-    choice = options() or -0.5
+    choice = command_options() or -0.5
 
     GameMenu = importlib.import_module('GameMenu')
     Choices = importlib.import_module('Choices')
