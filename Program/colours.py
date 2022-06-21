@@ -267,6 +267,7 @@ class colourRetrieve:
 
         # checks if whole word
         if choice in self.colours[mode[1]]:
+            self.fullName = choice
             return self.colours[mode[1]][choice]
 
         # import ipdb; ipdb.set_trace()
@@ -287,6 +288,7 @@ class colourRetrieve:
         choice = choice[1:]
         # check if word
         if choice in self.format:
+            self.fullName = choice
             return self.format[choice]
 
         # check for letter

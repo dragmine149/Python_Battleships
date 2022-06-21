@@ -72,6 +72,7 @@ class Settings:
             try:
                 code = colourRetrieve(colour)
                 colour = code.fullName
+                Print(f"Colour chosen: {colour}", "cyan")
             except ValueError:
                 Print("Invalid colour chosen!", "red")
                 colour = None
