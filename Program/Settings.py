@@ -9,6 +9,7 @@ Setup = importlib.import_module('Setup')
 
 Print = colours.Print
 colourRetrieve = colours.colourRetrieve
+c = colours.c
 
 
 class Settings:
@@ -23,7 +24,7 @@ class Settings:
 
         self.data = {
             "path": "Saves",
-            "colour": "reset"
+            "colour": "yellow"
         }
         self.defaultData = self.data.copy()
 
@@ -33,7 +34,7 @@ class Settings:
         self.loadSettings()
 
         self.unformatedOptions = """01: Deafult Location (game saves) -> {}
-02: Colour -> {}
+02: Colour -> {}{}{}
 03: Clear Cache
 04: Setup (Install optional modules)"""
 
@@ -42,7 +43,9 @@ class Settings:
 
     def updateDisplay(self):
         return self.unformatedOptions.format(self.data["path"],
-                                             self.data["colour"])
+                                             c(self.data["colour"]),
+                                             self.data["colour"],
+                                             c())
 
     """
     updateSave(obj, data)
@@ -64,7 +67,7 @@ class Settings:
         colour = None
         while colour is None:
             # gets input
-            colour = input("What colours would you like to be? (leave empty to go back): ")  # noqa E501
+            colour = input("What colour would you like to be? (leave empty to keep the same): ")  # noqa E501
             if colour == "":
                 return
 
