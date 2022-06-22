@@ -229,7 +229,7 @@ class check:
         while not self.__input:
             # gets inputs
             self._CallExtra()  # show information as needed
-            self.__input = input(str(self._request))
+            self.__input = input(str(self._request)).strip()
 
             # sorts out inputs
             if check == "Int":
