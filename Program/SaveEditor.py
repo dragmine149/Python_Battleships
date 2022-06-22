@@ -15,7 +15,7 @@ class saveEditor:
         self.columnCount = 4
 
     # header
-    def __ShowDisplay(self):
+    def ShowDisplay(self):
         Functions.clear()
         print('''--------------------------------------------------------------------
 Save Editor
@@ -29,7 +29,7 @@ Current Folder: {}
 
     # Returns a custom list of all the files in the specified directory.
     def __ListFiles(self):
-        files = ['..']  # so they can go up directory.
+        files = ['..']  # so they can go up directory.
         newFiles = os.listdir(self.folder)
         newFiles.sort()
         files.extend(newFiles)  # adds the folders onto the main list.
@@ -46,7 +46,7 @@ Current Folder: {}
 
             fileData = ""
             if file == self.activeFile:  # checks for currently active file
-                fileData += "> "  # signifies active file.
+                fileData += "> "  # signifies active file.
                 self.activeFileIndex = [len(newFileList), len(tempList) + 1]
 
             # if os.path.isdir(os.path.join(self.folder, files[file])):
@@ -59,7 +59,7 @@ Current Folder: {}
 
             tempList.append(fileData)
 
-            # make sure only columns of X
+            # make sure only columns of X
             if len(tempList) == self.columnCount:
                 newFileList.append(tempList)
                 tempList = []
@@ -82,7 +82,7 @@ Current Folder: {}
 
     # Update the screen
     def __UpdateScreen(self):
-        self.__ShowDisplay()
+        self.ShowDisplay()
         self.__ShowFiles()
 
     # Move the cursor
@@ -123,18 +123,18 @@ D: Right
             if c == "d":
                 self.__Move(1)
             if c == "\r":
+                # sorts ouut file stuff.
                 file = self.files[self.activeFileIndex[0]][self.activeFileIndex[1] - 1]
                 file = file.strip("> ")
                 if os.path.isdir(os.path.join(self.folder, file)):
                     if file != "..":
                         self.folder = os.path.join(self.folder, file)
                     else:
-                        folder = ""
-                        for file in os.path.split(self.folder)[:1]:
-                            folder = os.path.join(folder, file)
-                        self.folder = folder
+                        self.folder = os.path.split(self.folder)[0]
                 else:
-                    Functions.clear(1, "This is a file!", "red")
+                    # Functions.clear(1, "This is a file!", "red").
+                    FileEditor = File(self.folder, file)
+                    FileEditor.Main(self)
 
                 self.activeFile = 0
                 self.activeFileIndex = []
@@ -142,12 +142,31 @@ D: Right
             if c == "c":
                 self.__ChangeDirectory()
 
-
     # main
     def Main(self):
         self.__UpdateScreen()
         self.__MoveCursor()
 
+
+class File:
+    def __init__(self, file, name=''):
+        self.file = file
+        self.saveData = newSave.save({
+            'name': name,
+            'path': file
+        })
+        
+    
+    def readFile(self):
+        return self.saveData.readFile()
+    
+    def Main(self, se):
+        Functions.clear()
+        fileData = self.readFile()
+        se.ShowDisplay()
+        print(fileData)
+        input()
+        
 
 if __name__ == "__main__":
     se = saveEditor()
