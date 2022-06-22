@@ -49,10 +49,10 @@ class Place:
     def _rotationCheck(self):
         string = None
         rotation = {
-            "n": 90,
-            "e": 180,
-            "s": 270,
-            "w": 0,
+            "n": 0,
+            "e": 90,
+            "s": 180,
+            "w": 270,
         }
         while not string:
             # Highlights important letters
@@ -76,6 +76,7 @@ class Place:
         # Ability to get information in this loop
         fLoatcation = fLoatcationFunc()
         rotation = rotationFunc()
+        backupboard = copy.deepcopy(board)
 
         # board       -> copy of the current board.
         # ship        -> ship with data to place.
@@ -90,25 +91,25 @@ class Place:
                     # don't want ships to rotate off the board, these have to
                     # be included.
                     if rotation == 0:
-                        if placeId[0] - i < 0:
-                            raise IndexError("Ship goes off side of board!")
-
-                        placeId = [placeId[0] - i, placeId[1]]
-                    if rotation == 90:
-                        if placeId[1] + i < 0:
-                            raise IndexError("Ship goes off side of board!")
-
-                        placeId = [placeId[0], placeId[1] + i]
-                    if rotation == 180:
-                        if placeId[0] + i < 0:
-                            raise IndexError("Ship goes off side of board!")
-
-                        placeId = [placeId[0] + i, placeId[1]]
-                    if rotation == 270:
                         if placeId[1] - i < 0:
                             raise IndexError("Ship goes off side of board!")
 
                         placeId = [placeId[0], placeId[1] - i]
+                    if rotation == 90:
+                        if placeId[0] + i < 0:
+                            raise IndexError("Ship goes off side of board!")
+
+                        placeId = [placeId[0] + i, placeId[1]]
+                    if rotation == 180:
+                        if placeId[1] + i < 0:
+                            raise IndexError("Ship goes off side of board!")
+
+                        placeId = [placeId[0], placeId[1] + i]
+                    if rotation == 270:
+                        if placeId[0] - i < 0:
+                            raise IndexError("Ship goes off side of board!")
+
+                        placeId = [placeId[0] - i, placeId[1]]
 
                     if board[placeId[1]][placeId[0]] == "-":
                         board[placeId[1]][placeId[0]] = "\033[33m{}\033[0m".format(str(ship.Symbol))  # noqa E501
@@ -121,6 +122,7 @@ class Place:
                 print("Invalid ship placement -> {}".format(ie))
                 fLoatcation = fLoatcationFunc()
                 rotation = rotationFunc()
+                board = backupboard
 
     def __GetLocation(self):
         # Better location check to get the location easier.
@@ -189,10 +191,6 @@ class Place:
             if place == 0:
                 self.info.writeFile(Settings.request('colour'),
                                     True, "UserColour")
-
-                boardSize = self.info.readFile('../GameData', True)
-                self.info.writeFile(Functions.board.CreateBoard(boardSize['size']))  # noqa E501
-                self.info.writeFile("shots")
                 return 0
             if place is not None:
                 place -= 1
@@ -203,6 +201,7 @@ class Place:
 
                 self.boardData, saved = self.PlaceData(place)
                 if saved:
+                    print("Saved")
                     self.placedData[self.ships[place].Name] = True
                     self.info.writeFile(self.boardData, True, "ships")
                     self.info.writeFile(self.placedData, True, "placedData")
@@ -210,4 +209,6 @@ class Place:
     def Main(self):
         Functions.clear()
         data = self.Place()
+        boardSize = self.info.readFile('../GameData', True)
+        self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), True, "shots")  # noqa E501
         return data == -2

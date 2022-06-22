@@ -25,7 +25,7 @@ class Game:
                                            self.location,
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
-        self.gameData.writeFile()
+        # self.gameData.writeFile()
         return "Completed place"
 
     def Password(self):

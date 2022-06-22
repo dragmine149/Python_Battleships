@@ -1,6 +1,7 @@
 __pycache__
 .DS_Store
 .BattleshipsVenv
+.mypy_cache
 
 desktop.ini
 
@@ -13,4 +14,3 @@ DownloadFileTest.txt
 TabletPath.txt
 
 Tests/*.txt
-Program/saveEditor.py
