@@ -1,7 +1,7 @@
 import importlib
 import sys
 import argparse
-Functions = importlib.import_module('Functions')
+Functions = importlib.import_module('Files.Functions')
 
 
 def praser():
@@ -44,9 +44,9 @@ def Main():
     # goes into menu
     choice = command_options() or -0.5
 
-    GameMenu = importlib.import_module('GameMenu')
-    Choices = importlib.import_module('Choices')
-    Game = importlib.import_module('Game')
+    GameMenu = importlib.import_module('Files.GameMenu')
+    Choices = importlib.import_module('Files.Choices')
+    Game = importlib.import_module('Files.Game')
 
     # loads info
     c = Choices.Choices()

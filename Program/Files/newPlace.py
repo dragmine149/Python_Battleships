@@ -1,11 +1,11 @@
 import os
 import importlib
 import copy
-newSave = importlib.import_module('newSave')
-Functions = importlib.import_module('Functions')
-ShipInfo = importlib.import_module('ShipInfo')
-colours = importlib.import_module('colours')
-Settings = importlib.import_module('Settings')
+newSave = importlib.import_module('Files.newSave')
+Functions = importlib.import_module('Files.Functions')
+ShipInfo = importlib.import_module('Files.ShipInfo')
+colours = importlib.import_module('Files.colours')
+Settings = importlib.import_module('Files.Settings')
 
 
 class Place:

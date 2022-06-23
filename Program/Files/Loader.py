@@ -1,12 +1,12 @@
 import os
 import importlib
 
-Functions = importlib.import_module('Functions')
-Menu = importlib.import_module('GameMenu')
-newSave = importlib.import_module('newSave')
-pi = importlib.import_module('ProcessInput')
-Settings = importlib.import_module('Settings')
-colours = importlib.import_module('colours')
+Functions = importlib.import_module('Files.Functions')
+Menu = importlib.import_module('Files.GameMenu')
+newSave = importlib.import_module('Files.newSave')
+pi = importlib.import_module('Files.ProcessInput')
+Settings = importlib.import_module('Files.Settings')
+colours = importlib.import_module('Files.colours')
 
 c = colours.c
 

@@ -2,8 +2,8 @@ import importlib
 import time
 import os
 import traceback
-newSave = importlib.import_module('newSave')
-colours = importlib.import_module('colours')
+newSave = importlib.import_module('Files.newSave')
+colours = importlib.import_module('Files.colours')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # set import from colours (from colours import Print)

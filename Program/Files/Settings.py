@@ -1,11 +1,11 @@
 import os
 import importlib
 
-GameMenu = importlib.import_module('GameMenu')
-Functions = importlib.import_module('Functions')
-colours = importlib.import_module('colours')
-newSave = importlib.import_module('newSave')
-Setup = importlib.import_module('Setup')
+GameMenu = importlib.import_module('Files.GameMenu')
+Functions = importlib.import_module('Files.Functions')
+colours = importlib.import_module('Files.colours')
+newSave = importlib.import_module('Files.newSave')
+Setup = importlib.import_module('Files.Setup')
 
 Print = colours.Print
 colourRetrieve = colours.colourRetrieve
@@ -86,12 +86,15 @@ class Settings:
     def deleteCache(self):
         Print("Deleting cache...", "Red")
 
-        Data = Functions.search('..', '__pycache__', 1, 0, True).Locate()
+        Data = Functions.search('..', '.pyc', 1, 0, True).Locate()
+        import ipdb; ipdb.set_trace()
         for file in Data:
+            Print(f"Deleting: {file}", "orange")
             newSave.save.Delete(file)
 
         Data = Functions.search('..', '.pytest_cache', 1, 0, True).Locate()
         for file in Data:
+            Print(f"Deleting: {file}", "orange")
             newSave.save.Delete(file)
 
         Functions.warn(2, "Waiting...", "green")

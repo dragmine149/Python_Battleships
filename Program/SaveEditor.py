@@ -1,10 +1,10 @@
-import newSave
-import colours
-import Functions
-import Settings
 import importlib
 import os
-readchar = importlib.import_module('.readchar', 'readchar')
+readchar = importlib.import_module('.readchar', 'Files.readchar')
+newSave = importlib.import_module('Files.newSave')
+colours = importlib.import_module('Files.colours')
+Functions = importlib.import_module('Files.Functions')
+Settings = importlib.import_module('Files.Settings')
 
 
 class saveEditor:

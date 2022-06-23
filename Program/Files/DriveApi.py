@@ -12,8 +12,8 @@ import os
 import sys
 import io
 import importlib
-setup = importlib.import_module('DriveSetup')
-Functions = importlib.import_module('Functions')
+setup = importlib.import_module('Files.DriveSetup')
+Functions = importlib.import_module('Files.Functions')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 SCOPES = ['https://www.googleapis.com/auth/drive']

@@ -36,7 +36,7 @@ Arguments:
     - Value: String (result from colours.c)
 """
 import importlib
-colours = importlib.import_module('colours')
+colours = importlib.import_module('Files.colours')
 c = colours.c
 reverse = colours.reverse
 

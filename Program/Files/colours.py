@@ -19,7 +19,7 @@ Extra help:
 """
 
 import importlib
-colorama = importlib.import_module('colorama', 'Program.colorama')
+colorama = importlib.import_module('.colorama', 'Files')
 
 
 def ConsoleFormat():

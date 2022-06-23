@@ -3,7 +3,7 @@ import os
 import shutil
 import pickle
 import sys
-Functions = importlib.import_module('Functions')
+Functions = importlib.import_module('Files.Functions')
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)

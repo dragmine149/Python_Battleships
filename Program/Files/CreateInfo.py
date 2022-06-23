@@ -2,9 +2,9 @@ import getpass
 import string
 import random
 import importlib
-Functions = importlib.import_module('Functions')
-newSave = importlib.import_module('newSave')
-ShipInfo = importlib.import_module('ShipInfo')
+Functions = importlib.import_module('Files.Functions')
+newSave = importlib.import_module('Files.newSave')
+ShipInfo = importlib.import_module('Files.ShipInfo')
 
 
 class CreateData:

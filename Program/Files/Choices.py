@@ -1,9 +1,9 @@
 import importlib
 import sys
-Functions = importlib.import_module('Functions')
-Loader = importlib.import_module('Loader')
-pi = importlib.import_module('ProcessInput')
-Settings = importlib.import_module('Settings')
+Functions = importlib.import_module('Files.Functions')
+Loader = importlib.import_module('Files.Loader')
+pi = importlib.import_module('Files.ProcessInput')
+Settings = importlib.import_module('Files.Settings')
 
 
 # Main menu choices, not a lot.
