@@ -1,5 +1,6 @@
 import importlib
 import getpass
+import os
 newSave = importlib.import_module('newSave')
 Functions = importlib.import_module('Functions')
 newPlace = importlib.import_module('newPlace')
@@ -12,6 +13,7 @@ class Game:
         self.users = data[1]
         self.placed = data[2]
         self.location = data[3]
+        self.gamePath = os.path.join(self.location, self.name)
         self.multiplayer = data[4]
         self.gameData = newSave.save({
             'name': self.name,
@@ -22,7 +24,7 @@ class Game:
         for user in range(len(self.users)):
             if not self.placed[user]:
                 userPlace = newPlace.Place(self.name,
-                                           self.location,
+                                           os.path.join(self.gamePath, self.users[user]),
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
         # self.gameData.writeFile()

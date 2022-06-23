@@ -20,7 +20,7 @@ class Place:
     # Load more information, Mainly save information.
     def LoadInfo(self):
         self.info = newSave.save({
-            'name': os.path.join(self.name, self.user),
+            'name': '',
             'path': self.location,
         })
         self.placedData = self.info.readFile("placedData", True)

@@ -6,6 +6,7 @@ import importlib
 import os
 readchar = importlib.import_module('.readchar', 'readchar')
 
+
 class saveEditor:
     # basic setup
     def __init__(self):
@@ -21,7 +22,7 @@ class saveEditor:
 Save Editor
 
 Current Folder: {}
---------------------------------------------------------------------'''.format(self.folder))
+--------------------------------------------------------------------'''.format(self.folder))  # noqa E501
 
     # lets the user change directory without having to navigate though dirs.
     def __ChangeDirectory(self):
@@ -87,7 +88,7 @@ Current Folder: {}
 
     # Move the cursor
     def __Move(self, value):
-        if self.activeFile + value >= 0 and self.activeFile + value < self.folderLength:
+        if self.activeFile + value >= 0 and self.activeFile + value < self.folderLength:  # noqa E501
             self.activeFile += value
             self.__UpdateScreen()
             return
@@ -124,7 +125,7 @@ D: Right
                 self.__Move(1)
             if c == "\r":
                 # sorts ouut file stuff.
-                file = self.files[self.activeFileIndex[0]][self.activeFileIndex[1] - 1]
+                file = self.files[self.activeFileIndex[0]][self.activeFileIndex[1] - 1]  # noqa E501
                 file = file.strip("> ")
                 if os.path.isdir(os.path.join(self.folder, file)):
                     if file != "..":
@@ -155,18 +156,17 @@ class File:
             'name': name,
             'path': file
         })
-        
-    
+
     def readFile(self):
         return self.saveData.readFile()
-    
+
     def Main(self, se):
         Functions.clear()
         fileData = self.readFile()
         se.ShowDisplay()
         print(fileData)
         input()
-        
+
 
 if __name__ == "__main__":
     se = saveEditor()
