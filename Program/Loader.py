@@ -30,7 +30,6 @@ class Loader:
             info, options, choices, external = self.getGames()
             ui = info + "\n" + options
             delGameIndex = Functions.check("Please enter game number to delete (-1 to stop): ", ui, (-1, len(self.gameList))).getInput()  # noqa E501
-            print(delGameIndex)
             if delGameIndex != -1:
                 deletePath = None
                 # if apiExternal:
@@ -46,7 +45,7 @@ class Loader:
                 deletePath = self.gameList[delGameIndex - 1]
                 newSave.save({
                             'name': '',
-                            'path': self.path}).Delete(os.path.join("Saves", deletePath))  # noqa E501
+                            'path': self.path}).Delete(os.path.join(self.path, deletePath))  # noqa E501
                 delGameIndex = None
         self.game = None
 

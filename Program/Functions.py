@@ -222,7 +222,7 @@ class check:
                 return self._returnFunc[2]()
             return self._returnFunc[2]
         except (KeyError, IndexError):  # if we only supply 2 arguments
-            clear(2, "Invalid input, please enter y or n!", "red")
+            warn(2, "Invalid input, please enter y or n!", "red")
             return "Invalid"
 
     def getInput(self, check="Int"):
@@ -239,8 +239,10 @@ class check:
 
             if check == "ynCheck":
                 result = self._ynCheck()
-                if result != "Invalid":
-                    return result
+                if result == "Invalid":
+                    self.__input = None
+                    continue
+                return result
 
 
 # Everything to do with the board. Prints it and creates it.

@@ -69,6 +69,7 @@ class Process:
 
         # get users
         self.users = self.saveSystem.ls(True)
+        self.users.sort()
 
         # checks if game already won
         if self.saveSystem.CheckForFile("win"):
@@ -81,6 +82,7 @@ class Process:
             print({"User": user})
             if self.saveSystem.CheckForFile("{}/shots".format(user)):
                 placed[userIndex] = True
+            print({"Placed": placed[userIndex]})
 
         # Checks for multiplayer support
         multi = self.saveSystem.readFile("multi")

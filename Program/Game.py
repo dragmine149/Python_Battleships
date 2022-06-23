@@ -9,7 +9,6 @@ newPlace = importlib.import_module('newPlace')
 class Game:
     def __init__(self, data):
         self.name = data[0]
-        data[1].sort()
         self.users = data[1]
         self.placed = data[2]
         self.location = data[3]
@@ -27,7 +26,6 @@ class Game:
                                            os.path.join(self.gamePath, self.users[user]),
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
-        # self.gameData.writeFile()
         return "Completed place"
 
     def Password(self):

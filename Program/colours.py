@@ -270,7 +270,6 @@ class colourRetrieve:
             self.fullName = choice
             return self.colours[mode[1]][choice]
 
-        # import ipdb; ipdb.set_trace()
         # checks for first letter
         for option in self.colours[mode[1]]:
             self.fullName = option

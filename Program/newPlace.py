@@ -209,6 +209,7 @@ class Place:
     def Main(self):
         Functions.clear()
         data = self.Place()
-        boardSize = self.info.readFile('../GameData', True)
-        self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), True, "shots")  # noqa E501
+        if data == -2:
+            boardSize = self.info.readFile('../GameData', True)
+            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), True, "shots")  # noqa E501
         return data == -2
