@@ -2,6 +2,7 @@ import importlib
 import time
 import os
 import traceback
+import glob
 newSave = importlib.import_module('Files.newSave')
 colours = importlib.import_module('Files.colours')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -257,7 +258,7 @@ class board:
         return board
 
     def DisplayBoard(board):
-        print("  ABCDEFGHIJ")
+        print("  ABCDEFGHIJ")  # Easy to know where the square is
         for y in range(len(board)):
 
             yIndex = str(y + 1)
@@ -347,87 +348,67 @@ class userData:
 class search:
     """
     directory -> where to start search
-    target -> what to search for
+    target -> what to search for (Supports '()' arrays (tuples))
     layers -> How many directories above the current directory to search.
-              Default 3: '../../../' (WIP)
+              Default 2: '../../../'
     sti -> how long to wait between messages and stuff, just for fun.
-           Recommendation don't add.
-    List -> Returns a list of all files found
+           Recommendation don't add if you want speed.
     """
-    def __init__(self, directory, target, layers=3, sti=0, List=False):
+    def __init__(self, directory, target, layers=2, sti=0):
         self.directory = directory
         self.target = target
         self.searched = ''
         self.layers = layers
         self.sti = sti
-        self.list = List
-        self.FoundList = []
+        self.__FoundList = []
 
     def Locate(self):
-        result = self.__searchDirectory(self.directory)
-        if self.list:
-            return self.FoundList
-        return result
+        self.__searchDirectory(self.directory)
+        return self.__FoundList
 
     def __FindFile(self, directory, file):
-        targetFile = os.path.join(directory, file)
-        if os.path.exists(targetFile):
-            if not self.list:
-                print("Found file: {}".format(targetFile))
-
-                def yes():
-                    return "Found!", targetFile
-
-                def no():
-                    return None
-
-                checkResult = ynCheck(input("Is this the right file?: "), yes, no)  # noqa E501
-                if checkResult is not None:
-                    return checkResult
-            else:
-                self.FoundList.append(targetFile)
-        return
+        # Using glob, finds files with `directory/file`
+        files = glob.glob(os.path.join(directory, file))
+        self.__FoundList.extend(files)
 
     """
     __searchDirectory(self, directory, sub)
     - Searches for a file in directory
     Loops though pretty much the whole fs until the file is found.
-    Goings us directories, down into directories and more!
+    Goes up directories, down into directories and more!
     """
     def __searchDirectory(self, directory, sub=False):
         if self.layers > 0:
-            print('Searching Dir: "{}". Target file: "{}"'.format(directory, self.target)) # noqa E501
+            fileText = "file"
+            if isinstance(self.target, tuple) and len(self.target) > 1:
+                fileText = "files"
+            Print('Searching Dir: "{}". Target {}: "{}"'.format(directory, fileText, self.target), "green") # noqa E501
             time.sleep(self.sti)  # makes it look cool
 
             # checks if in current directory, returns if it is.
             if isinstance(self.target, tuple):
                 for file in self.target:
-                    result = self.__FindFile(directory, file)
-                    if result is not None:
-                        return
+                    self.__FindFile(directory, file)
 
             # get files in current directory and remove the folder the user
             # just came out of (doesn't search the folder again)
             try:
                 files = os.listdir(directory)
             except PermissionError:
-                print('Permission not granted for {}'.format(directory))
+                Print('Missing permissions for for {}'.format(directory), "red", "bold")  # noqa E501
                 return
+
+            # Skip over directory we just came out of
             if self.searched in files:
                 files.remove(self.searched)
 
             # loops though all the files
             for file in files:
                 time.sleep(self.sti)
-                print('Looking at {}'.format(file))
-                # checks if the folder / file is marked as hidden
-                if file.startswith('.') or file.startswith('__'):
-                    print('Hidden file')
-                    continue
-
-                # checks if the folder is not Saves, probably not there
-                if file == "Saves":
-                    print("Probably not here...")
+                Print('Looking at {}'.format(file), "yellow")
+                # Skips the folder if it's a well know not going to have files.
+                if file == ".git":
+                    print(".git, no just no.")
                     continue
 
                 # checks if the folder is a directory
@@ -435,19 +416,11 @@ class search:
                 if os.path.isdir(newFile):
                     result = self.__searchDirectory(newFile, True)  # noqa E501
 
-                    # checks for the subdir and the result returned.
-                    if result is not None:
-                        if len(result) == 2:
-                            if result[0] == "Found!" or result[0] == "Failed":
-                                return result[1]
-
             # if sub directory, don't go back up 1 directory.
             if not sub:
                 self.searched = os.path.basename(os.path.abspath(directory))
                 self.layers -= 1
-                return self.__searchDirectory(os.path.abspath(os.path.join(directory, '../')))  # noqa
-        else:
-            return "Failed!", None
+                self.__searchDirectory(os.path.abspath(os.path.join(directory, '../')))  # noqa
 
 
 def LocationTest(Location):
@@ -484,6 +457,9 @@ def LocationTest(Location):
 
 
 def IsDigit(var):
+    """
+    Better version of .isdigit but works with negatives.
+    """
     # returns true if interger
     if isinstance(var, int):
         return True

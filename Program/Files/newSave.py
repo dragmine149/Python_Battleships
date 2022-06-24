@@ -310,7 +310,10 @@ class save:
     @staticmethod
     def Delete(path):
         if os.path.exists(path):
-            shutil.rmtree(path)
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+                return True
+            os.remove(path)
             return True
         print('Path not found! -> {}'.format(path))
         return False

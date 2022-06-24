@@ -86,18 +86,13 @@ class Settings:
     def deleteCache(self):
         Print("Deleting cache...", "Red")
 
-        Data = Functions.search('..', '.pyc', 1, 0, True).Locate()
-        import ipdb; ipdb.set_trace()
+        Data = Functions.search('..', ('*.pyc', '*_cache'), 2, 0).Locate()  # noqa E501
+        print("Data Found: {}".format(Data))
         for file in Data:
             Print(f"Deleting: {file}", "orange")
             newSave.save.Delete(file)
 
-        Data = Functions.search('..', '.pytest_cache', 1, 0, True).Locate()
-        for file in Data:
-            Print(f"Deleting: {file}", "orange")
-            newSave.save.Delete(file)
-
-        Functions.warn(2, "Waiting...", "green")
+        Functions.warn(1, "Waiting...", "green")
 
     def setup(self):
         path, changed = Setup.env()

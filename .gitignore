@@ -1,7 +1,7 @@
 __pycache__
 .DS_Store
 .BattleshipsVenv
-.mypy_cache
+*_cache
 
 desktop.ini
 

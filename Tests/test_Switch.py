@@ -1,10 +1,9 @@
-import sys
-# We assume the user is in the main directory
-# TODO: find directory of program and use that instead
-sys.path.insert(0, './Program')
-import Switch
+import importlib
 import random
 import string
+import os
+print(os.path.abspath('.'))
+Switch = importlib.import_module('./Files/Switch', 'Program')
 
 
 # Test function to test the function ability of the script
