@@ -1,16 +1,22 @@
+# Cache Data
 __pycache__
-.DS_Store
-.BattleshipsVenv
 *_cache
 
+# OS made files (when looking in the folder)
+.DS_Store
 desktop.ini
 
+# Virtual enviroment data
+.BattleshipsVenv
+
+# Private data (game saves and stuff)
 Saves
 Data
 ApiFiles
-Program/Data/Settings
 
+# Test files (TabletPath is local to me only, will be removed)
 DownloadFileTest.txt
 TabletPath.txt
 
-Tests/*.txt
+# VSCode files
+.vscode
