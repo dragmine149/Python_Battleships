@@ -1,4 +1,5 @@
 import os
+import datetime
 import importlib
 
 GameMenu = importlib.import_module('Files.GameMenu')
@@ -133,6 +134,34 @@ class Settings:
         Print("Saving settings...", 'blue')
         self.save.writeFile(self.data, True)
         Print("Successfully saved settings", "green")
+    
+    def loadFromFile(self):
+        file = False
+        while file is False:
+            file = input("Please enter location of file (-1 to stop): ")
+
+            if file == -1:
+                return
+            
+            if os.path.exists(file):
+                try:
+                    pathData = newSave.save({
+                        'name': '',
+                        'path': file
+                    })
+                    data = pathData.readFile(nameAllowed=False)
+                    print({'path': data["path"]})
+                    print({'colour': data["colour"]})
+
+                    # TODO: add way to keep old settings in case they want them
+                    # os.system('mv Data/Settings Data/oldSettings{}'.format(str(datetime.datetime.now())))
+                    # print('a')
+                    os.system('mv {} Data/Settings'.format(file))
+
+                except Exception as e:
+                    print("{} occured!".format(e))
+                    file = False
+                    Functions.clear(2)
 
     # Shows the settings menu
     def showDisplay(self):
@@ -142,17 +171,22 @@ Your personal settings.
 \033[0m"""
         options = self.updateDisplay()
         choices = {
-            0: self.back,
-            1: self.changeLocation,
-            2: self.changeColour,
-            3: self.deleteCache,
-            4: self.setup,
+            -1: self.loadFromFile,
+             0: self.back,
+             1: self.changeLocation,
+             2: self.changeColour,
+             3: self.deleteCache,
+             4: self.setup,
+        }
+        external = {
+            -1: 'Load settings from file'
         }
         self.display = GameMenu.menu(info,
                                      options,
                                      choices,
-                                     back="Return to main menu")
-        result = self.display.getInput(values=(0, 4))
+                                     external,
+                                     "Return to main menu")
+        result = self.display.getInput(values=(-1, 4))
         if result == "Returned":
             return "back"
         return result

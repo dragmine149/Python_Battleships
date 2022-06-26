@@ -248,6 +248,7 @@ class check:
 
 # Everything to do with the board. Prints it and creates it.
 class board:
+    @staticmethod
     def CreateBoard(size):
         board = []
         for _ in range(size[1]):  # Y size (height)
@@ -257,6 +258,7 @@ class board:
             board.append(x)
         return board
 
+    @staticmethod
     def DisplayBoard(board):
         print("  ABCDEFGHIJ")  # Easy to know where the square is
         for y in range(len(board)):
@@ -269,81 +271,34 @@ class board:
             for x in board[y]:
                 print(x, end="")
             print()
+    
+    
+    def MultiDisplay(boards=[]):
+        if len(boards) < 2 or len(boards) > 2:
+            return
 
-"""
-OLD DATA, THIS DOES NOT WORK AND WILL BE REWRITTEN.
+        print("  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ")
+        lines = []
+        for _ in range(len(boards[0])):
+            lines.append("")
+        
+        for i in range(2):
+            for y in range(len(boards[i])):
 
-# Gets board information
-# This function is annoying with the ammount of checks and stuff
-# Rewrite to be better, quicker and more comments to understand what i did.
-class boardRetrieve:
-    def __init__(self, user, saveLocation, game, name):  # noqa
-        self.user = user
-        self.saveLocation = saveLocation
-        self.game = game
-        self.name = name
-        self.dir = None
-        foundLocation = self.saveLocation.find(self.game)
-        if foundLocation != -1:
-            self.saveLocation = self.saveLocation[:foundLocation - 1]
-        print({
-            'self.user': self.user,
-            'self.saveLocation': self.saveLocation,
-            'self.game': self.game,
-            'self.name': self.name,
-            'self.dir': self.dir
-            })
+                yIndex = str(y + 1)
+                if len(yIndex) == 1:
+                    yIndex = "0" + yIndex
+                lines[y] += yIndex
 
-    def getBoard(self):
-        # Call the other class, this is temparary (works without breaking yet)
-        data = userData(self.saveLocation, self.game, self.user, self.name).getBoard()  # noqa E501
-        return data
+                for x in boards[i][y]:
+                    lines[y] += x
+            
+            for line in range(len(lines)):
+                lines[line] += "\t\t\t"
 
-
-class userData:
-    def __init__(self, saveLocation, gameName, user, data="grid"):
-        # These have to be differnet to make easier to do stuff
-        # Also got to add in drive support
-        self.saveLocation = saveLocation
-        self.gameName = gameName
-        self.user = user
-        self.data = data
-
-    def getBoard(self):
-        Process of getting a board
-        - Find user folder
-        - Find user file
-        - Return request board data
-        userData = self.getUserFolder()
-        for file in userData:
-            if file == self.data:
-                data = save.save(self.EndPath, True, {
-                    'name': '',
-                    'file': ''
-                }).readFile({
-                    'name': file
-                })
-                return data, self.EndPath
-
-    def getUserFolder(self):
-        # join together saveLocation and path
-        gameData = os.path.join(self.saveLocation, self.gameName)
-
-        # api test
-        # Excepted data: Data in game Folder
-        gameSaveData = save.save(gameData).ListDirectory(dir=True)
-
-        # Checks if the data returned a folder exists for the user
-        for data in gameSaveData:
-            if data == self.user:
-                # TODO: work with Google drive
-                self.EndPath = os.path.join(self.saveLocation, self.gameName, data)  # noqa E501
-
-                # Get user data and return it
-                userData = save.save(self.EndPath).ListDirectory()
-                return userData
-"""
-
+        for line in lines:
+            print(line)
+            
 
 class search:
     """
@@ -414,7 +369,7 @@ class search:
                 # checks if the folder is a directory
                 newFile = os.path.join(directory, file)
                 if os.path.isdir(newFile):
-                    result = self.__searchDirectory(newFile, True)  # noqa E501
+                    self.__searchDirectory(newFile, True)  # noqa E501
 
             # if sub directory, don't go back up 1 directory.
             if not sub:
@@ -446,7 +401,7 @@ def LocationTest(Location):
 
         if data != "This is a test file":
             # Oh oh, doesn't work... Return error
-            Functions.clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
+            clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
             Location = None
 
         saveInfo.Delete(folder)
@@ -516,11 +471,9 @@ def tests():
     r1 = LocationConvert('A1').Convert()
     r2 = RemoveNonGames('.')
     r5 = board.CreateBoard([10, 10])
-    r6 = board.DisplayBoard(r5)
     print(r1)
     print(r2)
     print(r5)
-    print(r6)
     assert True
     return True
 
@@ -561,7 +514,7 @@ def changePath():
                     if games is None:
                         external = None
                         path = "Saves"
-                        Functions.clear(2, "No games found in desired location!")  # noqa E501
+                        clear(2, "No games found in desired location!")  # noqa E501
                         continue
                     return games, path, apiExternal
 

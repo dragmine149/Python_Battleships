@@ -6,15 +6,12 @@ Functions = importlib.import_module('Files.Functions')
 
 def praser():
     parser = argparse.ArgumentParser(description="Battleships, in python in a python terminal.")  # noqa E501
-    parser.add_argument('menu', default=-.5, type=int,
-                        help="The menu to load into.", choices=[-.5, 1, 2, 3],
-                        metavar="MENU", nargs='?')
+    parser.add_argument('menu', default=-.5,
+                        help="The menu or game to load",
+                        metavar="Menu / Game Name", nargs='?')
     parser.add_argument('--delete',
                         help="Delete old game data.",
                         action='store_true')
-    parser.add_argument("game name", default="", type=str,
-                        help="Load into that game, comming in U3",
-                        metavar="GAME_NAME", nargs='?')
     args = vars(parser.parse_args())
     return args
 
@@ -23,7 +20,7 @@ def command_options():
     args = praser()
     if args['delete']:
         def yes():
-            import newSave
+            newSave = importlib.import_module('Files.newSave')
             newSave.save.Delete('Saves')
             newSave.save.Delete('Data')
             sys.exit('Deleted old data. Please rerun')
@@ -34,10 +31,13 @@ def command_options():
         Functions.check('Are you sure you want to delete all data?: ',
                         returnFunc=(yes, no)).getInput('ynCheck')
 
-    if args['game name'] != '':
+    r = Functions.IsDigit(args['menu'])
+    print(r, args['menu'])
+
+    if not r:
         sys.exit("Comming soon (Probably in Update 3)")
 
-    return args['menu']
+    return int(args['menu'])
 
 
 def Main():

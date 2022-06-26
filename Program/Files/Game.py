@@ -4,6 +4,7 @@ import os
 newSave = importlib.import_module('Files.newSave')
 Functions = importlib.import_module('Files.Functions')
 newPlace = importlib.import_module('Files.newPlace')
+newFire = importlib.import_module('Files.newFire')
 
 
 class Game:
@@ -23,10 +24,13 @@ class Game:
         for user in range(len(self.users)):
             if not self.placed[user]:
                 userPlace = newPlace.Place(self.name,
-                                           os.path.join(self.gamePath, self.users[user]),
+                                           os.path.join(self.gamePath, self.users[user]),  # noqa E501
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
         return "Completed place"
+
+    def Fire(self):
+        newFire.Fire([self.name, self.location, self.multiplayer], self.users).Fire()
 
     def Password(self):
         gameData = self.gameData.readFile('{}/GameData'.format(self.name))
@@ -39,5 +43,7 @@ class Game:
 
     def Main(self):
         if self.Password():
-            return self.Place()
+            result = self.Place()
+            print(result)
+            return self.Fire()
         return "Incorrect password entered!"
