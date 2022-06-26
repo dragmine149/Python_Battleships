@@ -460,17 +460,54 @@ def IsDigit(var):
     """
     Better version of .isdigit but works with negatives.
     """
+    
+    # Skips the check if None is inputted
+    if var == None:
+        raise AttributeError("'NoneType' object has no attribute 'isdigit'")
+
     # returns true if interger
     if isinstance(var, int):
         return True
 
+    # Might keep this might not, Designed for lists and dicts but breaks on negatives.
+    # if not isinstance(var, str):
+    #     raise ValueError('{} is not of type str!'.format(var))
+
+    var = str(var)  # make sure it's a string if the int check failed
+
     # Checks to see if negative or not
     try:
-        if var[0] == '-':
-            # negative
-            return var[1:].isdigit()
-        return var.isdigit()
-    except IndexError:  # if error, return false
+        # Removes negative
+        var = var.replace("-", "")
+
+        # gets where the decimal is
+        decimalLocation = False
+
+        # 2 items on split
+        if len(var.split('.')) == 2:
+            decimalLocation = var.index('.')
+
+        # 1 item on split
+        if len(var.split('.')) == 1:
+            return var.isdigit()
+
+        # Too many items on split (not 1 or 2)
+        if decimalLocation is False:
+            print('Too many decimals found!')
+            return False
+
+        # Debug purposes
+        # print({'var': var,
+        #        'before DL': var[:decimalLocation],
+        #        'After DL': var[decimalLocation + 1:],
+        #        'Before DL is': var[:decimalLocation].isdigit(),
+        #        'After DL is': var[decimalLocation + 1:].isdigit(),
+        #        'Both': var[:decimalLocation].isdigit() and var[decimalLocation + 1:].isdigit()})
+
+        # Final thing to return (if contains decimal)
+        return var[:decimalLocation].isdigit() and var[decimalLocation + 1:].isdigit()
+    except IndexError as ie:  # if error, return false
+        print("IndexError: {}".format(ie))
         return False
 
 
