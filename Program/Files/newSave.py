@@ -286,7 +286,7 @@ class save:
     def CheckForFile(self, path):
         Npath = self.__replace(path)
         if self._api:
-            return self._api.checkIfExissts(self.path, Npath)[0]
+            return self._api.checkIfExists(self.path, Npath)[0]
         return os.path.exists(os.path.join(self.path, Npath))
 
     """

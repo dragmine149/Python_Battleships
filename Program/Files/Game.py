@@ -27,7 +27,8 @@ class Game:
                                            os.path.join(self.gamePath, self.users[user]),  # noqa E501
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
-        return "Completed place"
+            
+        return self.placed[0] and self.placed[1]
 
     def Fire(self):
         newFire.Fire([self.name, self.location, self.multiplayer], self.users).Fire()
@@ -44,6 +45,8 @@ class Game:
     def Main(self):
         if self.Password():
             result = self.Place()
-            print(result)
-            return self.Fire()
+            
+            if result:
+                return self.Fire()
+            return "Ended during placement."
         return "Incorrect password entered!"

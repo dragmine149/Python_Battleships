@@ -23,7 +23,8 @@ class Fire:
         self.game = self.gameData.readFile("GameData")
         self.turn = self.game["turn"]
         self.turnIndex = self.userInfo.index(self.turn)
-        self.opponentTurnIndex = 1 if self.turnIndex == 0 else 1
+        import ipdb; ipdb.set_trace()
+        self.opponentTurnIndex = 0 if self.turnIndex == 0 else 1
 
         self.multiplayer = self.game["multi"]
         self.userColours = [
@@ -67,6 +68,10 @@ class Fire:
         else:
             Functions.board.DisplayBoard(self.userBoards[self.turnIndex][0])
 
+    def __Clear(self, msg):
+        Functions.clear(1, msg)
+        self.__Display()
+
     def __Shot(self):
         takenShot = False
         while not takenShot:
@@ -75,10 +80,20 @@ class Fire:
                 return False
 
             x, y = Functions.LocationConvert(shotPosition).Convert()
+            if x is None or y is None:
+                self.__Clear("Please enter a valid input!")
+                continue
+            
+            if x >= self.game["size"][0]:
+                self.__Clear("X coordinate is not on the board!")
+                continue
+            
+            if y >= self.game["size"][1]:
+                self.__Clear("Y coordinate is not on the board!")
+                continue
         
             if self.userBoards[self.turnIndex][0][y][x] != "-":
-                Functions.clear(1, "You have already shot there!")
-                self.__Display()
+                self.__Clear("You have already shot there!")
                 continue
             
             if self.userBoards[self.opponentTurnIndex][1][y][x] != "-":

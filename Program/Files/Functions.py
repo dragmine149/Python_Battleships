@@ -272,7 +272,7 @@ class board:
                 print(x, end="")
             print()
     
-    
+    @staticmethod
     def MultiDisplay(boards=[]):
         if len(boards) < 2 or len(boards) > 2:
             return
