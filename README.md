@@ -18,6 +18,7 @@ I plan to keep maintain this program and updating it in the future. However due 
 
 # Other information
   [How to use](Documentation/Usage.md)
+  [Mods](Documentation/Mods.md)
 
 # Credits (External modules used)
 - Google API
@@ -25,4 +26,4 @@ I plan to keep maintain this program and updating it in the future. However due 
   This program version: https://github.com/dragmine149/python-Colorama-Modified
 - readchar: https://github.com/magmax/python-readchar
 
- All other modules used are built into python*
+ All other modules used are built into python by default*

@@ -41,6 +41,9 @@ Current State: BROKEN (includes all versions)
   These are optional modules you can install for this program to work. These are not needed but might provide a better experience.
   You can either go through them all seperatly or call `pip install -r requirements.txt` to automatically install all the optional modules.
 
-### Google Drive api
-  This also requires more setup as per this [documentation][https://developers.google.com/drive/api/quickstart/python]:
-  `pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib`
+  If you don't want to install them manually, the program comes with a built-in setup function.
+
+### Extra Notes:
+  Some modules, as you may have noticied, the code has been downloaded and automatically placed into the program itself.
+  This is because the code used in those modules are required in other parts of the program to make the program what it is.
+  Some of these modules, for example 'colorama' are required and as so, automatically used even if the user has their own local version installed.
