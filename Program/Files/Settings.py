@@ -134,7 +134,7 @@ class Settings:
         Print("Saving settings...", 'blue')
         self.save.writeFile(self.data, True)
         Print("Successfully saved settings", "green")
-    
+
     def loadFromFile(self):
         file = False
         while file is False:
@@ -142,7 +142,7 @@ class Settings:
 
             if file == -1:
                 return
-            
+
             if os.path.exists(file):
                 try:
                     pathData = newSave.save({
@@ -154,7 +154,7 @@ class Settings:
                     print({'colour': data["colour"]})
 
                     # TODO: add way to keep old settings in case they want them
-                    # os.system('mv Data/Settings Data/oldSettings{}'.format(str(datetime.datetime.now())))
+                    # os.system('mv Data/Settings Data/oldSettings{}'.format(str(datetime.datetime.now())))  
                     # print('a')
                     os.system('mv {} Data/Settings'.format(file))
 
@@ -165,18 +165,19 @@ class Settings:
 
     # Shows the settings menu
     def showDisplay(self):
-        info = """\033[32m--------------------------------------------------------------------
+        dashText = '-' * os.get_terminal_size().columns
+        info = """\033[32m{}
 Your personal settings.
---------------------------------------------------------------------
-\033[0m"""
+{}
+\033[0m""".format(dashText, dashText)
         options = self.updateDisplay()
         choices = {
             -1: self.loadFromFile,
-             0: self.back,
-             1: self.changeLocation,
-             2: self.changeColour,
-             3: self.deleteCache,
-             4: self.setup,
+            0: self.back,
+            1: self.changeLocation,
+            2: self.changeColour,
+            3: self.deleteCache,
+            4: self.setup,
         }
         external = {
             -1: 'Load settings from file'

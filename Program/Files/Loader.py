@@ -68,10 +68,11 @@ class Loader:
             msg = "Google Drive"
 
         # banner information
-        info = """--------------------------------------------------------------------
+        dashText = '-' * os.get_terminal_size().columns
+        info = """{}
 Games found in: {} ({})
---------------------------------------------------------------------
-""".format(self.path, msg)
+{}
+""".format(dashText, self.path, msg, dashText)
 
         # alvalible options
         options = ""

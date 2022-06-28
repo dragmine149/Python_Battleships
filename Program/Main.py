@@ -53,12 +53,13 @@ def Main():
     menu = GameMenu.menu
 
     # banner
-    info = """\033[32m--------------------------------------------------------------------
+    dashText = '-' * Functions.os.get_terminal_size().columns
+    info = """\033[32m{}
 Python Battleships by drag
 
 Github: https://www.github.com/dragmine149/Python_Battleships
---------------------------------------------------------------------
-\033[0m"""
+{}
+\033[0m""".format(dashText, dashText)
 
     options = """01: Load Games
 02: Make New Game

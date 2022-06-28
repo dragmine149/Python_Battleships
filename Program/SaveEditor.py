@@ -18,11 +18,12 @@ class saveEditor:
     # header
     def ShowDisplay(self):
         Functions.clear()
-        print('''--------------------------------------------------------------------
+        dashText = '-' * os.get_terminal_size().columns
+        print('''{}
 Save Editor
 
 Current Folder: {}
---------------------------------------------------------------------'''.format(self.folder))  # noqa E501
+{}'''.format(dashText, self.folder, dashText))  # noqa E501
 
     # lets the user change directory without having to navigate though dirs.
     def __ChangeDirectory(self):
