@@ -27,7 +27,7 @@ class Game:
                                            os.path.join(self.gamePath, self.users[user]),  # noqa E501
                                            self.users[user])
                 self.placed[user] = userPlace.Main()
-            
+
         return self.placed[0] and self.placed[1]
 
     def Fire(self):

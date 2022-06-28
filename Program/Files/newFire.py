@@ -13,7 +13,7 @@ class Fire:
     userInfo -> Contains user data [fire, target]
     """
     def __init__(self, gameInfo, userInfo):
-        # Loads information
+        # Loads information
         self.gameInfo = gameInfo
         self.userInfo = userInfo
         self.ships = ShipInfo.shipInfo(ShipInfo.getShips()).Main()
@@ -21,7 +21,7 @@ class Fire:
         self.__getGameInformation()
 
     def __getGameInformation(self):
-        # More information
+        # More information
         self.game = self.gameData.readFile("GameData")
         self.turn = self.game["turn"]
         self.turnIndex = self.userInfo.index(self.turn)
@@ -71,7 +71,7 @@ class Fire:
             self.turn,
             colours.c()))
 
-        # Cool feature so if you are playing on two different devices 
+        # Cool feature so if you are playing on two different devices
         # you can see where your ships are as well.
         if self.multiplayer != "n":
             Functions.board.MultiDisplay([self.userBoards[self.turnIndex][0],
@@ -98,7 +98,7 @@ class Fire:
                 continue
 
             # off board checks (too big to be on board)
-            if x >= self.game["size"][0]: 
+            if x >= self.game["size"][0]:
                 self.__Clear("X coordinate is not on the board!")
                 continue
 
@@ -148,10 +148,17 @@ class Fire:
         destroyedAmount = 0
 
         # Make into a better loop?
+        # BIV -> Board Index Value
+        # OIV -> Opponent Index Value
+        BIV = self.userBoards[self.turnIndex]
+        OIV = self.userBoards[self.opponentTurnIndex]
+
         for ship in ships:
             for y in range(len(self.userBoards[self.turnIndex][0])):
                 for x in range(len(self.userBoards[self.turnIndex][0][y])):
-                    if self.userBoards[self.turnIndex][0][y][x] == "X" and self.userBoards[self.opponentTurnIndex][1][y][x] == ship.Colour + ship.Symbol + colours.c():
+                    colour = ship.Colour + ship.Symbol + colours.c()
+
+                    if BIV[0][y][x] == "X" and OIV[1][y][x] == colour:
                         ship.Health -= 1
 
             # Check if destroyed (all shot out)
@@ -162,8 +169,8 @@ class Fire:
         # if more (how) or equal are destroyed, end
         if destroyedAmount >= len(ships):
             Functions.clear()
-            print("GG! {} has beaten {}".format(self.userInfo[self.turnIndex],
-                                                self.userInfo[self.opponentTurnIndex]))
+            print("GG! {} has beaten {}".format(BIV,
+                                                OIV))
             self.game["win"] = self.userInfo[self.turnIndex]
             self.gameData.writeFile(self.game, True, "GameData")
             return True

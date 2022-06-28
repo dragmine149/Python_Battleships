@@ -1,5 +1,4 @@
 import os
-import datetime
 import importlib
 
 GameMenu = importlib.import_module('Files.GameMenu')
@@ -154,8 +153,6 @@ class Settings:
                     print({'colour': data["colour"]})
 
                     # TODO: add way to keep old settings in case they want them
-                    # os.system('mv Data/Settings Data/oldSettings{}'.format(str(datetime.datetime.now())))  
-                    # print('a')
                     os.system('mv {} Data/Settings'.format(file))
 
                 except Exception as e:

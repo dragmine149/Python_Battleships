@@ -42,11 +42,11 @@ class save:
                 Functions.clear()
                 Functions.warn(2, "Google drive api not installed!")
                 # Asks the user if they want to change location
-                #change = input("Please enter the new path (type 'install' to install googledrive api): ")  # noqa E501
-                #if change.lower() == 'install':
-                #    sys.exit(self.__installDrive())
-                #self.path = change.rstrip()
-                #return self.__loadApi()
+                # change = input("Please enter the new path (type 'install' to install googledrive api): ")  # noqa E501
+                # if change.lower() == 'install':
+                #     sys.exit(self.__installDrive())
+                # self.path = change.rstrip()
+                # return self.__loadApi()
 
     """
     __Foldercheck()
@@ -220,8 +220,7 @@ class save:
         if name != "" and joint:
             name = os.path.join(self.data['name'], name)
 
-        slash = self.__slash()
-        path = "{}{}{}".format(self.path, slash, name) if name != "" else self.path
+        path = os.path.join(self.path, name) if name != "" else self.path
         if self._api:
             saveLoc = "Saves/.Temp/{}".format(name)
             Id = self._api.DownloadData({
