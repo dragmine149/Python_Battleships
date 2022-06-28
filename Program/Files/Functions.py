@@ -271,7 +271,7 @@ class board:
             for x in board[y]:
                 print(x, end="")
             print()
-    
+
     @staticmethod
     def MultiDisplay(boards=[]):
         if len(boards) < 2 or len(boards) > 2:
@@ -281,7 +281,7 @@ class board:
         lines = []
         for _ in range(len(boards[0])):
             lines.append("")
-        
+
         for i in range(2):
             for y in range(len(boards[i])):
 
@@ -292,13 +292,13 @@ class board:
 
                 for x in boards[i][y]:
                     lines[y] += x
-            
+
             for line in range(len(lines)):
                 lines[line] += "\t\t\t"
 
         for line in lines:
             print(line)
-            
+
 
 class search:
     """
@@ -415,18 +415,14 @@ def IsDigit(var):
     """
     Better version of .isdigit but works with negatives.
     """
-    
+
     # Skips the check if None is inputted
-    if var == None:
+    if var is None:
         raise AttributeError("'NoneType' object has no attribute 'isdigit'")
 
     # returns true if interger
     if isinstance(var, int):
         return True
-
-    # Might keep this might not, Designed for lists and dicts but breaks on negatives.
-    # if not isinstance(var, str):
-    #     raise ValueError('{} is not of type str!'.format(var))
 
     var = str(var)  # make sure it's a string if the int check failed
 
@@ -451,16 +447,10 @@ def IsDigit(var):
             print('Too many decimals found!')
             return False
 
-        # Debug purposes
-        # print({'var': var,
-        #        'before DL': var[:decimalLocation],
-        #        'After DL': var[decimalLocation + 1:],
-        #        'Before DL is': var[:decimalLocation].isdigit(),
-        #        'After DL is': var[decimalLocation + 1:].isdigit(),
-        #        'Both': var[:decimalLocation].isdigit() and var[decimalLocation + 1:].isdigit()})
-
         # Final thing to return (if contains decimal)
-        return var[:decimalLocation].isdigit() and var[decimalLocation + 1:].isdigit()
+        var1 = var[:decimalLocation].isdigit()
+        var2 = var[decimalLocation + 1:].isdigit()
+        return var1 and var2
     except IndexError as ie:  # if error, return false
         print("IndexError: {}".format(ie))
         return False

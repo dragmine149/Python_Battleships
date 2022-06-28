@@ -3,6 +3,7 @@ import os
 Create = importlib.import_module('Files.CreateInfo')
 newSave = importlib.import_module('Files.newSave')
 Functions = importlib.import_module('Files.Functions')
+readchar = importlib.import_module('Files.readchar.readchar')
 Print = Functions.Print
 
 
@@ -37,20 +38,16 @@ class Process:
             ships = boardSystem.readFile(os.path.join(user, "ships"))
             shots = boardSystem.readFile(os.path.join(user, "shots"))
 
-            print("Grid:")
-            Functions.board.DisplayBoard(ships)
-            print("\nShots:")
-            Functions.board.DisplayBoard(shots)
+            Functions.board.MultiDisplay([ships, shots])
             print("----------------------------")
 
-        print("\n\n")
-        input("Please press enter when you are ready to continue")
+        print("\n\nPlease press any key when you are ready to move on")
+        readchar.readchar()
         return True
 
     # Check if the game has been won, If so, print output
-    def winView(self, path, name=None, external=False):
+    def winView(self, path, winner):
         Functions.clear()
-        winner = self.saveSystem.readFile("win")
 
         Print("Game Over!!!", 'green')
         Print("Winner: {}".format(winner), "cyan")
@@ -71,9 +68,14 @@ class Process:
         self.users = self.saveSystem.ls(True)
         self.users.sort()
 
+        gameData = newSave.save({
+            'name': '',
+            'path': os.path.join(self.path, self.name)
+        }).readFile("GameData")
+
         # checks if game already won
-        if self.saveSystem.CheckForFile("win"):
-            return self.winView(self.path, self.name, external)
+        if gameData["win"] != '':
+            return self.winView(self.path, gameData["win"])
 
         # Checks if users have placed their ships
         placed = [False, False]
@@ -84,7 +86,4 @@ class Process:
                 placed[userIndex] = True
             print({"Placed": placed[userIndex]})
 
-        # Checks for multiplayer support
-        multi = self.saveSystem.readFile("multi")
-
-        return self.name, self.users, placed, self.path, multi
+        return self.name, self.users, placed, self.path, gameData["multi"]

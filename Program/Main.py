@@ -64,12 +64,17 @@ Github: https://www.github.com/dragmine149/Python_Battleships
     options = """01: Load Games
 02: Make New Game
 03: Settings"""
-    main = menu(info, options, c.generate("main"))
 
-    result = main.getInput(choice, values=(0, 3))
-    print({'main temp result': result})
-    result = Game.Game(result).Main()
-    print({'Game result': result})
+    while True:
+        main = menu(info, options, c.generate("main"))
+
+        result = main.getInput(choice, values=(0, 3))
+        if result is True:
+            continue
+
+        print({'main temp result': result})
+        result = Game.Game(result).Main()
+        print({'Game result': result})
 
 
 if __name__ == "__main__":

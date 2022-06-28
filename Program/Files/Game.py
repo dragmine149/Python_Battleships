@@ -31,7 +31,10 @@ class Game:
         return self.placed[0] and self.placed[1]
 
     def Fire(self):
-        newFire.Fire([self.name, self.location, self.multiplayer], self.users).Fire()
+        newFire.Fire([self.name,
+                      self.location,
+                      self.multiplayer],
+                     self.users).Fire()
 
     def Password(self):
         gameData = self.gameData.readFile('{}/GameData'.format(self.name))
@@ -45,7 +48,7 @@ class Game:
     def Main(self):
         if self.Password():
             result = self.Place()
-            
+
             if result:
                 return self.Fire()
             return "Ended during placement."
