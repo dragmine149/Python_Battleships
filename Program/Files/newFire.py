@@ -23,9 +23,7 @@ class Fire:
         self.game = self.gameData.readFile("GameData")
         self.turn = self.game["turn"]
         self.turnIndex = self.userInfo.index(self.turn)
-        import ipdb; ipdb.set_trace()
-        self.opponentTurnIndex = 0 if self.turnIndex == 0 else 1
-
+        self.opponentTurnIndex = 0 if self.turnIndex == 1 else 1
         self.multiplayer = self.game["multi"]
         self.userColours = [
             Settings.request('colour'),
