@@ -256,15 +256,22 @@ class save:
     ls(dir)
     dir -> whever to include files (false) or not (true)
     - Same as 'ls' on 'posix' (os.name) systems.
+    Joint -> Joins self.path and self.name together
     """
-    def ls(self, dir=False):
+    def ls(self, dir=False, Joint=False):
+
+        # Joins path and name together
+        path = self.path
+        if Joint:
+            path = os.path.join(self.path, self.data['name'])
+
         # use api if alvalible.
         if self._api:
             return self._api.ListFolder(dir=dir)
 
         # Local area
-        if os.path.exists(self.path):
-            dirData = os.listdir(self.path)
+        if os.path.exists(path):
+            dirData = os.listdir(path)
             if not dir:
                 # return if all files wanted
                 return dirData
@@ -272,7 +279,7 @@ class save:
             # Removes all none files
             newDirList = []
             for item in dirData:
-                if os.path.isdir(os.path.join(self.path, item)):
+                if os.path.isdir(os.path.join(path, item)):
                     newDirList.append(item)
             return newDirList
         return None  # if directory not found

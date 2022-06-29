@@ -79,14 +79,19 @@ Games found in: {} ({})
         self.gameList = Functions.RemoveNonGames(self.games)
         self.gameList.sort()
 
+        # Adds (Winner: {winner}) to the list if the game has been completed.
         for game in range(len(self.gameList)):
             completed = '(Winner: '
             try:
-                completed += newSave.save({
-                                'name': '',
-                                'path': os.path.join(self.games,
-                                                     self.gameList[game])
-                            }).readFile("GameData")["win"] + ')'
+                winner = newSave.save({
+                    'name': '',
+                    'path': os.path.join(self.games,
+                                         self.gameList[game])
+                }).readFile("GameData")["win"]
+                if winner != '':
+                    completed += winner + ')'
+                else:
+                    completed = ''
             except KeyError:
                 completed = ''
 

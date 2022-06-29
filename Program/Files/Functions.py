@@ -274,15 +274,19 @@ class board:
 
     @staticmethod
     def MultiDisplay(boards=[]):
-        if len(boards) < 2 or len(boards) > 2:
+        if len(boards) < 2 or len(boards) > 3:
             return
 
-        print("  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ")
+        msg = "  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ"
+        msg += "\t\t\tOpponent shots" if len(boards) == 3 else ""
+        print(msg)
         lines = []
         for _ in range(len(boards[0])):
             lines.append("")
 
-        for i in range(2):
+        maxRange = len(boards)
+
+        for i in range(maxRange):
             for y in range(len(boards[i])):
 
                 yIndex = str(y + 1)
@@ -526,6 +530,20 @@ def PrintTraceback():
     print('\033[41m----')
     traceback.print_exc()
     print('----\033[0m')
+
+
+# Prints a message out with a timer whilst waiting
+def waiting(message):
+    # Waits for the opponent.
+    try:
+        back = "(ctrl + c to go back)"
+        dots = ''
+        for _ in range(0, 4):
+            print("{}{} {}".format(message, dots, back), end="\r")
+            dots += '.'
+            time.sleep(1)
+    except KeyboardInterrupt:
+        return "Back"
 
 
 if __name__ == "__main__":

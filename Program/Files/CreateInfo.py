@@ -90,7 +90,7 @@ Password: {}{}\033[0m
             choiceFunction = options[choice]
             result = choiceFunction()
             if result == "Save":
-                return [self.Gname, self.usernames, self.Loc, self.Multi]
+                return [self.Gname, self.usernames, self.Loc, self.Multi[0]]
         return None
 
     def name(self):
@@ -339,7 +339,7 @@ Password: {}{}\033[0m
         })
 
         gameFolder = gameData.makeFolder(replace=True)
-        print(gameFolder)
+        # print(gameFolder)
         gameFolder = gameFolder
 
         userFolders = []
@@ -361,7 +361,7 @@ Password: {}{}\033[0m
             for ship in ShipInfo.getShips():
                 placedData[ship.Name] = False
 
-            print(placedData)
+            # print(placedData)
             userData.writeFile(placedData, name="placedData")
 # userData.writeFile(board, name='shots')
 
@@ -381,4 +381,4 @@ Password: {}{}\033[0m
 if __name__ == '__main__':
     c = CreateData("Saves")
     result = c.getOption()
-    print(result)
+    # print(result)

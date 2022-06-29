@@ -72,7 +72,7 @@ Github: https://www.github.com/dragmine149/Python_Battleships
         if result is True:
             continue
 
-        print({'main temp result': result})
+        # print({'main temp result': result})
         result = Game.Game(result).Main()
         print({'Game result': result})
 

@@ -30,3 +30,4 @@ The next update, As some things are known in U2 i'll give more information here.
 - Ability to open game by name (creates if not found).
 - Ability to chat with your opponent whilst waiting.
 - Start of mod support
+- Ability to spectate

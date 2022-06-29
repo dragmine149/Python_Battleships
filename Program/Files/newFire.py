@@ -12,10 +12,11 @@ class Fire:
     gameInfo -> Contains data about the game
     userInfo -> Contains user data [fire, target]
     """
-    def __init__(self, gameInfo, userInfo):
+    def __init__(self, gameInfo, userInfo, localUser=None):
         # Loads information
         self.gameInfo = gameInfo
         self.userInfo = userInfo
+        self.localUser = localUser
         self.ships = ShipInfo.shipInfo(ShipInfo.getShips()).Main()
         self.__RetrieveBoards()
         self.__getGameInformation()
@@ -74,8 +75,11 @@ class Fire:
         # Cool feature so if you are playing on two different devices
         # you can see where your ships are as well.
         if self.multiplayer != "n":
-            Functions.board.MultiDisplay([self.userBoards[self.turnIndex][0],
-                                          self.userBoards[self.turnIndex][1]])
+            localIndex = self.userInfo.index(self.localUser)
+            localOpponentIndex = 0 if localIndex == 1 else 1
+            Functions.board.MultiDisplay([self.userBoards[localIndex][0],
+                                          self.userBoards[localIndex][1],
+                                          self.userBoards[localOpponentIndex][0]])  # noqa E501
         else:
             Functions.board.DisplayBoard(self.userBoards[self.turnIndex][0])
 
@@ -141,7 +145,7 @@ class Fire:
         # x, +, -
         return
 
-    def WinGame(self):
+    def WinGame(self, winCheck=False):
         # setup (gets ships and text)
         ships = ShipInfo.shipInfo(ShipInfo.getShips()).Main()
         destroyedText = "Destroyed Ships:\n"
@@ -169,22 +173,46 @@ class Fire:
         # if more (how) or equal are destroyed, end
         if destroyedAmount >= len(ships):
             Functions.clear()
-            print("GG! {} has beaten {}".format(BIV,
-                                                OIV))
+            winner = self.userInfo[self.turnIndex]
+            looser = self.userInfo[self.opponentTurnIndex]
+            Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
             self.game["win"] = self.userInfo[self.turnIndex]
             self.gameData.writeFile(self.game, True, "GameData")
             return True
 
-        Functions.clear(2, destroyedText)
+        if not winCheck:
+            Functions.clear(2, destroyedText)
 
     def Fire(self):
         # Main game loop
         game = True
         while game:
+            # This is something we want to avoid really,
+            # clearing every loop and recalling data again.
             Functions.clear()
+
+            # Shows the display
             self.__Display()
-            result = self.__Shot()
-            if result is False:
-                return
+
+            if self.multiplayer != 'n':
+                if self.turn == self.localUser:  # if current turn, shoot fine.
+                    result = self.__Shot()
+                    if result is False:
+                        return
+                else:  # else wait for instructions
+                    msg = "Waiting for {} to shoot".format(
+                        self.userInfo[self.turnIndex])
+                    returnValue = Functions.waiting(msg)
+                    if returnValue == "Back":
+                        return "Stopped whilst shooting."
+
+                # Checks if game has already been won (completed.) (TODO)
+                # self.WinGame(True)
+            else:
+                result = self.__Shot()
+                if result is False:
+                    return
+
+            # Load the data again
             self.__RetrieveBoards()
             self.__getGameInformation()
