@@ -101,6 +101,7 @@ class save:
     def __replace(self, path):
         if os.name != "nt":
             return path.replace("\\", "")
+        return path
 
     """
     __split(data)
