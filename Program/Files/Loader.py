@@ -80,7 +80,18 @@ Games found in: {} ({})
         self.gameList.sort()
 
         for game in range(len(self.gameList)):
-            options += "{}: {}\n".format(game + 1, self.gameList[game])
+            completed = '(Winner: '
+            try:
+                completed += newSave.save({
+                                'name': '',
+                                'path': os.path.join(self.games,
+                                                     self.gameList[game])
+                            }).readFile("GameData")["win"] + ')'
+            except KeyError:
+                completed = ''
+
+            options += "{}: {} {}\n".format(game + 1, self.gameList[game],
+                                            completed)
 
         if options == "":
             options = c('r') + """No games found!
