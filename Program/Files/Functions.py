@@ -56,16 +56,18 @@ def RemoveNonGames(path="Saves"):
     # returns empty if nothing put in.
     if path is None:
         return []
+
     games = None
-    api = False
-    if isinstance(path, list):
-        api = True
-        games = path
-    else:
-        try:
-            games = os.listdir(path)
-        except FileNotFoundError:
-            return []
+    saveLocation = newSave.save({
+        'name': '',
+        'path': path
+    })
+    api = saveLocation._api
+
+    try:
+        games = saveLocation.ls(True)
+    except FileNotFoundError:
+        return []
 
     newlist = []
     for folder in games:
@@ -387,7 +389,6 @@ def LocationTest(Location):
         saveInfo = newSave.save({
             'name': 'Test',
             'path': Location,
-            'Json': False
         })
         print(vars(saveInfo))
 
@@ -408,7 +409,8 @@ def LocationTest(Location):
             clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
             Location = None
 
-        saveInfo.Delete(folder)
+        deletion = saveInfo.Delete(folder)
+        print(deletion)
 
         return True, saveInfo._api
     except Exception:

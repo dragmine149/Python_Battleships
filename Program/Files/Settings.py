@@ -86,7 +86,7 @@ class Settings:
     def deleteCache(self):
         Print("Deleting cache...", "Red")
 
-        Data = Functions.search('..', ('*.pyc', '*_cache'), 2, 0).Locate()  # noqa E501
+        Data = Functions.search('..', ('*.pyc', '*_cache', '.Temp'), 2, 0).Locate()  # noqa E501
         print("Data Found: {}".format(Data))
         for file in Data:
             Print(f"Deleting: {file}", "orange")

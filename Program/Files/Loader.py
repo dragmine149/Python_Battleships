@@ -78,16 +78,16 @@ Games found in: {} ({})
         options = ""
         self.gameList = Functions.RemoveNonGames(self.games)
         self.gameList.sort()
+        print(self.gameList)
 
         # Adds (Winner: {winner}) to the list if the game has been completed.
         for game in range(len(self.gameList)):
             completed = '(Winner: '
             try:
                 winner = newSave.save({
-                    'name': '',
-                    'path': os.path.join(self.games,
-                                         self.gameList[game])
-                }).readFile("GameData")["win"]
+                    'name': self.gameList[game],
+                    'path': self.path
+                }).readFile("GameData", joint=True)["win"]
                 if winner != '':
                     completed += winner + ')'
                 else:
@@ -139,4 +139,5 @@ Please reload by giving no input, Choose a different location or make a game.
 
             if self.game is not None:
                 pathInfo = self.gameList[self.game - 1]
+                import ipdb; ipdb.set_trace()
                 return pi.Process(self.path, pathInfo).Inputs(self.apiExternal)

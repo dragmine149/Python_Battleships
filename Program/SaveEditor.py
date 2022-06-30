@@ -9,8 +9,10 @@ Settings = importlib.import_module('Files.Settings')
 
 class saveEditor:
     # basic setup
-    def __init__(self):
-        self.folder = os.path.abspath(Settings.request("path"))
+    def __init__(self, folder=None):
+        self.folder = folder
+        if self.folder is None:
+            self.folder = os.path.abspath(Settings.request("path"))
         self.files = []
         self.activeFile = 0
         self.columnCount = 4
@@ -31,6 +33,10 @@ Current Folder: {}
 
     # Returns a custom list of all the files in the specified directory.
     def __ListFiles(self):
+        # return newSave.save({
+        #     'name': '',
+        #     'path': self.folder
+        # }).ls()
         files = ['..']  # so they can go up directory.
         newFiles = os.listdir(self.folder)
         newFiles.sort()
@@ -170,5 +176,5 @@ class File:
 
 
 if __name__ == "__main__":
-    se = saveEditor()
+    se = saveEditor(os.path.abspath('Saves'))
     se.Main()

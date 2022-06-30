@@ -36,7 +36,7 @@ class save:
         if self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves" and self.path != "Data":  # noqa E501
             # Import drive and do stuff
             try:
-                import DriveApi as d
+                d = importlib.import_module('Files.DriveApi')
                 return d.Api(self.path)
             except ImportError:
                 Functions.clear()
@@ -225,7 +225,7 @@ class save:
         if self._api:
             saveLoc = "Saves/.Temp/{}".format(name)
             Id = self._api.DownloadData({
-                'Id': name,
+                'Id': path,
                 'path': saveLoc
             })
             # If can't find file, attempt to search
@@ -241,7 +241,10 @@ class save:
 
             if isinstance(Id, str):
                 with open(Id, 'rb') as file:
-                    return self._Encode(file.read())
+                    fileData = self._Encode(file.read())
+
+                # self.Delete(Id)  # deletes data after read
+                return fileData
             return Id
 
         # local read area
@@ -258,8 +261,9 @@ class save:
     dir -> whever to include files (false) or not (true)
     - Same as 'ls' on 'posix' (os.name) systems.
     Joint -> Joins self.path and self.name together
+    folder -> drive api folder
     """
-    def ls(self, dir=False, Joint=False):
+    def ls(self, dir=False, Joint=False, folder=None):
 
         # Joins path and name together
         path = self.path
@@ -268,7 +272,7 @@ class save:
 
         # use api if alvalible.
         if self._api:
-            return self._api.ListFolder(dir=dir)
+            return self._api.ListFolder(folder=folder, dir=dir)
 
         # Local area
         if os.path.exists(path):

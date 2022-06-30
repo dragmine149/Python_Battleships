@@ -15,7 +15,7 @@ class Process:
             # Loads the save system
             self.saveSystem = newSave.save({
                 'name': name,
-                'path': os.path.join(path, name)
+                'path': path
             })
 
     def __create(self):
@@ -46,7 +46,7 @@ class Process:
         return True
 
     # Check if the game has been won, If so, print output
-    def winView(self, path, winner):
+    def winView(self, winner):
         Functions.clear()
 
         Print("Game Over!!!", 'green')
@@ -65,8 +65,18 @@ class Process:
         # if not external:
 
         # get users
-        self.users = self.saveSystem.ls(True)
+        self.users = self.saveSystem.ls(True, folder=self.name)
+
+        # Convert google drive list into normal data
+        if isinstance(self.users[0], dict):
+            newUsers = []
+            for user in self.users:
+                newUsers.append(user['name'])
+            self.users = newUsers
+
         self.users.sort()
+
+        import ipdb; ipdb.set_trace()
 
         gameData = newSave.save({
             'name': '',
@@ -75,14 +85,14 @@ class Process:
 
         # checks if game already won
         if gameData["win"] != '':
-            return self.winView(self.path, gameData["win"])
+            return self.winView(gameData["win"])
 
         # Checks if users have placed their ships
         placed = [False, False]
         for userIndex in range(len(self.users)):
             user = self.users[userIndex]
             print({"User": user})
-            if self.saveSystem.CheckForFile("{}/shots".format(user)):
+            if self.saveSystem.CheckForFile("{}/{}/shots".format(self.name, user)):  # noqa E501
                 placed[userIndex] = True
             print({"Placed": placed[userIndex]})
 

@@ -127,8 +127,37 @@ class Api:
         else:
             return Id
 
+    # Attempts to find the file in the id if the id is: 'PATH/NAME'
+    def GetFileFromParentId(self, id):
+        # Split up the path into each dir
+        pathSplit = id.split('/')
+        if len(pathSplit) <= 1:
+            # return original if only id with nothing else
+            return id
+
+        # Get files under the parent folder
+        parentFolder = pathSplit[0]
+        files = self.ListFolder(parentFolder)
+        for file in files:
+            if file['name'] == pathSplit[1]:
+                parentFolder = file['id']
+                files = self.ListFolder(parentFolder)
+                break
+
+        # Loop through the files in that folder to find the file
+        # searching for at the beginning.
+        print(files)
+        for file in files:
+            if file['name'] == pathSplit[2]:
+                return file['id']
+
+        return id  # if none found, return original
+
     # Download data from fileid. (Change to file name?)
     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
+        print('Original: ' + data['Id'])
+        data['Id'] = self.GetFileFromParentId(data['Id'])
+        print('New: {}'.format(data['Id']))
         try:
             request = self.service.files().get_media(fileId=data['Id'])
             fileHandler = io.BytesIO()
@@ -136,28 +165,40 @@ class Api:
             done = False
             while done is False:
                 status, done = downloader.next_chunk()
-                print("Downloaded {}%".format(int(status.progress()) * 100))
+                print("Downloaded {}%".format(int(status.progress()) * 100),
+                      end='\r')
             html = fileHandler.getvalue()
 
-            fileEnd = ".txt"
-            if not End:
-                fileEnd = ""
+            fileEnd = ".txt" if End else ""
+
+            # Sorts out the path incase '/' got included again.
+            sPath = data['path'].split('/')
+            start = 'Saves/.Temp'
+            end = ''
+            for i in range(len(sPath) - 2):
+                end += sPath[i + 2]
+                if i + 2 == len(sPath) - 2:
+                    end += '-'
+            data['path'] = os.path.join(start, end)
 
             with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
                 f.write(html)
+
+            Functions.clear()
             return "{}{}".format(data['path'], fileEnd)
         except HttpError as error:
-            # If this fires and then the above files, do not worry.
+            # If this fires and then the above fires, do not worry.
             print("Error occured!: {}".format(error.reason))
             return False
 
     def ListFolder(self, folder=None, dir=False):
         if folder is None:
             folder = self.folder
+
         if isinstance(folder, dict):
             folder = folder['id']
         try:
-            query = "'{}' in parents".format(folder)
+            query = "'{}' in parents and trashed=false".format(folder)
             if dir:
                 query += " and mimeType = 'application/vnd.google-apps.folder'"
 
