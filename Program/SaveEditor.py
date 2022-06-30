@@ -1,5 +1,6 @@
 import importlib
 import os
+import argparse
 readchar = importlib.import_module('.readchar', 'Files.readchar')
 newSave = importlib.import_module('Files.newSave')
 colours = importlib.import_module('Files.colours')
@@ -7,12 +8,35 @@ Functions = importlib.import_module('Files.Functions')
 Settings = importlib.import_module('Files.Settings')
 
 
+def Praser():
+    parser = argparse.ArgumentParser(description="Battleships save editor")  # noqa E501
+    parser.add_argument('Location',
+                        help="Override the location saved in Settings",
+                        metavar="location", nargs='?')
+    args = vars(parser.parse_args())
+    return args
+
+
 class saveEditor:
     # basic setup
     def __init__(self, folder=None):
-        self.folder = folder
-        if self.folder is None:
-            self.folder = os.path.abspath(Settings.request("path"))
+        # Loads in folder
+        requestFolder = folder
+        if requestFolder is None:
+            requestFolder = Settings.request("path")
+
+        # Loads in save system
+        self.saveSystem = newSave.save({
+            'name': '',
+            'path': requestFolder
+        })
+
+        # Checks what type of files we are dealing with
+        self.folder = requestFolder
+        if not self.saveSystem._api:
+            self.folder = os.path.abspath(requestFolder)
+
+        # Other information
         self.files = []
         self.activeFile = 0
         self.columnCount = 4
@@ -30,15 +54,25 @@ Current Folder: {}
     # lets the user change directory without having to navigate though dirs.
     def __ChangeDirectory(self):
         self.folder = os.path.abspath(Functions.changePath()[1])
+        self.__UpdateSaveSystem()
+
+    def __UpdateSaveSystem(self):
+        self.saveSystem.path = self.folder
+        self.saveSystem.data['path'] = self.folder
 
     # Returns a custom list of all the files in the specified directory.
     def __ListFiles(self):
-        # return newSave.save({
-        #     'name': '',
-        #     'path': self.folder
-        # }).ls()
         files = ['..']  # so they can go up directory.
-        newFiles = os.listdir(self.folder)
+        self.__UpdateSaveSystem()
+        newFiles = self.saveSystem.ls()
+
+        # Checks the type of file and translate
+        if isinstance(newFiles[0], dict):
+            newF = []
+            for nEw in newFiles:
+                newF.append(nEw['name'])
+            newFiles = newF
+
         newFiles.sort()
         files.extend(newFiles)  # adds the folders onto the main list.
         self.folderLength = len(files)
@@ -176,5 +210,9 @@ class File:
 
 
 if __name__ == "__main__":
-    se = saveEditor(os.path.abspath('Saves'))
+    args = Praser()
+    folder = args['Location']
+    if folder is not None:
+        folder = os.path.abspath(folder)
+    se = saveEditor(folder)
     se.Main()
