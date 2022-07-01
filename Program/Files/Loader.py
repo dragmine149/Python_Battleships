@@ -64,7 +64,7 @@ class Loader:
         msg = "Local"
         if self.path != "Saves":
             msg = "External"
-        if self.apiExternal:
+        if self.apiExternal:  # TODO: Fix
             msg = "Google Drive"
 
         # banner information
@@ -139,5 +139,4 @@ Please reload by giving no input, Choose a different location or make a game.
 
             if self.game is not None:
                 pathInfo = self.gameList[self.game - 1]
-                import ipdb; ipdb.set_trace()
-                return pi.Process(self.path, pathInfo).Inputs(self.apiExternal)
+                return pi.Process(self.path, pathInfo).Inputs()

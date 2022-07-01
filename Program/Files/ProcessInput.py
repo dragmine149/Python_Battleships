@@ -59,11 +59,9 @@ class Process:
                                returnFunc=(self.viewBoards, noFunc)).getInput("ynCheck")  # noqa E501
 
     # Gets the inputs and return the game result info thing
-    def Inputs(self, external=False, create=False):
+    def Inputs(self, create=False):
         if create:
             return self.__create()
-        # if not external:
-
         # get users
         self.users = self.saveSystem.ls(True, folder=self.name)
 

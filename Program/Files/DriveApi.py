@@ -27,6 +27,7 @@ class Api:
         self.pageSize = 10  # Change to variable setting later.
 
     # Loads the api for use later.
+    # Complicated function taken from google.
     def __LoadAPI__(self):
         Functions.clear()
         setup.Setup(self.folder).main()
@@ -94,6 +95,7 @@ class Api:
         if isinstance(self.folder, dict):
             self.folder = self.folder['id']
 
+        # check if already exists, we don't want to make duplicates
         exists, Id = self.checkIfExists(self.folder, data['name'])
 
         # Deletes if we overwrite the data.
@@ -101,20 +103,21 @@ class Api:
             print(self.DeleteData(Id['id']))
 
         if (not exists and Id is None) or overwrite:
-            if folder:  # makes folder
+            if folder:  # folder metadata
                 metadata = {
                     'name': data['name'],
                     'mimeType': 'application/vnd.google-apps.folder',
                     'parents': [self.folder]
                 }
             else:
+                # file metadata
                 metadata = {
                     'name': data['name'],
                     'mimeType': '*/*',  # not readable on drive
                     'parents': [self.folder]
                 }
                 print(metadata)
-                media = MediaFileUpload(data['path'],  # noqa
+                media = MediaFileUpload(data['path'],
                                         mimetype='*/*',
                                         resumable=True)
             if media:
@@ -135,30 +138,26 @@ class Api:
             # return original if only id with nothing else
             return id
 
-        # Get files under the parent folder
         parentFolder = pathSplit[0]
-        files = self.ListFolder(parentFolder)
-        for file in files:
-            if file['name'] == pathSplit[1]:
-                parentFolder = file['id']
-                files = self.ListFolder(parentFolder)
-                break
-
-        # Loop through the files in that folder to find the file
-        # searching for at the beginning.
-        print(files)
-        for file in files:
-            if file['name'] == pathSplit[2]:
-                return file['id']
-
-        return id  # if none found, return original
+        for i in range(len(pathSplit)):
+            files = self.ListFolder(parentFolder)
+            for file in files:
+                if file['name'] == pathSplit[i]:
+                    if i + 1 == len(pathSplit):
+                        return file['id']
+                    parentFolder = file['id']
+                    break
+        return id  # none found, return original
 
     # Download data from fileid. (Change to file name?)
     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
+        # debug
         print('Original: ' + data['Id'])
         data['Id'] = self.GetFileFromParentId(data['Id'])
         print('New: {}'.format(data['Id']))
+
         try:
+            # Gets the file data from drive
             request = self.service.files().get_media(fileId=data['Id'])
             fileHandler = io.BytesIO()
             downloader = MediaIoBaseDownload(fileHandler, request)
@@ -169,6 +168,7 @@ class Api:
                       end='\r')
             html = fileHandler.getvalue()
 
+            # If the file should be presented as 'FILE.txt'
             fileEnd = ".txt" if End else ""
 
             # Sorts out the path incase '/' got included again.
@@ -181,6 +181,7 @@ class Api:
                     end += '-'
             data['path'] = os.path.join(start, end)
 
+            # save
             with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
                 f.write(html)
 
@@ -199,7 +200,7 @@ class Api:
             folder = folder['id']
         try:
             query = "'{}' in parents and trashed=false".format(folder)
-            if dir:
+            if dir:  # return only directories
                 query += " and mimeType = 'application/vnd.google-apps.folder'"
 
             # Some things don't work...
@@ -212,6 +213,15 @@ class Api:
                 print('No files found.')
                 return
             return items
-        except HttpError as error:
-            print('An error occurred: {}'.format(error))
-            return "Error"
+        except HttpError:
+
+            # Attempts to take the folder as a name and find files in folder
+            # SO, if folder != drive ID, find folder, return files in folder
+            try:
+                files = self.ListFolder(dir=dir)
+                for file in files:
+                    if file['name'] == folder:
+                        return self.ListFolder(file['id'], dir=dir)
+            except HttpError as error:
+                print('An error occurred: {}'.format(error))
+                return "Error"
