@@ -390,19 +390,19 @@ def LocationTest(Location):
             'name': 'Test',
             'path': Location,
         })
-        print(vars(saveInfo))
+        print({'saveInfo vars': vars(saveInfo)})
 
         # Creates test folder
         folder = saveInfo.makeFolder(replace=True)
-        print(folder)
+        print({'folder': folder})
 
         # creates file
         savedLocation = saveInfo.writeFile("This is a test file")
-        print(savedLocation)
+        print({'savedLocation': savedLocation})
 
         # reads file from same place
         data = saveInfo.readFile()
-        print(data)
+        print({'data': data})
 
         if data != "This is a test file":
             # Oh oh, doesn't work... Return error
@@ -410,10 +410,11 @@ def LocationTest(Location):
             Location = None
 
         deletion = saveInfo.Delete(folder)
-        print(deletion)
+        print({'deletion': deletion})
 
         return True, saveInfo._api
     except Exception:
+        PrintTraceback()
         return False, False
 
 

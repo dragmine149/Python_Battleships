@@ -88,7 +88,7 @@ class Process:
         for userIndex in range(len(self.users)):
             user = self.users[userIndex]
             print({"User": user})
-            if self.saveSystem.CheckForFile("{}/{}/shots".format(self.name, user)):  # noqa E501
+            if self.saveSystem.CheckForFile(os.path.join(self.path, self.name, user)):  # noqa E501
                 placed[userIndex] = True
             print({"Placed": placed[userIndex]})
 

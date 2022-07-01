@@ -21,8 +21,8 @@ def command_options():
     if args['delete']:
         def yes():
             newSave = importlib.import_module('Files.newSave')
-            newSave.save.Delete('Saves')
-            newSave.save.Delete('Data')
+            newSave.save.delete('Saves')
+            newSave.save.delete('Data')
             sys.exit('Deleted old data. Please rerun')
 
         def no():

@@ -90,7 +90,7 @@ class Settings:
         print("Data Found: {}".format(Data))
         for file in Data:
             Print(f"Deleting: {file}", "orange")
-            newSave.save.Delete(file)
+            newSave.save.delete(file)
 
         Functions.warn(1, "Waiting...", "green")
 

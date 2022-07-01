@@ -76,22 +76,24 @@ class Game:
         return True
 
     def UsernameCheck(self):
-        # Gets the user username for the game
-        users = self.gameData.ls(True, True)
+        if self.multiplayer == 'y':
+            # Gets the user username for the game
+            users = self.gameData.ls(True, True)
 
-        # Check to see if same to account name
-        localUser = getpass.getuser()
-        if localUser in users:
-            return localUser
+            # Check to see if same to account name
+            localUser = getpass.getuser()
+            if localUser in users:
+                return localUser, self.users.index(localUser)
 
-        # Gets them to manualy enter it in.
-        user = None
-        while user is None:
-            user = input("Please enter your username: ")
-            if user in users:
-                return user
-            Functions.clear(2, "User not found! (Spectating comming in Update 3)")  # noqa E501
+            # Gets them to manualy enter it in.
             user = None
+            while user is None:
+                user = input("Please enter your username: ")
+                if user in users:
+                    return user
+                Functions.clear(2, "User not found! (Spectating comming in Update 3)")  # noqa E501
+                user = None
+        return None, None
 
     def MultiPlaceCheck(self):
         # Multiplayer placement check
@@ -117,8 +119,8 @@ class Game:
 
     def Main(self):
         # Main loop
-        self.localUser = self.UsernameCheck()
-        self.localUserIndex = self.users.index(self.localUser)
+        # import ipdb; ipdb.set_trace()
+        self.localUser, self.localUserIndex = self.UsernameCheck()
         if self.Password():
             result = self.Place()
 

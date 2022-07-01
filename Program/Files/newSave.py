@@ -149,7 +149,7 @@ class save:
 
             # replace and return
             if replace:
-                self.path = folderId
+                self.path = folderId['id']
             return folderId['id']
 
         # normal local folder
@@ -311,15 +311,15 @@ class save:
 
         if not self._api:
             Npath = self.__replace(path)
-            Delete(Npath)
+            delete(Npath)
         return self._api.DeleteData(path)
 
     """
-    Delete(path)
+    delete(path)
     - Static method, Deletes without questions
     """
     @staticmethod
-    def Delete(path):
+    def delete(path):
         if os.path.exists(path):
             if os.path.isdir(path):
                 shutil.rmtree(path)
