@@ -74,12 +74,10 @@ class Process:
 
         self.users.sort()
 
-        import ipdb; ipdb.set_trace()
-
         gameData = newSave.save({
-            'name': '',
-            'path': os.path.join(self.path, self.name)
-        }).readFile("GameData")
+            'name': self.name,
+            'path': self.path
+        }).readFile("GameData", joint=True)
 
         # checks if game already won
         if gameData["win"] != '':

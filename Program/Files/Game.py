@@ -95,7 +95,7 @@ class Game:
 
     def MultiPlaceCheck(self):
         # Multiplayer placement check
-        if self.multiplayer:
+        if self.multiplayer == 'y':
             placed = False
 
             # Loop for checking placement
