@@ -183,14 +183,14 @@ class save:
     name -> name of the file, just in case the file needs to be different from the current name inputted.
     - Save data to a file
     """  # noqa E501
-    def writeFile(self, data, overwrite=False, name=""):
+    def writeFile(self, data, overwrite=False, name="", game=False):
         if data is None:
             return None
         if name == "":
             name = self.data['name']
 
         # Makes the file with the data in the temparay location
-        tempLocation = "Saves/.Temp/{}".format(name)
+        tempLocation = "Saves/.Temp/{}".format(name.replace('/', '-'))
         with open(tempLocation, 'wb+') as tempFile:
             tempFile.write(self._Encode(data, True))
 
@@ -200,12 +200,12 @@ class save:
                 'name': name,
                 'path': tempLocation,
                 'folder': self.path,
-            }, overwrite=overwrite)
+            }, overwrite=overwrite, game=game)
             os.remove(tempLocation)  # remove local copy
             return id
         slash = self.__slash()
         # moves file to where it should be saved
-        shutil.move("Saves{}.Temp{}{}".format(slash, slash, name),
+        shutil.move(tempLocation,
                     "{}{}{}".format(self.__replace(self.path), slash, name))  # noqa E501
         return "{}{}{}".format(self.path, slash, name)
 

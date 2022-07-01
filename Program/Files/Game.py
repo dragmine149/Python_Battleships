@@ -29,18 +29,27 @@ class Game:
             for user in range(len(self.users)):
                 if not self.placed[user]:
                     userPlace = newPlace.Place(self.name,
-                                               os.path.join(self.gamePath,
-                                                            self.users[user]),  # noqa E501
+                                               [self.location,
+                                                os.path.join(
+                                                    self.name,
+                                                    self.users[user]
+                                                )],
                                                self.users[user])
                     self.placed[user] = userPlace.Main()
+                    if self.placed[user] is False:
+                        # person A quit, no need for person B to place.
+                        return False
 
             return self.placed[0] and self.placed[1]
 
         # Checks if the local user has placed in this multiplayer game
         if not self.placed[self.localUserIndex]:
             userPlace = newPlace.Place(self.name,
-                                       os.path.join(self.gamePath,
-                                                    self.users[self.localUserIndex]),  # noqa E501
+                                       [self.location,
+                                        os.path.join(
+                                            self.name,
+                                            self.users[self.localUserIndex]
+                                        )],
                                        self.users[self.localUserIndex])
             return userPlace.Main()
 

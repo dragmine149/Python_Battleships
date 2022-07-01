@@ -20,10 +20,10 @@ class Place:
     def LoadInfo(self):
         self.info = newSave.save({
             'name': '',
-            'path': self.location,
+            'path': self.location[0],
         })
-        self.placedData = self.info.readFile("placedData", True)
-        self.boardData = self.info.readFile("ships", True)
+        self.placedData = self.info.readFile("{}/placedData".format(self.location[1]), True)
+        self.boardData = self.info.readFile("{}/ships".format(self.location[1]), True)
 
     # The display
     def ShowDisplay(self, showShips=True, board=None):
@@ -202,13 +202,17 @@ class Place:
                 if saved:
                     print("Saved")
                     self.placedData[self.ships[place].Name] = True
-                    self.info.writeFile(self.boardData, True, "ships")
-                    self.info.writeFile(self.placedData, True, "placedData")
+                    import ipdb; ipdb.set_trace()
+                    self.info.writeFile(self.boardData, True, "{}/ships".format(self.location[1]), True)
+                    ipdb.set_trace()
+                    self.info.writeFile(self.placedData, True, "{}/placedData".format(self.location[1]), True)
 
     def Main(self):
         Functions.clear()
         data = self.Place()
         if data == -2:
             boardSize = self.info.readFile('../GameData', True)
-            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), True, "shots")  # noqa E501
+            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']),
+                                True,
+                                "{}/shots".format(self.location[1]))  # noqa E501
         return data == -2

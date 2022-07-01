@@ -69,6 +69,10 @@ def RemoveNonGames(path="Saves"):
     except FileNotFoundError:
         return []
 
+    # skips loop if empty
+    if len(games) == 0:
+        return []
+
     newlist = []
     for folder in games:
         # Removes non directories
@@ -410,7 +414,9 @@ def LocationTest(Location):
             Location = None
 
         deletion = saveInfo.Delete(folder)
+        deletion2 = saveInfo.delete('Saves/.Temp/Test')
         print({'deletion': deletion})
+        print({'deletion2': deletion2})
 
         return True, saveInfo._api
     except Exception:

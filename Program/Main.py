@@ -2,6 +2,7 @@ import importlib
 import sys
 import argparse
 Functions = importlib.import_module('Files.Functions')
+newSave = importlib.import_module('Files.newSave')
 
 
 def praser():
@@ -51,6 +52,9 @@ def Main():
     # loads info
     c = Choices.Choices()
     menu = GameMenu.menu
+
+    # Delete temparary data stored in Saves/.Temp
+    newSave.save.delete('Saves/.Temp')
 
     # banner
     dashText = '-' * Functions.os.get_terminal_size().columns

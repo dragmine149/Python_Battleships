@@ -81,7 +81,20 @@ class Api:
         return False, None
 
     # Makes folder / uploads data based on input
-    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False):  # noqa
+    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False, game=False):  # noqa
+
+        # Splits the name and path information to get the sub
+        # folder and name of the file
+        try:
+            savedPath = data['path']
+        except KeyError:
+            pass
+        if game:
+            data['path'] = data['path'].replace('-', '/')
+            splitName = os.path.split(data['name'])
+            data['folder'] = self.GetFileFromParentId(splitName[0])
+            data['name'] = splitName[1]
+
         print("Uploading... {}\tFolder:{}".format(data, folder))
         metadata = {}
         media = None
@@ -117,7 +130,7 @@ class Api:
                     'parents': [self.folder]
                 }
                 print(metadata)
-                media = MediaFileUpload(data['path'],
+                media = MediaFileUpload(savedPath,
                                         mimetype='*/*',
                                         resumable=True)
             if media:
@@ -211,7 +224,7 @@ class Api:
 
             if not items:
                 print('No files found.')
-                return
+                return []
             return items
         except HttpError:
 

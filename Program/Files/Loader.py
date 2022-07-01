@@ -1,5 +1,6 @@
 import os
 import importlib
+import time
 
 Functions = importlib.import_module('Files.Functions')
 Menu = importlib.import_module('Files.GameMenu')
@@ -60,6 +61,8 @@ class Loader:
         return "Changed"
 
     def getGames(self):
+        loadtimeStart = time.time()
+
         # sets the message so the user knows where it is better
         msg = "Local"
         if self.path != "Saves":
@@ -70,7 +73,7 @@ class Loader:
         # banner information
         dashText = '-' * os.get_terminal_size().columns
         info = """{}
-Games found in: {} ({})
+Games found in: {} ({}) (Load Time: +)
 {}
 """.format(dashText, self.path, msg, dashText)
 
@@ -117,6 +120,13 @@ Please reload by giving no input, Choose a different location or make a game.
             -1: 'Delete Game',
             -2: 'Change Path'
         }
+
+        # Works out how long it took to load the files, mainly debug but
+        loadtimeEnd = time.time()
+        loadtime = round(loadtimeEnd - loadtimeStart, 2)
+        loadtimeMessage = "{}s".format(loadtime)
+
+        info = info.replace('+', loadtimeMessage)
         return info, options, choices, external
 
     def loadMenu(self):
