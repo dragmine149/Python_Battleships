@@ -98,18 +98,20 @@ class Api:
         print("Uploading... {}\tFolder:{}".format(data, folder))
         metadata = {}
         media = None
+
+        localFolder = self.folder
         try:
             if data['folder']:
-                self.folder = data['folder']
+                localFolder = data['folder']
         except KeyError:
             # No need to do anything if error.
             pass
 
-        if isinstance(self.folder, dict):
-            self.folder = self.folder['id']
+        if isinstance(localFolder, dict):
+            localFolder = localFolder['id']
 
         # check if already exists, we don't want to make duplicates
-        exists, Id = self.checkIfExists(self.folder, data['name'])
+        exists, Id = self.checkIfExists(localFolder, data['name'])
 
         # Deletes if we overwrite the data.
         if overwrite and exists:
@@ -120,14 +122,14 @@ class Api:
                 metadata = {
                     'name': data['name'],
                     'mimeType': 'application/vnd.google-apps.folder',
-                    'parents': [self.folder]
+                    'parents': [localFolder]
                 }
             else:
                 # file metadata
                 metadata = {
                     'name': data['name'],
                     'mimeType': '*/*',  # not readable on drive
-                    'parents': [self.folder]
+                    'parents': [localFolder]
                 }
                 print(metadata)
                 media = MediaFileUpload(savedPath,

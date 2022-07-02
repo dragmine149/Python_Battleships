@@ -22,8 +22,11 @@ class Place:
             'name': '',
             'path': self.location[0],
         })
-        self.placedData = self.info.readFile("{}/placedData".format(self.location[1]), True)
-        self.boardData = self.info.readFile("{}/ships".format(self.location[1]), True)
+        loc = self.location[1]
+        self.placedData = self.info.readFile(
+            "{}/placedData".format(loc), True)
+        self.boardData = self.info.readFile(
+            "{}/ships".format(loc), True)
 
     # The display
     def ShowDisplay(self, showShips=True, board=None):
@@ -202,10 +205,15 @@ class Place:
                 if saved:
                     print("Saved")
                     self.placedData[self.ships[place].Name] = True
-                    import ipdb; ipdb.set_trace()
-                    self.info.writeFile(self.boardData, True, "{}/ships".format(self.location[1]), True)
-                    ipdb.set_trace()
-                    self.info.writeFile(self.placedData, True, "{}/placedData".format(self.location[1]), True)
+                    loc = self.location[1]
+                    self.info.writeFile(self.boardData,
+                                        True,
+                                        "{}/ships".format(loc),
+                                        True)
+                    self.info.writeFile(self.placedData,
+                                        True,
+                                        "{}/placedData".format(loc),
+                                        True)
 
     def Main(self):
         Functions.clear()
