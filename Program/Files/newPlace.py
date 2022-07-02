@@ -1,5 +1,6 @@
 import importlib
 import copy
+import os
 newSave = importlib.import_module('Files.newSave')
 Functions = importlib.import_module('Files.Functions')
 ShipInfo = importlib.import_module('Files.ShipInfo')
@@ -192,7 +193,7 @@ class Place:
                                     (0, len(self.ships))).getInput()
             if place == 0:
                 self.info.writeFile(Settings.request('colour'),
-                                    True, "UserColour")
+                                    True, "UserColour", True)
                 return 0
             if place is not None:
                 place -= 1
@@ -219,8 +220,14 @@ class Place:
         Functions.clear()
         data = self.Place()
         if data == -2:
-            boardSize = self.info.readFile('../GameData', True)
+            boardSize = newSave.save({
+                'name': '',
+                'path': self.location[0]
+            }).readFile(
+                '{}/GameData'.format(os.path.split(self.location[1])[0]),
+                True)
             self.info.writeFile(Functions.board.CreateBoard(boardSize['size']),
                                 True,
-                                "{}/shots".format(self.location[1]))  # noqa E501
+                                "{}/shots".format(self.location[1]),
+                                True)  # noqa E501
         return data == -2

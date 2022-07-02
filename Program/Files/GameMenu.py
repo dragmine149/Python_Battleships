@@ -39,6 +39,7 @@ class menu:
     def showMenu(self):
         if self.callableFunction is not None:
             self.info, self.options, self.choiceData, self.external = self.callableFunction()  # noqa E501
+            Functions.clear()  # clear after calling for clean screen.
         print("""{}
 Options:
 {}

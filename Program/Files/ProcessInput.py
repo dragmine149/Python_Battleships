@@ -78,10 +78,14 @@ class Process:
             'name': self.name,
             'path': self.path
         }).readFile("GameData", joint=True)
+        winData = newSave.save({
+            'name': self.name,
+            'path': self.path
+        })
 
         # checks if game already won
-        if gameData["win"] != '':
-            return self.winView(gameData["win"])
+        if winData.CheckForFile('win'):
+            return self.winView(winData.readFile('win', joint=True)["win"])
 
         # Checks if users have placed their ships
         placed = [False, False]

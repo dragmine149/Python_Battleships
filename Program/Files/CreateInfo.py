@@ -371,7 +371,6 @@ Password: {}{}\033[0m
             'multi': self.Multi[0],
             'password': self.password,
             'size': self.siZe,
-            'win': '',
         }
         gameData.writeFile(data, name="GameData")
 

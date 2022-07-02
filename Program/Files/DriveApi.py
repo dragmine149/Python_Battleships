@@ -68,7 +68,7 @@ class Api:
 
     # Checks if the folder / file exists before making a duplicate
     def checkIfExists(self, folder, name):
-        # folder -> folder to upload file to.
+        # folder -> folder to check for file in
         # name -> name of the file to compare
         print({'folder': folder})
         items = self.ListFolder(folder)

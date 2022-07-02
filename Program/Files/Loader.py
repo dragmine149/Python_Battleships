@@ -87,11 +87,20 @@ Games found in: {} ({}) (Load Time: +)
         for game in range(len(self.gameList)):
             completed = '(Winner: '
             try:
+                # Checks if there is a winner
                 winner = newSave.save({
                     'name': self.gameList[game],
                     'path': self.path
-                }).readFile("GameData", joint=True)["win"]
-                if winner != '':
+                }).CheckForFile('win')
+                if winner:
+
+                    # reads winner if found
+                    winner = newSave.save({
+                        'name': self.gameList[game],
+                        'path': self.path
+                    }).readFile("win", joint=True)["win"]
+
+                if winner != '' and winner is not False:
                     completed += winner + ')'
                 else:
                     completed = ''
