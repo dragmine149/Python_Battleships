@@ -27,7 +27,6 @@ class saveEditor:
 
         # Loads in save system
         self.saveSystem = newSave.save({
-            'name': '',
             'path': requestFolder
         })
 

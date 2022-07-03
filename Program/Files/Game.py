@@ -59,7 +59,6 @@ class Game:
         placed = [False, False]
         for user in range(len(self.users)):
             folder = newSave.save({
-                'name': '',
                 'path': os.path.join(self.gamePath, self.users[user])
             }).CheckForFile('shots')
             if folder:

@@ -59,7 +59,6 @@ def RemoveNonGames(path="Saves"):
 
     games = None
     saveLocation = newSave.save({
-        'name': '',
         'path': path
     })
     api = saveLocation._api
@@ -508,7 +507,6 @@ def changePath():
 
                     # get the files
                     games = newSave.save({
-                        'name': '',
                         'path': external
                     }).ls()
                     games = games

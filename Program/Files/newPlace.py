@@ -20,7 +20,6 @@ class Place:
     # Load more information, Mainly save information.
     def LoadInfo(self):
         self.info = newSave.save({
-            'name': '',
             'path': self.location[0],
         })
         loc = self.location[1]
@@ -221,7 +220,6 @@ class Place:
         data = self.Place()
         if data == -2:
             boardSize = newSave.save({
-                'name': '',
                 'path': self.location[0]
             }).readFile(
                 '{}/GameData'.format(os.path.split(self.location[1])[0]),

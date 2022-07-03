@@ -45,7 +45,6 @@ class Loader:
                 #     continue
                 deletePath = self.gameList[delGameIndex - 1]
                 newSave.save({
-                            'name': '',
                             'path': self.path}).Delete(os.path.join(self.path, deletePath))  # noqa E501
                 delGameIndex = None
         self.game = None

@@ -16,12 +16,19 @@ class save:
         path -> where to save the file
     }
     """
-    def __init__(self, data={'name': '',
+    def __init__(self, data={'name': '-',
                              'path': ''}):
         # removes characters from the path
         self.path = data['path'].rstrip()
         self._api = self.__loadApi()
         self.__Foldercheck()
+
+        try:
+            if data['name'] is None:
+                data['name'] = ''
+        except KeyError:
+            data['name'] = ''
+
         if data['name'] is not None and data['path'] is not None:
             self.data = data
 
@@ -116,9 +123,7 @@ class save:
     - returns either \\ or / depending on os
     """
     def __slash(self):
-        if os.name == "nt":
-            return "\\"
-        return "/"
+        return "\\" if os.name == "nt" else "/"
 
     """
     makeFolder(sub, replace)
@@ -311,7 +316,7 @@ class save:
 
         if not self._api:
             Npath = self.__replace(path)
-            delete(Npath)
+            save.delete(Npath)
         return self._api.DeleteData(path)
 
     """

@@ -23,7 +23,8 @@ class Fire:
 
     def __getGameInformation(self):
         # More information
-        self.game = self.gameData.readFile("GameData")
+        self.game = self.gameData.readFile(
+            "{}/GameData".format(self.gameInfo[0]))
         self.turn = self.game["turn"]
         self.turnIndex = self.userInfo.index(self.turn)
         self.opponentTurnIndex = 0 if self.turnIndex == 1 else 1
@@ -36,31 +37,30 @@ class Fire:
     def __RetrieveBoards(self):
         # Even more information
         self.gameData = newSave.save({
-            'name': '',
-            'path': os.path.join(self.gameInfo[1], self.gameInfo[0])
+            'path': self.gameInfo[1]
         })
+        # Paths for each individual users.
+        # Done like this because newSave.data['path'] can only be id for drive
+        self.guInfo = [os.path.join(self.gameInfo[0],
+                                    self.userInfo[0]),
+                       os.path.join(self.gameInfo[0],
+                                    self.userInfo[1])]
         self.userData = [
             newSave.save({
-                'name': '',
-                'path': os.path.join(self.gameInfo[1],
-                                     self.gameInfo[0],
-                                     self.userInfo[0])
+                'path': self.gameInfo[1]
             }),
             newSave.save({
-                'name': '',
-                'path': os.path.join(self.gameInfo[1],
-                                     self.gameInfo[0],
-                                     self.userInfo[1])
+                'path': self.gameInfo[1]
             })
         ]
         self.userBoards = [
             [
-                self.userData[0].readFile("shots"),
-                self.userData[0].readFile("ships"),
+                self.userData[0].readFile("{}/shots".format(self.guInfo[0])),
+                self.userData[0].readFile("{}/ships".format(self.guInfo[0])),
             ],
             [
-                self.userData[1].readFile("shots"),
-                self.userData[1].readFile("ships"),
+                self.userData[1].readFile("{}/shots".format(self.guInfo[1])),
+                self.userData[1].readFile("{}/ships".format(self.guInfo[1])),
             ]
         ]
 
@@ -91,8 +91,8 @@ class Fire:
         takenShot = False
         while not takenShot:
             # get input from user
-            shotPosition = input("Please enter position to shoot (q = quit): ")
-            if shotPosition[0].lower() == "q":
+            shotPosition = input("Please enter position to shoot (0 = quit): ")
+            if shotPosition[0].lower() == "0":
                 return False
 
             # converts to []
@@ -125,14 +125,25 @@ class Fire:
 
             # Saving data...
             takenShot = True
-            self.userData[0].writeFile(self.userBoards[0][0], True, "shots")
-            self.userData[0].writeFile(self.userBoards[0][1], True, "ships")
-            self.userData[1].writeFile(self.userBoards[1][0], True, "shots")
-            self.userData[1].writeFile(self.userBoards[1][1], True, "ships")
+            self.userData[0].writeFile(
+                self.userBoards[0][0], True, "{}/shots".format(self.guInfo[0]),
+                True)
+            self.userData[0].writeFile(
+                self.userBoards[0][1], True, "{}/ships".format(self.guInfo[0]),
+                True)
+            self.userData[1].writeFile(
+                self.userBoards[1][0], True, "{}/shots".format(self.guInfo[1]),
+                True)
+            self.userData[1].writeFile(
+                self.userBoards[1][1], True, "{}/ships".format(self.guInfo[1]),
+                True)
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
-            self.gameData.writeFile(self.game, True, "GameData")
+            import ipdb; ipdb.set_trace()
+            self.gameData.writeFile(self.game, True,
+                                    "{}/GameData".format(self.gameInfo[0]),
+                                    True)
 
             # win check
             if self.WinGame() is True:
@@ -177,12 +188,13 @@ class Fire:
             looser = self.userInfo[self.opponentTurnIndex]
             Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
             # self.game["win"] = self.userInfo[self.turnIndex]
-            self.gameData.writeFile(self.game, True, "GameData")
+            self.gameData.writeFile(self.game, True,
+                                    "{}/GameData".format(self.gameInfo[0]))
             self.gameData.writeFile({
                 'win': self.userInfo[self.turnIndex]
                 },
                                     True,
-                                    'win')
+                                    '{}/win'.format(self.gameInfo[0]))
             return True
 
         if not winCheck:

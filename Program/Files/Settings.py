@@ -145,7 +145,6 @@ class Settings:
             if os.path.exists(file):
                 try:
                     pathData = newSave.save({
-                        'name': '',
                         'path': file
                     })
                     data = pathData.readFile(nameAllowed=False)
