@@ -140,7 +140,6 @@ class Fire:
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
-            import ipdb; ipdb.set_trace()
             self.gameData.writeFile(self.game, True,
                                     "{}/GameData".format(self.gameInfo[0]),
                                     True)

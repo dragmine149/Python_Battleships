@@ -149,8 +149,15 @@ class Api:
     def GetFileFromParentId(self, id):
         # Split up the path into each dir
         pathSplit = id.split('/')
-        if len(pathSplit) <= 1:
+        if len(pathSplit) == 1:
             # return original if only id with nothing else
+            files = self.ListFolder(self.folder)
+            try:
+                for file in files:
+                    if file['name'] == pathSplit[0]:
+                        return file['id']
+            except ValueError:
+                pass
             return id
 
         parentFolder = pathSplit[0]
