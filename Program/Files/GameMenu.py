@@ -28,6 +28,7 @@ class menu:
         if callable(info):
             self.callableFunction = info
             info, options, choiceData, external = info()
+            self.start = True
 
         self.info = info
         self.options = options
@@ -37,9 +38,10 @@ class menu:
 
     # shows menu using user inputs
     def showMenu(self):
-        if self.callableFunction is not None:
+        if self.callableFunction is not None and not self.start:
             self.info, self.options, self.choiceData, self.external = self.callableFunction()  # noqa E501
             Functions.clear()  # clear after calling for clean screen.
+        self.start = False
         print("""{}
 Options:
 {}
@@ -68,7 +70,6 @@ Other Options:
                 Functions.PrintTraceback()
                 Functions.Print('Key Error 2', 'red', 'bold')
                 return None
-            return None
         except NameError as NE:
             Functions.PrintTraceback()
             Functions.warn(2, "Error in calling function! -> {}\n\n{}".format(self.choiceData[choice], NE), "light red")  # noqa E501

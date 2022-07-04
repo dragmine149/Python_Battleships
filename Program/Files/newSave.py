@@ -303,8 +303,9 @@ class save:
         Npath = self.__replace(path)
         if self._api:
             return self._api.checkIfExists(self.path, Npath)[0]
-            # return self._api.GetFileFromParentId(Npath)
-        return os.path.exists(os.path.join(self.path, Npath))
+        return os.path.exists(os.path.join(self.path,
+                                           self.data['name'],
+                                           Npath))
 
     """
     Delete(path)
