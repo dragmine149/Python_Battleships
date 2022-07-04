@@ -127,7 +127,6 @@ class Game:
 
     def Main(self):
         # Main loop
-        # import ipdb; ipdb.set_trace()
         self.localUser, self.localUserIndex = self.UsernameCheck()
         if self.Password():
             result = self.Place()

@@ -4,38 +4,20 @@
 Current State: BROKEN (includes all versions)
 
 # Python Versions:
-  These are versions that have been tested for this program to work. I recommend you get the newest version though.
-  - Python3.4
-    - Main part (might be a bit broken)
-    - Google Drive Api (unknown)
-  - Python3.5
-    - Main part (unknown)
-    - Google Drive Api (unknown)
-  - Python3.6
-    - Main part (unknown)
-    - Google Drive Api (unknown)
-  - Python3.7
-    - Main part (unknown)
-    - Google Drive Api (unknown)
-  - Python3.8
-    - Main part (unknown)
-    - Google Drive Api (unknown)
-  - Python3.9
-    - Main part (works)
-    - Google Drive Api (in progress)
-  - Python3.10
-    - Main part (unknown)
-    - Google Drive Api (unknown)
+  In theory, this program should work for py3.4+ but this has not been tested. Tests are not fun to write either, so this isn't going to get updated for a while
 
 # How To:
   The next steps assume you have python3+ installed.
-  1. Download a zip file of `Program` folder. Or clone the repo.
+  1. Download a zip file of `Program` folder. Or clone the repo **(recommended)** `git clone git@github.com:dragmine149/Python_Battleships.git`.
   2. Navagate to the repo in a terminal window. (`cd <PATH TO FILE>`)
       Note: if using the python terminal (instead of command prompt, mac/linux terminal) you need to take these steps:
       1. `import os`
       2. `os.system('STEP 3')`
+      If you don't take the above steps and run the file, you won't be able to see the output and report a bug if you encounter one. (You can still play, but when it breaks you can't report the bug)
       Note: if you downloaded the repo, you need to cd into the Program folder as well
   3. Run Main.py (`python Main.py`)
+
+  [Google Drive Setup](Documentation/Drive.md)
 
 ## Optional Modules.
   These are optional modules you can install for this program to work. These are not needed but might provide a better experience.

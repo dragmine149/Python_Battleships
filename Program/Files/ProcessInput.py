@@ -38,7 +38,8 @@ class Process:
             ships = boardSystem.readFile(os.path.join(user, "ships"))
             shots = boardSystem.readFile(os.path.join(user, "shots"))
 
-            Functions.board.MultiDisplay([ships, shots])
+            Functions.board.MultiDisplay([ships, shots],
+                                         ["ships", "shots"])
             print("----------------------------")
 
         print("\n\nPlease press any key when you are ready to move on")
@@ -88,12 +89,16 @@ class Process:
             return self.winView(winData.readFile('win', joint=True)["win"])
 
         # Checks if users have placed their ships
-        placed = [False, False]
+        placed = [True, True]
         for userIndex in range(len(self.users)):
             user = self.users[userIndex]
             print({"User": user})
-            if self.saveSystem.CheckForFile(os.path.join(self.path, self.name, user)):  # noqa E501
-                placed[userIndex] = True
-            print({"Placed": placed[userIndex]})
+            placeData = newSave.save({
+                'path': self.path
+            }).readFile('{}/placedData'.format(os.path.join(self.name, user)))
+
+            for ship in placeData:
+                if not placeData[ship]:
+                    placed[userIndex] = False
 
         return self.name, self.users, placed, self.path, gameData["multi"]

@@ -33,7 +33,7 @@ class Place:
         print("{}'s turn to place!\n".format(self.user))
         if board is None:
             board = self.boardData
-        Functions.board.DisplayBoard(board)
+        Functions.board.DisplayBoard(board, "Your Board")
 
         if showShips:
             print("\nAlvalible Ships to place:")

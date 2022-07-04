@@ -264,7 +264,10 @@ class board:
         return board
 
     @staticmethod
-    def DisplayBoard(board):
+    def DisplayBoard(board, text):
+        print("  {}{}{}".format(colours.c('funderline'),
+                                text[0:10],
+                                colours.c()))
         print("  ABCDEFGHIJ")  # Easy to know where the square is
         for y in range(len(board)):
 
@@ -278,11 +281,17 @@ class board:
             print()
 
     @staticmethod
-    def MultiDisplay(boards=[]):
+    def MultiDisplay(boards=[], text=[]):
         if len(boards) < 2 or len(boards) > 3:
             return
 
-        msg = "  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ"
+        msg = "  {}{}{}\t\t\t  {}{}{}\n".format(colours.c('funderline'),
+                                                text[0][0:10],
+                                                colours.c(),
+                                                colours.c('funderline'),
+                                                text[1][0:10],
+                                                colours.c())
+        msg += "  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ"
         msg += "\t\t\tOpponent shots" if len(boards) == 3 else ""
         print(msg)
         lines = []

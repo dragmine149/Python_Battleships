@@ -139,12 +139,13 @@ Whilst placing a ship, there are multiply questions that you will be asked.
 
 ## Shooting Menu
 Finally, after going through all the other menus, you get to shoot at your opponent.
-This men will also show your boards (where you shot, and where your ships are and what has been shot at) if you are in multiplayer mode. Else it's just shows your shots board.
+This menu contains all the information about the game, where both people have shot. And if playing online multiplayer, your board as well. There really isn't many things on this menu because you are only shooting.
 
 ### Options
 Location: Where to shoot
 - Follows the same logic as the location in the place system (above)
 - Returns `X` or `+` on hit or miss. (Automatic feadback without them having to say anything)
+- Using `0` will return you and quit out of the game
 
 # Other
 Modes can have some influence in menus and what they do.

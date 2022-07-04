@@ -77,11 +77,20 @@ class Fire:
         if self.multiplayer != "n":
             localIndex = self.userInfo.index(self.localUser)
             localOpponentIndex = 0 if localIndex == 1 else 1
-            Functions.board.MultiDisplay([self.userBoards[localIndex][0],
-                                          self.userBoards[localIndex][1],
-                                          self.userBoards[localOpponentIndex][0]])  # noqa E501
+            boards = [self.userBoards[localIndex][0],
+                      self.userBoards[localIndex][1],
+                      self.userBoards[localOpponentIndex][0]]
+            Text = [
+                self.userInfo[localIndex] + "'s board",
+                self.userInfo[localOpponentIndex] + "'s board"
+            ]
+            Functions.board.MultiDisplay(boards, Text)  # noqa E501
         else:
-            Functions.board.DisplayBoard(self.userBoards[self.turnIndex][0])
+            boards = [self.userBoards[self.turnIndex][0],
+                      self.userBoards[self.opponentTurnIndex][0]]
+            Text = [self.userInfo[self.turnIndex] + "'s board",
+                    self.userInfo[self.opponentTurnIndex] + "'s board"]
+            Functions.board.MultiDisplay(boards, Text)
 
     def __Clear(self, msg):
         Functions.clear(1, msg)
@@ -211,6 +220,7 @@ class Fire:
             self.__Display()
 
             if self.multiplayer != 'n':
+                # Multiplayer loop
                 if self.turn == self.localUser:  # if current turn, shoot fine.
                     result = self.__Shot()
                     if result is False:
