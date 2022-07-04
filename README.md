@@ -18,7 +18,10 @@ I plan to keep maintain this program and updating it in the future. However due 
 
 # Other information
   [How to use](Documentation/Usage.md)
+
   [Mods](Documentation/Mods.md)
+
+  [Installation](Documentation/Installation.md)
 
 # Credits (External modules used)
 - Google API

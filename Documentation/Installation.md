@@ -17,7 +17,7 @@ Current State: BROKEN (includes all versions)
       Note: if you downloaded the repo, you need to cd into the Program folder as well
   3. Run Main.py (`python Main.py`)
 
-  [Google Drive Setup](Documentation/Drive.md)
+  [Google Drive Setup](Drive.md)
 
 ## Optional Modules.
   These are optional modules you can install for this program to work. These are not needed but might provide a better experience.
