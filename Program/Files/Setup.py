@@ -17,16 +17,19 @@ def uiCheck(path="python"):
         result = "Found Tk"
     except ModuleNotFoundError:
         def install():
+            print('Installing tkinter...')
             os.system('{} -m pip install tk'.format(path))
             return "Installed Tk", True
 
-        result, changed = Functions.check("Do you want to install Tkinter (ui support)?: ",  # noqa E501
-                                          rangeCheck=(install, ("Nothing", False))).getInput("ynCheck")  # noqa E501
+        r = Functions.check("Do you want to install Tkinter (ui support)?: ",  # noqa E501
+                                          returnFunc=(install, ("Nothing", False))).getInput("ynCheck")  # noqa E501
+    result, changed = r
     print("-----------------------END-----------------------")
     return result, changed
 
 
 # Checks for a virtual evniroment.
+# Need to update every time
 def env():
     print("Checking for virtual enviroment")
     print("----------------------START----------------------")

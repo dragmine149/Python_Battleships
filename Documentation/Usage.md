@@ -30,19 +30,24 @@ Note: settings will change overtime and mods might add more settings to the list
 0: Back
 - Does what it says on the tin, goes back to main menu
 
-1: Change location
+1: Change location (Default: Saves)
 - Changes the default save location to specified location. As well as tests whever it can access that location.
 - Useful for playing multiplayer games
 
-2: Change Colour
+2: Change Colour (Default: yellow)
 - A fun feature that's not really needed but i personally like. You can set your colour to anything and during multiplayer, your name will be shown in the colour you set it to. 
 - This setting also works by giving it only the first letter of the colour you would like your name to be. Useful if you can't spell.
 
-3: Delete Cache
+3: Change Print Output (Default: true)
+- This features makes the terminal and print output like a mac / idle output. Instead of getting rid of the output everytime 'clear' is called, it insteads moves the output so you can still see the errors.
+- This is not needed but very useful for debugging (and reporting bugs) as you can see the exact issue and what you were doing before hand. (If it hasn't already gotten cleared)
+- Note, this might take up more memory but shouldn't be that big of a deal.
+
+4: Delete Cache
 - Not really a setting, but something worth having. This command will delete all the cache in __pycache__ and and folders that end in __cache.
 - This does not stop the program on use, Delete any saved data.
 
-4: Setup
+5: Setup
 - Installs modules that are optional to use but could make the experience overall better.
 - These modules are not installed / bundled with the program by default as they are purley optional with little parts of the program using them.
 

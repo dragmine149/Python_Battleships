@@ -24,7 +24,8 @@ class Settings:
 
         self.data = {
             "path": "Saves",
-            "colour": "yellow"
+            "colour": "yellow",
+            "clear": True
         }
         self.defaultData = self.data.copy()
 
@@ -35,8 +36,17 @@ class Settings:
 
         self.unformatedOptions = """01: Deafult Location (game saves) -> {}
 02: Colour -> {}{}{}
-03: Clear Cache
-04: Setup (Install optional modules)"""
+03: Console Clear -> {}
+04: Clear Cache
+05: Setup (Install optional modules)"""
+        self.choices = {
+            0: self.back,
+            1: self.changeLocation,
+            2: self.changeColour,
+            3: self.changeClear,
+            4: self.deleteCache,
+            5: self.setup,
+        }
 
     def back(self):
         return "Returned"
@@ -45,7 +55,8 @@ class Settings:
         return self.unformatedOptions.format(self.data["path"],
                                              c(self.data["colour"]),
                                              self.data["colour"],
-                                             c())
+                                             c(),
+                                             self.data["clear"])
 
     """
     updateSave(obj, data)
@@ -82,6 +93,10 @@ class Settings:
 
         # save
         self.updateSave("colour", colour)
+    
+    # Changes how the terminal gets cleared
+    def changeClear(self):
+        self.updateSave("clear", not self.data['clear'])
 
     def deleteCache(self):
         Print("Deleting cache...", "Red")
@@ -167,23 +182,15 @@ Your personal settings.
 {}
 \033[0m""".format(dashText, dashText)
         options = self.updateDisplay()
-        choices = {
-            -1: self.loadFromFile,
-            0: self.back,
-            1: self.changeLocation,
-            2: self.changeColour,
-            3: self.deleteCache,
-            4: self.setup,
-        }
         external = {
             -1: 'Load settings from file'
         }
         self.display = GameMenu.menu(info,
                                      options,
-                                     choices,
+                                     self.choices,
                                      external,
                                      "Return to main menu")
-        result = self.display.getInput(values=(-1, 4))
+        result = self.display.getInput(values=(-1, len(self.choices) -1))
         if result == "Returned":
             return "back"
         return result
@@ -194,4 +201,7 @@ Your personal settings.
 def request(data):
     setObj = Settings()
     # no need to load again as automatically done in class call.
-    return setObj.data[data]
+    try:
+        return setObj.data[data]
+    except KeyError:
+        return None

@@ -3,6 +3,8 @@ import time
 import os
 import traceback
 import glob
+
+Settings = importlib.import_module('Files.Settings')
 newSave = importlib.import_module('Files.newSave')
 colours = importlib.import_module('Files.colours')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -108,10 +110,14 @@ def __messageSort(timeS=0, message=None, clear=False, colour=[None, None]):
     # Windows doesn't have 'clear' so having to use the other option.
     # Mac / Linux doesn't have 'cls' same issue as windows
     if clear:
-        if os.name == "nt":
-            os.system("cls")
+        if Settings.request('clear'):
+            # This clears the terminal without deleting the logs.
+            print("\x1b[2J\x1b[H", end='')
         else:
-            os.system("clear")
+            if os.name == "nt":
+                os.system("cls")
+            else:
+                os.system("clear")
 
 
 # Clears the console with a message before clear.
