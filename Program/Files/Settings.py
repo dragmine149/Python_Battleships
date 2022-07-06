@@ -30,7 +30,7 @@ class Settings:
         self.defaultData = self.data.copy()
 
         # checks and makes file if doesn't exist.
-        if not self.save.CheckForFile('Settings'):
+        if not os.path.exists('Data/Settings'):
             self.saveSettings()
         self.loadSettings()
 

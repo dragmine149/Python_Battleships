@@ -106,9 +106,7 @@ class save:
     - If not windows os, replace \\ with nothing
     """
     def __replace(self, path):
-        if os.name != "nt":
-            return path.replace("\\", "")
-        return path
+        return path.replace('\\', '') if os.name != "nt" else path
 
     """
     __split(data)
