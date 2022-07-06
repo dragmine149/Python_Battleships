@@ -81,8 +81,8 @@ class Fire:
                       self.userBoards[localIndex][1],
                       self.userBoards[localOpponentIndex][0]]
             Text = [
-                self.userInfo[localIndex] + "'s board",
-                self.userInfo[localOpponentIndex] + "'s board"
+                'Your shots',
+                'Your ships'
             ]
             Functions.board.MultiDisplay(boards, Text)  # noqa E501
         else:
@@ -101,7 +101,12 @@ class Fire:
         while not takenShot:
             # get input from user
             shotPosition = input("Please enter position to shoot (0 = quit): ")
+            if shotPosition == '' or shotPosition is None:
+                # No input test
+                continue
+
             if shotPosition[0].lower() == "0":
+                # Quit test
                 return False
 
             # converts to []

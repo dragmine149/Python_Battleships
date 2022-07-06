@@ -300,7 +300,17 @@ class save:
     def CheckForFile(self, path):
         Npath = self.__replace(path)
         if self._api:
-            return self._api.checkIfExists(self.path, Npath)[0]
+            path = self.path
+            
+            # Checks in self.data['name'] folder instead of self.path
+            if self.data['name'] != '':
+                files = self.ls()
+                for file in files:
+                    if file['name'] == self.data['name']:
+                        path = file['id']
+                        break
+            
+            return self._api.checkIfExists(path, Npath)[0]
         return os.path.exists(os.path.join(self.path,
                                            self.data['name'],
                                            Npath))

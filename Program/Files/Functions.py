@@ -298,7 +298,7 @@ class board:
                                                 text[1][0:10],
                                                 colours.c())
         msg += "  ABCDEFGHIJ\t\t\t  ABCDEFGHIJ"
-        msg += "\t\t\tOpponent shots" if len(boards) == 3 else ""
+        msg += "\t\t\t{}Opponent shots{}".format(colours.c('funderline'), colours.c()) if len(boards) == 3 else ""
         print(msg)
         lines = []
         for _ in range(len(boards[0])):

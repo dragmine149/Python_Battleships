@@ -1,6 +1,7 @@
 import importlib
 import getpass
 import os
+import ipdb
 newSave = importlib.import_module('Files.newSave')
 Functions = importlib.import_module('Files.Functions')
 newPlace = importlib.import_module('Files.newPlace')
@@ -19,6 +20,19 @@ class Game:
             'name': self.name,
             'path': self.location,
         })
+        
+        # If drive, gets the sub folder for the game instead of where all the games are stored.
+        if self.gameData._api:
+            files = self.gameData.ls()
+            for file in files:
+                if file['name'] == self.name:
+                    self.location = file['id']
+                    self.gameData = newSave.save({
+                        'name': self.name,
+                        'path': self.location
+                    })
+                    self.gamePath = os.path.join(self.location, self.name)
+                    break
 
         self.localUser = None
         self.localUserIndex = None
@@ -59,8 +73,9 @@ class Game:
         placed = [False, False]
         for user in range(len(self.users)):
             folder = newSave.save({
-                'path': os.path.join(self.gamePath, self.users[user])
-            }).CheckForFile('shots')
+                'name': self.users[user],
+                'path': self.location
+            }).CheckForFile('shots')    
             if folder:
                 placed[user] = True
         return placed
@@ -85,20 +100,24 @@ class Game:
 
     def UsernameCheck(self):
         if self.multiplayer == 'y':
-            # Gets the user username for the game
-            users = self.gameData.ls(True, True)
-
             # Check to see if same to account name
             localUser = getpass.getuser()
-            if localUser in users:
+            if localUser in self.users:
                 return localUser, self.users.index(localUser)
 
             # Gets them to manualy enter it in.
             user = None
             while user is None:
                 user = input("Please enter your username: ")
-                if user in users:
-                    return user
+                
+                # Loops through all users and find if the input is correct.
+                for usIndex in range(len(self.users)):
+                    us = self.users[usIndex]
+                    if isinstance(us, dict):
+                        us = us['name']
+                    if user == us:
+                        return user, usIndex
+                
                 Functions.clear(2, "User not found! (Spectating comming in Update 3)")  # noqa E501
                 user = None
         return None, None
@@ -108,10 +127,10 @@ class Game:
         if self.multiplayer == 'y':
             placed = False
 
+            opponenet = 0 if self.localUserIndex == 1 else 1
             # Loop for checking placement
             while placed is False:
                 placing = self.PlaceCheck()  # checks files
-                opponenet = 0 if self.localUserIndex == 1 else 1
 
                 # Waiting simulator if waiting on opponenet.
                 if not placing[opponenet]:
