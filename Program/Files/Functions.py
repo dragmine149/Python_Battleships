@@ -389,6 +389,9 @@ class search:
                 if file == ".git":
                     print(".git, no just no.")
                     continue
+                
+                if file == self.target:
+                    self.__FoundList.append(os.path.join(directory, file))
 
                 # checks if the folder is a directory
                 newFile = os.path.join(directory, file)
