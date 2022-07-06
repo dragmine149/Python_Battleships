@@ -81,7 +81,7 @@ class Api:
         return False, None
 
     # Makes folder / uploads data based on input
-    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False, game=False):  # noqa
+    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False, game=False, gamePop=False):  # noqa
 
         # Splits the name and path information to get the sub
         # folder and name of the file
@@ -92,7 +92,7 @@ class Api:
         if game:
             data['path'] = data['path'].replace('-', '/')
             splitName = os.path.split(data['name'])
-            data['folder'] = self.GetFileFromParentId(splitName[0])
+            data['folder'] = self.GetFileFromParentId(splitName[0], gamePop)
             data['name'] = splitName[1]
 
         print("Uploading... {}\tFolder:{}".format(data, folder))
@@ -146,9 +146,11 @@ class Api:
             return Id
 
     # Attempts to find the file in the id if the id is: 'PATH/NAME'
-    def GetFileFromParentId(self, id):
+    def GetFileFromParentId(self, id, game=False):
         # Split up the path into each dir
         pathSplit = id.split('/')
+        if game:
+            pathSplit.pop(0)
         if len(pathSplit) == 1:
             # return original if only id with nothing else
             files = self.ListFolder(self.folder)

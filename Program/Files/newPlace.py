@@ -209,10 +209,12 @@ class Place:
                     self.info.writeFile(self.boardData,
                                         True,
                                         "{}/ships".format(loc),
+                                        True,
                                         True)
                     self.info.writeFile(self.placedData,
                                         True,
                                         "{}/placedData".format(loc),
+                                        True,
                                         True)
 
     def Main(self):

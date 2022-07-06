@@ -335,7 +335,6 @@ Password: {}{}\033[0m
         gameData = newSave.save({
             'name': self.Gname,
             'path': self.Loc,
-            'Json': True
         })
 
         gameFolder = gameData.makeFolder(replace=True)
@@ -348,7 +347,6 @@ Password: {}{}\033[0m
             userData = newSave.save({
                 'name': user,
                 'path': gameFolder,
-                'Json': True
             })
             # create user folder
             folder = userData.makeFolder(replace=True)

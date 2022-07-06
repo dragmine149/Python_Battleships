@@ -33,7 +33,6 @@ class Process:
             boardSystem = newSave.save({
                 'name': self.name,
                 'path': os.path.join(self.path, self.name),
-                'Json': True
             })
             ships = boardSystem.readFile(os.path.join(user, "ships"))
             shots = boardSystem.readFile(os.path.join(user, "shots"))

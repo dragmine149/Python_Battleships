@@ -141,22 +141,14 @@ class Fire:
             takenShot = True
             self.userData[0].writeFile(
                 self.userBoards[0][0], True, "{}/shots".format(self.guInfo[0]),
-                True)
-            self.userData[0].writeFile(
-                self.userBoards[0][1], True, "{}/ships".format(self.guInfo[0]),
-                True)
+                True, True)
             self.userData[1].writeFile(
                 self.userBoards[1][0], True, "{}/shots".format(self.guInfo[1]),
-                True)
-            self.userData[1].writeFile(
-                self.userBoards[1][1], True, "{}/ships".format(self.guInfo[1]),
-                True)
+                True, True)
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
-            self.gameData.writeFile(self.game, True,
-                                    "{}/GameData".format(self.gameInfo[0]),
-                                    True)
+            self.gameData.writeFile(self.game, True, "GameData")
 
             # win check
             if self.WinGame() is True:

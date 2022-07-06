@@ -186,7 +186,7 @@ class save:
     name -> name of the file, just in case the file needs to be different from the current name inputted.
     - Save data to a file
     """  # noqa E501
-    def writeFile(self, data, overwrite=False, name="", game=False):
+    def writeFile(self, data, overwrite=False, name="", game=False, gamePop=False):
         if data is None:
             return None
         if name == "":
@@ -203,7 +203,7 @@ class save:
                 'name': name,
                 'path': tempLocation,
                 'folder': self.path,
-            }, overwrite=overwrite, game=game)
+            }, overwrite=overwrite, game=game, gamePop=gamePop)
             os.remove(tempLocation)  # remove local copy
             return id
         slash = self.__slash()
