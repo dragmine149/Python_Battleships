@@ -223,6 +223,7 @@ class Fire:
                     winnerIndex = self.userInfo.index(winner)
                     looserIndex = 0 if winnerIndex == 1 else 1
                     Functions.clear(2, "GG! {} has beaten {}".format(self.userInfo[winnerIndex], self.userInfo[looserIndex]))
+                    return "Game Over"
                 # Multiplayer loop
                 if self.turn == self.localUser:  # if current turn, shoot fine.
                     result = self.__Shot()
