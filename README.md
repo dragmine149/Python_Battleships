@@ -8,6 +8,10 @@
  - Automatic saving of game.
  - Network support, Play a game on the same network as someone else.
 
+# Important Notes
+There is a bug, due to how google drive works, where if you are using the api you might (rarley) crash. This is because your opponent has deleted a file to reupload it as you are trying to read it. If this happenes, just restart the program and everything will be fine.
+I will try and find a way to edit files instead of having to delete and reupload.
+
 # Helping
  Anyone can help, just make a new branch and submit a pull request. Not all requests will be accepted though.
  Depending on the request and what it does, depends on if it will get accepted.
