@@ -30,6 +30,7 @@ class Place:
 
     # The display
     def ShowDisplay(self, showShips=True, board=None):
+        # Multiplayer check?
         print("{}'s turn to place!\n".format(self.user))
         if board is None:
             board = self.boardData
@@ -229,5 +230,6 @@ class Place:
             self.info.writeFile(Functions.board.CreateBoard(boardSize['size']),
                                 True,
                                 "{}/shots".format(self.location[1]),
+                                True,
                                 True)  # noqa E501
         return data == -2
