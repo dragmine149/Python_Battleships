@@ -20,7 +20,10 @@ class Loader:
         path = Settings.request("path")
         self.games = path
         self.path = path
-        self.apiExternal = False
+        saveInfo = newSave.save({
+            'path': path
+        })
+        self.apiExternal = saveInfo._api
         self.gameList = None
 
     # deletes a game
@@ -80,34 +83,36 @@ Games found in: {} ({}) (Load Time: +)
         options = ""
         self.gameList = Functions.RemoveNonGames(self.games)
         self.gameList.sort()
-        print(self.gameList)
+        # print(self.gameList)
 
+        LTS2 = time.time()
         # Adds (Winner: {winner}) to the list if the game has been completed.
         for game in range(len(self.gameList)):
-            completed = '(Winner: '
+            gTime = time.time()
+            completed = ''
             try:
                 # Checks if there is a winner
-                winner = newSave.save({
+                winnerData = newSave.save({
                     'name': self.gameList[game],
                     'path': self.path
-                }).CheckForFile('win')
+                })
+                winner = winnerData.CheckForFile('win')
                 if winner:
 
                     # reads winner if found
-                    winner = newSave.save({
-                        'name': self.gameList[game],
-                        'path': self.path
-                    }).readFile("win", joint=True)["win"]
+                    winner = winnerData.readFile("win", joint=True)["win"]
 
                 if winner != '' and winner is not False:
-                    completed += winner + ')'
-                else:
-                    completed = ''
+                    completed = '(Winner: {})'.format(winner)
             except KeyError:
                 completed = ''
 
-            options += "{}: {} {}\n".format(game + 1, self.gameList[game],
-                                            completed)
+            gTEnd = time.time()
+            loadtimeMsg = '({}s winner check time)'.format(round(gTEnd - gTime, 2))
+            options += "{}: {} {} {}\n".format(game + 1, self.gameList[game],
+                                               completed, loadtimeMsg)
+        
+        LTS2E = time.time()
 
         if options == "":
             options = c('r') + """No games found!
@@ -132,7 +137,8 @@ Please reload by giving no input, Choose a different location or make a game.
         # Works out how long it took to load the files, mainly debug but
         loadtimeEnd = time.time()
         loadtime = round(loadtimeEnd - loadtimeStart, 2)
-        loadtimeMessage = "{}s".format(loadtime)
+        lts = round(LTS2E - LTS2, 2)
+        loadtimeMessage = "{}s total ({}s winner check)".format(loadtime, lts)
 
         info = info.replace('+', loadtimeMessage)
         return info, options, choices, external
