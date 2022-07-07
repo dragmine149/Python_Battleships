@@ -216,6 +216,13 @@ class Fire:
             self.__Display()
 
             if self.multiplayer != 'n':
+                
+                winner = self.gameData.CheckForFile('win')
+                if winner:
+                    winner = self.gameData.readFile('win')
+                    winnerIndex = self.userInfo.index(winner)
+                    looserIndex = 0 if winnerIndex == 1 else 1
+                    Functions.clear(2, "GG! {} has beaten {}".format(self.userInfo[winnerIndex], self.userInfo[looserIndex]))
                 # Multiplayer loop
                 if self.turn == self.localUser:  # if current turn, shoot fine.
                     result = self.__Shot()
