@@ -27,19 +27,22 @@ class Process:
         return name, users, [False, False], Location, online
 
     def viewBoards(self):
-        print("----------------------------")
+        data = []
         for user in self.users:
             print({"User": user})
             boardSystem = newSave.save({
                 'name': self.name,
-                'path': os.path.join(self.path, self.name),
+                'path': self.path
             })
-            ships = boardSystem.readFile(os.path.join(user, "ships"))
-            shots = boardSystem.readFile(os.path.join(user, "shots"))
+            ships = boardSystem.readFile(os.path.join(user, "ships"), joint=True)
+            shots = boardSystem.readFile(os.path.join(user, "shots"), joint=True)
+            data.append([ships, shots])
 
-            Functions.board.MultiDisplay([ships, shots],
+        print('-' * Functions.os.get_terminal_size().columns)
+        for user in data:
+            Functions.board.MultiDisplay([user[0], user[1]],
                                          ["ships", "shots"])
-            print("----------------------------")
+            print('-' * Functions.os.get_terminal_size().columns)
 
         print("\n\nPlease press any key when you are ready to move on")
         readchar.readchar()

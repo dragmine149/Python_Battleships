@@ -193,7 +193,7 @@ class Fire:
             looser = self.userInfo[self.opponentTurnIndex]
             Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
             self.gameData.writeFile(self.game, True,
-                                    "{}/GameData".format(self.gameInfo[0]))
+                                    "GameData")
             self.gameData.writeFile({
                 'win': self.userInfo[self.turnIndex]
                 },
