@@ -29,7 +29,6 @@ class Choices:
         sys.exit("Thank you for playing")
 
     def selectGame(self):
-        Functions.clear()
         self.Loader.game = None
         result = self.Loader.selectGame()
         return result

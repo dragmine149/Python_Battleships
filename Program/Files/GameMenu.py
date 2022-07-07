@@ -18,7 +18,7 @@ class menu:
                  choiceData=None,
                  external=None,
                  back="Quit"):
-        Functions.clear(.25, "Loading data...")
+        print('Loading data...')
 
         empty = options is None and choiceData is None and external is None
         if not callable(info) and empty:

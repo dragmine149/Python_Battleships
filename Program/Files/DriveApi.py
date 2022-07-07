@@ -29,7 +29,6 @@ class Api:
     # Loads the api for use later.
     # Complicated function taken from google.
     def __LoadAPI__(self):
-        Functions.clear()
         setup.Setup(self.folder).main()
         try:
             creds = None

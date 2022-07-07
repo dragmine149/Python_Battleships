@@ -62,7 +62,30 @@ class Loader:
         self.games, self.path, self.apiExternal = data
         return "Changed"
 
+    def gameMenuInfo(self, options):
+        if options == "":
+            options = c('r') + """No games found!
+Please reload by giving no input, Choose a different location or make a game.
+""" + c()
+
+        def all(choice):
+            Functions.Print('ALL OBJECT CALLED', 'green', 'bold')
+            return choice
+
+        choices = {
+            "All": all,
+            0: self.back,
+            -1: self.deleteGame,
+            -2: self.changePath
+        }
+        external = {
+            -1: 'Delete Game',
+            -2: 'Change Path'
+        }
+        return [options, choices, external]
+
     def getGames(self):
+        print('loadinG Games')
         loadtimeStart = time.time()
 
         # sets the message so the user knows where it is better
@@ -114,26 +137,6 @@ Games found in: {} ({}) (Load Time: +)
         
         LTS2E = time.time()
 
-        if options == "":
-            options = c('r') + """No games found!
-Please reload by giving no input, Choose a different location or make a game.
-""" + c()
-
-        def all(choice):
-            Functions.Print('ALL OBJECT CALLED', 'green', 'bold')
-            return choice
-
-        choices = {
-            "All": all,
-            0: self.back,
-            -1: self.deleteGame,
-            -2: self.changePath
-        }
-        external = {
-            -1: 'Delete Game',
-            -2: 'Change Path'
-        }
-
         # Works out how long it took to load the files, mainly debug but
         loadtimeEnd = time.time()
         loadtime = round(loadtimeEnd - loadtimeStart, 2)
@@ -141,6 +144,7 @@ Please reload by giving no input, Choose a different location or make a game.
         loadtimeMessage = "{}s total ({}s winner check)".format(loadtime, lts)
 
         info = info.replace('+', loadtimeMessage)
+        options, choices, external = self.gameMenuInfo(options)
         return info, options, choices, external
 
     def loadMenu(self):
@@ -152,7 +156,6 @@ Please reload by giving no input, Choose a different location or make a game.
     # returns data from loading the games
     def selectGame(self):
         while not self.game:
-            Functions.clear()
             self.game = self.loadMenu()
 
             if self.game == "Returned":
