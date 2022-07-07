@@ -219,7 +219,7 @@ class Fire:
                 
                 winner = self.gameData.CheckForFile('win')
                 if winner:
-                    winner = self.gameData.readFile('win')
+                    winner = self.gameData.readFile('win')['win']
                     winnerIndex = self.userInfo.index(winner)
                     looserIndex = 0 if winnerIndex == 1 else 1
                     Functions.clear(2, "GG! {} has beaten {}".format(self.userInfo[winnerIndex], self.userInfo[looserIndex]))
