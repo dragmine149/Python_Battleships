@@ -25,7 +25,8 @@ class Settings:
         self.data = {
             "path": "Saves",
             "colour": "yellow",
-            "clear": True
+            "clear": True,
+            "loadTimes": False
         }
         self.defaultData = self.data.copy()
 
@@ -37,15 +38,17 @@ class Settings:
         self.unformatedOptions = """01: Deafult Location (game saves) -> {}
 02: Colour -> {}{}{}
 03: Console Clear -> {}
-04: Clear Cache
-05: Setup (Install optional modules)"""
+04: Load Times -> {}
+05: Clear Cache
+06: Setup (Install optional modules)"""
         self.choices = {
             0: self.back,
             1: self.changeLocation,
             2: self.changeColour,
             3: self.changeClear,
-            4: self.deleteCache,
-            5: self.setup,
+            4: self.changeLoad,
+            5: self.deleteCache,
+            6: self.setup,
         }
 
     def back(self):
@@ -56,7 +59,8 @@ class Settings:
                                              c(self.data["colour"]),
                                              self.data["colour"],
                                              c(),
-                                             self.data["clear"])
+                                             self.data["clear"],
+                                             self.data["loadTimes"])
 
     """
     updateSave(obj, data)
@@ -97,6 +101,9 @@ class Settings:
     # Changes how the terminal gets cleared
     def changeClear(self):
         self.updateSave("clear", not self.data['clear'])
+    
+    def changeLoad(self):
+        self.updateSave("loadTimes", not self.data['loadTimes'])
 
     def deleteCache(self):
         Print("Deleting cache...", "Red")

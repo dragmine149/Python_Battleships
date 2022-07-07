@@ -131,7 +131,12 @@ Games found in: {} ({}) (Load Time: +)
                 completed = ''
 
             gTEnd = time.time()
-            loadtimeMsg = '({}s winner check time)'.format(round(gTEnd - gTime, 2))
+
+            # Sorts out the individal load times            
+            loadtimeMsg = ''
+            if Settings.request('loadTimes'):
+                loadtimeMsg = '({}s winner check time)'.format(round(gTEnd - gTime, 2))
+
             options += "{}: {} {} {}\n".format(game + 1, self.gameList[game],
                                                completed, loadtimeMsg)
         

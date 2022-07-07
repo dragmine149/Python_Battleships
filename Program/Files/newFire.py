@@ -192,14 +192,13 @@ class Fire:
             winner = self.userInfo[self.turnIndex]
             looser = self.userInfo[self.opponentTurnIndex]
             Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
-            # self.game["win"] = self.userInfo[self.turnIndex]
             self.gameData.writeFile(self.game, True,
                                     "{}/GameData".format(self.gameInfo[0]))
             self.gameData.writeFile({
                 'win': self.userInfo[self.turnIndex]
                 },
                                     True,
-                                    '{}/win'.format(self.gameInfo[0]))
+                                    'win')
             return True
 
         if not winCheck:

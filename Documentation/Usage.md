@@ -43,11 +43,15 @@ Note: settings will change overtime and mods might add more settings to the list
 - This is not needed but very useful for debugging (and reporting bugs) as you can see the exact issue and what you were doing before hand. (If it hasn't already gotten cleared)
 - Note, this might take up more memory but shouldn't be that big of a deal.
 
-4: Delete Cache
+4: Change Load Time output (Default: false)
+- This feature enables / disable the showing of how long different components of the game took to load.
+- Useful for debugging and overall in general, sometimes intresting seeing what takes the most time to load.
+
+5: Delete Cache
 - Not really a setting, but something worth having. This command will delete all the cache in __pycache__ and and folders that end in __cache.
 - This does not stop the program on use, Delete any saved data.
 
-5: Setup
+6: Setup
 - Installs modules that are optional to use but could make the experience overall better.
 - These modules are not installed / bundled with the program by default as they are purley optional with little parts of the program using them.
 
