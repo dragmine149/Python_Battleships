@@ -24,6 +24,14 @@ There are currently 5 different options in settings, each doing a different thin
 Note: settings will change overtime and mods might add more settings to the list that aren't listed here. Please check the mod description for those settings.
 
 ### Settings (Options)
+-3: Delete Cache
+- Not really a setting, but something worth having. This command will delete all the cache in __pycache__ and and folders that end in __cache.
+- This does not stop the program on use, Delete any saved data.
+
+-2: Setup
+- Installs modules that are optional to use but could make the experience overall better.
+- These modules are not installed / bundled with the program by default as they are purley optional with little parts of the program using them.
+
 -1: Load from file
 - Loads old settings from a file. Can be better than locating the folder of where the files are saved. (Program Location/Program/Files/Data btw)
 
@@ -47,13 +55,10 @@ Note: settings will change overtime and mods might add more settings to the list
 - This feature enables / disable the showing of how long different components of the game took to load.
 - Useful for debugging and overall in general, sometimes intresting seeing what takes the most time to load.
 
-5: Delete Cache
-- Not really a setting, but something worth having. This command will delete all the cache in __pycache__ and and folders that end in __cache.
-- This does not stop the program on use, Delete any saved data.
+5: Change Check Time (Default: 3)
+- This features changes how long to wait before the program checks for an updated file at the designated location.
+- For example, using google drive this will wait 3 seconds before checking if the files have been updated.
 
-6: Setup
-- Installs modules that are optional to use but could make the experience overall better.
-- These modules are not installed / bundled with the program by default as they are purley optional with little parts of the program using them.
 
 ## Make Game
 This screen lets you make a game based on your own settings. By default, most of the options will be filled out for you but they can still be changed.

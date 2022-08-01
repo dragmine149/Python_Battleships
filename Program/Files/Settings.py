@@ -1,3 +1,4 @@
+from curses.ascii import isdigit
 import os
 import importlib
 
@@ -26,7 +27,8 @@ class Settings:
             "path": "Saves",
             "colour": "yellow",
             "clear": True,
-            "loadTimes": False
+            "loadTimes": False,
+            "CheckTimeout": 3,
         }
         self.defaultData = self.data.copy()
 
@@ -39,16 +41,18 @@ class Settings:
 02: Colour -> {}{}{}
 03: Console Clear -> {}
 04: Load Times -> {}
-05: Clear Cache
-06: Setup (Install optional modules)"""
+05: Check Timeout -> {}
+"""
         self.choices = {
+            -3: self.setup,
+            -2: self.deleteCache,
+            -1: self.loadFromFile,
             0: self.back,
             1: self.changeLocation,
             2: self.changeColour,
             3: self.changeClear,
             4: self.changeLoad,
-            5: self.deleteCache,
-            6: self.setup,
+            5: self.changeWait,
         }
 
     def back(self):
@@ -60,7 +64,8 @@ class Settings:
                                              self.data["colour"],
                                              c(),
                                              self.data["clear"],
-                                             self.data["loadTimes"])
+                                             self.data["loadTimes"],
+                                             self.data["CheckTimeout"])
 
     """
     updateSave(obj, data)
@@ -102,8 +107,22 @@ class Settings:
     def changeClear(self):
         self.updateSave("clear", not self.data['clear'])
     
+    # Change whever to show the load time
     def changeLoad(self):
         self.updateSave("loadTimes", not self.data['loadTimes'])
+    
+    # Change the wait time between checks
+    def changeWait(self):
+        time = None
+        while time is None:
+            time = input("Please enter the wait time (leave blank to keep the same): ")
+            if time == "":
+                return
+
+            if time.isdigit():
+                self.updateSave("CheckTimeout", int(time))
+            else:
+                Print("Invalid time! Must be greater than 0", "red", "bold")
 
     def deleteCache(self):
         Print("Deleting cache...", "Red")
@@ -190,14 +209,16 @@ Your personal settings.
 \033[0m""".format(dashText, dashText)
         options = self.updateDisplay()
         external = {
-            -1: 'Load settings from file'
+            -1: 'Load settings from file',
+            -2: 'Clear Cache',
+            -3: 'Setup (Install optional modules)'
         }
         self.display = GameMenu.menu(info,
                                      options,
                                      self.choices,
                                      external,
                                      "Return to main menu")
-        result = self.display.getInput(values=(-1, len(self.choices) -1))
+        result = self.display.getInput(values=(-3, len(self.choices) -1))
         if result == "Returned":
             return "back"
         return result

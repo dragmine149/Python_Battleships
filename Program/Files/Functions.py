@@ -559,11 +559,12 @@ def PrintTraceback():
 
 # Prints a message out with a timer whilst waiting
 def waiting(message):
+    time = Settings.request("CheckTimeout")
     # Waits for the opponent.
     try:
         back = "(ctrl + c to go back)"
         dots = ''
-        for _ in range(0, 4):
+        for _ in range(0, time + 1):
             print("{}{} {}".format(message, dots, back), end="\r")
             dots += '.'
             time.sleep(1)
