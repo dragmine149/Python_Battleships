@@ -86,6 +86,8 @@ Please reload by giving no input, Choose a different location or make a game.
 
     def getGames(self):
         print('loadinG Games')
+        self.games = Settings.request("path")
+        self.path = Settings.request("path")
         loadtimeStart = time.time()
 
         # sets the message so the user knows where it is better
