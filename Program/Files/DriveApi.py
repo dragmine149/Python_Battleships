@@ -176,23 +176,25 @@ class Api:
     # Download data from fileid. (Change to file name?)
     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
         originalData = copy.deepcopy(data) # just in case of recheckt
+        
+        # Check if exists to avoid breaks
+        fileName = data["path"].split("/")
+        exists, _ = self.checkIfExists(
+            data['Id'].split("/")[0], fileName[len(fileName) - 1])
+
+        if not exists:
+            # attempts to redownload if not found
+            print("File not found on server! Retrying in 5 seconds")
+            Functions.clear(
+                5, "File not found on server! Retrying in 5 seconds", "red")
+            return self.DownloadData(originalData, End)
+        
         # debug
         print('Original: ' + data['Id'])
         data['Id'] = self.GetFileFromParentId(data['Id'])
         print('New: {}'.format(data['Id']))
 
         try:
-            # Check if exists to avoid breaks
-            fileName = data["path"].split("/")
-            exists, _ = self.checkIfExists(data['Id'], fileName[len(fileName) - 1])
-            
-            if not exists:
-                # attempts to redownload if not found
-                print("File not found on server! Retrying in 5 seconds")
-                Functions.clear(
-                    5, "File not found on server! Retrying in 5 seconds", "red")
-                return self.DownloadData(originalData, End)
-            
             # Gets the file data from drive
             request = self.service.files().get_media(fileId=data['Id'])
             fileHandler = io.BytesIO()
