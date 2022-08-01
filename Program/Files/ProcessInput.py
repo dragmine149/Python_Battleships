@@ -19,6 +19,7 @@ class Process:
             })
 
     def __create(self):
+        self.path = Functions.Settings.request("path")
         Data = Create.CreateData(self.path, self.name).getOption()
         # checks if no data before trying to return chaos
         if Data is None:
