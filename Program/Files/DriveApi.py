@@ -12,6 +12,7 @@ import os
 import sys
 import io
 import importlib
+import copy
 setup = importlib.import_module('Files.DriveSetup')
 Functions = importlib.import_module('Files.Functions')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -174,7 +175,7 @@ class Api:
 
     # Download data from fileid. (Change to file name?)
     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
-        originalData = data # just in case of recheckt
+        originalData = copy.deepcopy(data) # just in case of recheckt
         # debug
         print('Original: ' + data['Id'])
         data['Id'] = self.GetFileFromParentId(data['Id'])
