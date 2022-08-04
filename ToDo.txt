@@ -7,20 +7,20 @@ Index:
 Main:
 ✅ Generate Board
 ✅ Menu
-  ◾️ Small things that do not effect the game (settings)
+  ✅ Small things that do not effect the game (settings)
 ✅ Place Ships
 ✅ Fire at opponent
-🅿️ View info about ships
+✅ View info about ships
 ✅ More than one game
 ✅ Multiplayer
-🅿️ Network
-  🅿️ Extra file support
+✅ Network
+  ✅ Extra file support
   ✅ Google Drive Support
-◾️ Settings
+✅ Settings
 ◾️ UI (optional for user)
 🅿️ Bug Fixes
 ✅ Code Rewrite
-◾️ Save Game create inputs
+✅ Save Game create inputs
 ◾️ Archive Option
 --------------------------------------------------------------------------------
 AI:

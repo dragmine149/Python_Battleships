@@ -250,7 +250,10 @@ Password: {}{}\033[0m
             if Location != "Saves":
                 # attmepts to write file and read file from dir specified
                 # creates save obj
-                Functions.LocationTest(Location)
+                allowed = Functions.LocationTest(Location)
+                if not allowed[0]:
+                    Location = None
+                    Functions.warn(2, "Error occured whilst trying to change location.", ["", "red"])
 
         print({"Loc": Location})
         self.Loc = Location
