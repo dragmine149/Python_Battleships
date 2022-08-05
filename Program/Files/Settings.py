@@ -1,6 +1,6 @@
-from curses.ascii import isdigit
 import os
 import importlib
+import getpass
 
 GameMenu = importlib.import_module('Files.GameMenu')
 Functions = importlib.import_module('Files.Functions')
@@ -18,6 +18,7 @@ class Settings:
     # does some pre loading of settings
     def __init__(self):
         print("Loading settings")
+        self.display = None
         self.save = newSave.save({
             'name': 'Settings',
             'path': 'Data',
@@ -29,6 +30,8 @@ class Settings:
             "clear": True,
             "loadTimes": False,
             "CheckTimeout": 3,
+            "FTPname": "",
+            "FTPpass": "",
         }
         self.defaultData = self.data.copy()
 
@@ -42,6 +45,7 @@ class Settings:
 03: Console Clear -> {}
 04: Load Times -> {}
 05: Check Timeout -> {}
+06: FTPname -> {}. Password -> Hidden
 """
         self.choices = {
             -3: self.setup,
@@ -53,6 +57,7 @@ class Settings:
             3: self.changeClear,
             4: self.changeLoad,
             5: self.changeWait,
+            6: self.changeFTP,
         }
 
     def back(self):
@@ -65,7 +70,8 @@ class Settings:
                                              c(),
                                              self.data["clear"],
                                              self.data["loadTimes"],
-                                             self.data["CheckTimeout"])
+                                             self.data["CheckTimeout"],
+                                             self.data["FTPname"])
 
     """
     updateSave(obj, data)
@@ -75,7 +81,8 @@ class Settings:
     def updateSave(self, obj, data):
         self.data[obj] = data
         self.saveSettings()
-        self.display.options = self.updateDisplay()
+        if self.display is not None:
+            self.display.options = self.updateDisplay()
 
     # Changes default location
     def changeLocation(self):
@@ -134,6 +141,20 @@ class Settings:
             newSave.save.delete(file)
 
         Functions.warn(1, "Waiting...", "green")
+    
+    def changeFTP(self):
+        name = None
+        
+        while name is None:
+            name = input("Please enter your username for the FTP server: ")
+            if name == "":
+                name = None
+                Print("Please enter a name!", "Red")
+        
+        password = getpass.getpass("Please enter your FTP password: ")
+        
+        self.updateSave("FTPname", name)
+        self.updateSave("FTPpass", password)
 
     def setup(self):
         path, changed = Setup.env()

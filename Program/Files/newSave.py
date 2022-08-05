@@ -4,6 +4,8 @@ import shutil
 import pickle
 import sys
 Functions = importlib.import_module('Files.Functions')
+Settings = importlib.import_module('Files.Settings')
+FTP = importlib.import_module('Files.FTP')
 # Stores whever program is stored.
 filePath = os.path.dirname(os.path.realpath(__file__))
 os.chdir(filePath)
@@ -20,7 +22,7 @@ class save:
                              'path': ''}):
         # removes characters from the path
         self.path = data['path'].rstrip()
-        self._api = self.__loadApi()
+        self._api = self.__loadSystem()
         self.__Foldercheck()
 
         try:
@@ -31,6 +33,33 @@ class save:
 
         if data['name'] is not None and data['path'] is not None:
             self.data = data
+    
+    def __loadSystem(self):
+        """Loads the file system to use
+
+        Returns:
+            Class: Class of the system to use.
+        """
+        if self.path == "Saves" or self.path == "Data":
+            return
+        
+        if self.path.find(':/') != -1:
+            return self.__loadFTP()
+        
+        if self.path.find("/") == -1 and self.path.find("\\") == -1:
+            return self.__loadApi()
+    
+    def __loadFTP(self):
+        # path is stored as IP::/PATH
+        pathData = self.path.split(":/")
+        
+        ftp = FTP.FileTransferProtocole(pathData[0],
+                                        Settings.request("FTPname"),
+                                        Settings.request("FTPpass"),
+                                        pathData[1])
+        ftp.login()
+        return ftp
+        
 
     """
     __loadApi()
@@ -39,21 +68,19 @@ class save:
     """
     def __loadApi(self):
         # Attempts to load Api
-        # Remove api bypass?
-        if self.path.find("/") == -1 and self.path.find("\\") == -1 and self.path != "Saves" and self.path != "Data":  # noqa E501
-            # Import drive and do stuff
-            try:
-                d = importlib.import_module('Files.DriveApi')
-                return d.Api(self.path)
-            except ImportError:
-                Functions.clear()
-                Functions.warn(2, "Google drive api not installed!")
-                # Asks the user if they want to change location
-                # change = input("Please enter the new path (type 'install' to install googledrive api): ")  # noqa E501
-                # if change.lower() == 'install':
-                #     sys.exit(self.__installDrive())
-                # self.path = change.rstrip()
-                # return self.__loadApi()
+        # Import drive and do stuff
+        try:
+            d = importlib.import_module('Files.DriveApi')
+            return d.Api(self.path)
+        except ImportError:
+            Functions.clear()
+            Functions.warn(2, "Google drive api not installed!")
+            # Asks the user if they want to change location
+            # change = input("Please enter the new path (type 'install' to install googledrive api): ")  # noqa E501
+            # if change.lower() == 'install':
+            #     sys.exit(self.__installDrive())
+            # self.path = change.rstrip()
+            # return self.__loadApi()
 
     """
     __Foldercheck()
@@ -123,61 +150,22 @@ class save:
     def __slash(self):
         return "\\" if os.name == "nt" else "/"
 
-    """
-    makeFolder(sub, replace)
-    sub -> Path of subdirectories under the main directories ('/e/e')
-    replace -> whever to set the last directory created
-    """
-    def makeFolder(self, sub=None, replace=False):
+    def makeFolder(self):
+        """Make a directory
+        
+        Returns:
+            string: The path / id of the directory.
+        """
         if self._api:
-            # Makes folder on drive
-            folderId = self._api.UploadData({
-                'name': self.data['name'],
-                'folder': self.path
-            }, True)
-
-            # Check for sub folder path
-            if sub is not None:
-                splitInfo = self.__split(sub)
-                newFolder = folderId['id']
-
-                # Makes sub folders on drive
-                for item in splitInfo:
-                    newFolder = self._api.UploadData({
-                        'name': item,
-                        'path': newFolder
-                    }, True)['id']
-
-                folderId = newFolder
-
-            # replace and return
-            if replace:
-                self.path = folderId['id']
-            return folderId['id']
+            return self._api.MakeDirectory(self.data['name'])
 
         # normal local folder
         path = self.path
         if self.data['name'] != '':
             path = os.path.join(self.path, self.data['name'])
 
-        # this is because os.path.exists doesn't like it but os.mkdir AAAAAAA
-        Npath = self.__replace(path)
-        if not os.path.exists(Npath):
-            os.mkdir(Npath)
-
-        if sub is not None:
-            # change, make, change
-            if not os.path.exists(os.path.join(path, sub)):
-                os.chdir(path)
-                os.makedirs(sub)
-                os.chdir(filePath)
-
-        if replace:
-            self.path = path
-            if sub is not None:
-                self.path = os.path.join(path, sub)
-
-        return path
+            os.makedirs(path)
+            return path
 
     """
     writeFile(data, overwrite=False)
@@ -196,16 +184,12 @@ class save:
         tempLocation = "Saves/.Temp/{}".format(name.replace('/', '-'))
         with open(tempLocation, 'wb+') as tempFile:
             tempFile.write(self._Encode(data, True))
-
+            
         if self._api:
-            # uploads to drive
-            id = self._api.UploadData({
-                'name': name,
-                'path': tempLocation,
-                'folder': self.path,
-            }, overwrite=overwrite, game=game, gamePop=gamePop)
-            os.remove(tempLocation)  # remove local copy
-            return id
+            result = self._api.UploadFile(tempLocation)
+            os.remove(tempLocation)
+            return result
+
         slash = self.__slash()
         # moves file to where it should be saved
         shutil.move(tempLocation,
@@ -226,29 +210,25 @@ class save:
 
         path = os.path.join(self.path, name) if name != "" else self.path
         if self._api:
-            saveLoc = "Saves/.Temp/{}".format(name)
-            Id = self._api.DownloadData({
-                'Id': path,
-                'path': saveLoc
-            })
+            nameInfo = name.split("/")
+            saveLoc = "Saves/.Temp/{}".format(nameInfo[len(nameInfo) -1])
+            
+            directory = ""
+            for item in nameInfo[:len(nameInfo) - 1]:
+                directory += item + "/"
+            
+            self._api.ChangeDirectory(directory)
+            try:
+                Id = self._api.DownloadFile(saveLoc)
+            except:
+                Functions.Print("Failed to find file on server")
+                return ""
             # If can't find file, attempt to search
-            if Id is False:
-                files = self._api.ListFolder()
-                for file in files:
-                    if file['name'] == name:
-                        Id = self._api.DownloadData({
-                            'Id': file['id'],
-                            'path': saveLoc
-                        })
-                        break
 
-            if isinstance(Id, str):
-                with open(Id, 'rb') as file:
-                    fileData = self._Encode(file.read())
+            with open(Id, 'rb') as file:
+                fileData = self._Encode(file.read())
 
-                # self.Delete(Id)  # deletes data after read
-                return fileData
-            return Id
+            return fileData
 
         # local read area
         # Don't need to add name here as done eariler
@@ -261,12 +241,9 @@ class save:
 
     """
     ls(dir)
-    dir -> whever to include files (false) or not (true)
-    - Same as 'ls' on 'posix' (os.name) systems.
-    Joint -> Joins self.path and self.name together
-    folder -> drive api folder
+    - Joint -> Joins self.path and self.name together
     """
-    def ls(self, dir=False, Joint=False, folder=None):
+    def ls(self, Joint=False):
 
         # Joins path and name together
         path = self.path
@@ -275,21 +252,12 @@ class save:
 
         # use api if alvalible.
         if self._api:
-            return self._api.ListFolder(folder=folder, dir=dir)
+            return self._api.ListDirectory()
 
         # Local area
         if os.path.exists(path):
             dirData = os.listdir(path)
-            if not dir:
-                # return if all files wanted
-                return dirData
-
-            # Removes all none files
-            newDirList = []
-            for item in dirData:
-                if os.path.isdir(os.path.join(path, item)):
-                    newDirList.append(item)
-            return newDirList
+            return dirData
         return None  # if directory not found
 
     """
@@ -301,16 +269,20 @@ class save:
         Npath = self.__replace(path)
         if self._api:
             path = self.path
-            
+            self._api.ChangeDirectory(self.data['name'])
             # Checks in self.data['name'] folder instead of self.path
             if self.data['name'] != '':
                 files = self.ls()
                 for file in files:
-                    if file['name'] == self.data['name']:
-                        path = file['id']
-                        break
+                    
+                    if isinstance(file, dict):
+                        if file['name'] == self.data['name']:
+                            return True
+
+                    if file == self.data['name']:
+                        return True
             
-            return self._api.checkIfExists(path, Npath)[0]
+            return False
         return os.path.exists(os.path.join(self.path,
                                            self.data['name'],
                                            Npath))
@@ -327,7 +299,7 @@ class save:
         if not self._api:
             Npath = self.__replace(path)
             save.delete(Npath)
-        return self._api.DeleteData(path)
+        return self._api.Delete(path)
 
     """
     delete(path)

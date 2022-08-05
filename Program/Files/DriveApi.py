@@ -20,16 +20,270 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 
+# class Api:
+#     # Setup the api class
+#     def __init__(self, folderId):
+#         self.folder = folderId
+#         self.service = self.__LoadAPI__()
+#         self.pageSize = 10  # Change to variable setting later.
+
+#     # Loads the api for use later.
+#     # Complicated function taken from google.
+#     def __LoadAPI__(self):
+#         setup.Setup(self.folder).main()
+#         try:
+#             creds = None
+#             if os.path.exists('ApiFiles/token.json'):  # noqa
+#                 creds = Credentials.from_authorized_user_file('ApiFiles/token.json', SCOPES)  # noqa
+#             # If there are no (valid) credentials available, let the user login
+#             if not creds or not creds.valid:
+#                 if creds and creds.expired and creds.refresh_token:
+#                     creds.refresh(Request())
+#                 else:
+#                     flow = InstalledAppFlow.from_client_secrets_file(
+#                         'ApiFiles/credentials.json', SCOPES)
+#                     creds = flow.run_local_server(port=0)
+#                 # Save the credentials for the next run
+#                 with open('ApiFiles/token.json', 'w') as token:  # noqa
+#                     token.write(creds.to_json())
+
+#             return build('drive', 'v3', credentials=creds)
+#         except KeyboardInterrupt:
+#             sys.exit('Bad drive... Please restart the program and try again.')
+#         except:  # noqa  Try and find error handle 'RefreshError'
+#             if os.path.exists('ApiFiles/token.json'):
+#                 os.system('rm ApiFiles/token.json')
+
+#                 # Check if files are actually there and not missing due to folder creation.  # noqa
+#                 if not os.path.exists('ApiFiles/credentials.json'):
+#                     os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')  # noqa
+#             return self.__LoadAPI__()
+
+#     def DeleteData(self, id):
+#         try:
+#             self.service.files().delete(fileId=id).execute()
+#             return "Deleted"
+#         except HttpError:
+#             return "Not found"
+
+#     # Checks if the folder / file exists before making a duplicate
+#     def checkIfExists(self, folder, name):
+#         # folder -> folder to check for file in
+#         # name -> name of the file to compare
+#         print({'folder': folder})
+#         items = self.ListFolder(folder)
+#         if items is not None:
+#             print(items)
+#             for item in items:
+#                 print(item)
+#                 if item['name'] == name:
+#                     return True, item
+#         return False, None
+
+#     # Makes folder / uploads data based on input
+#     def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False, game=False, gamePop=False):  # noqa
+
+#         # Splits the name and path information to get the sub
+#         # folder and name of the file
+#         try:
+#             savedPath = data['path']
+#         except KeyError:
+#             pass
+#         if game:
+#             data['path'] = data['path'].replace('-', '/')
+#             splitName = os.path.split(data['name'])
+#             data['folder'] = self.GetFileFromParentId(splitName[0], gamePop)
+#             data['name'] = splitName[1]
+
+#         print("Uploading... {}\tFolder:{}".format(data, folder))
+#         metadata = {}
+#         media = None
+
+#         localFolder = self.folder
+#         try:
+#             if data['folder']:
+#                 localFolder = data['folder']
+#         except KeyError:
+#             # No need to do anything if error.
+#             pass
+
+#         if isinstance(localFolder, dict):
+#             localFolder = localFolder['id']
+
+#         # check if already exists, we don't want to make duplicates
+#         exists, Id = self.checkIfExists(localFolder, data['name'])
+
+#         # Deletes if we overwrite the data.
+#         if overwrite and exists:
+#             print(self.DeleteData(Id['id']))
+
+#         if (not exists and Id is None) or overwrite:
+#             if folder:  # folder metadata
+#                 metadata = {
+#                     'name': data['name'],
+#                     'mimeType': 'application/vnd.google-apps.folder',
+#                     'parents': [localFolder]
+#                 }
+#             else:
+#                 # file metadata
+#                 metadata = {
+#                     'name': data['name'],
+#                     'mimeType': '*/*',  # not readable on drive
+#                     'parents': [localFolder]
+#                 }
+#                 print(metadata)
+#                 media = MediaFileUpload(savedPath,
+#                                         mimetype='*/*',
+#                                         resumable=True)
+#             if media:
+#                 return self.service.files().create(body=metadata,
+#                                                    media_body=media,
+#                                                    fields='id').execute()
+#             else:
+#                 return self.service.files().create(body=metadata,
+#                                                    fields='id').execute()
+#         else:
+#             return Id
+
+#     # Attempts to find the file in the id if the id is: 'PATH/NAME'
+#     def GetFileFromParentId(self, id, game=False):
+#         # Split up the path into each dir
+#         pathSplit = id.split('/')
+#         if game:
+#             pathSplit.pop(0)
+#         if len(pathSplit) == 1:
+#             # return original if only id with nothing else
+#             files = self.ListFolder(self.folder)
+#             try:
+#                 for file in files:
+#                     if file['name'] == pathSplit[0]:
+#                         return file['id']
+#             except ValueError:
+#                 pass
+#             return id
+
+#         parentFolder = pathSplit[0]
+#         for i in range(len(pathSplit)):
+#             files = self.ListFolder(parentFolder)
+#             for file in files:
+#                 if file['name'] == pathSplit[i]:
+#                     if i + 1 == len(pathSplit):
+#                         return file['id']
+#                     parentFolder = file['id']
+#                     break
+#         return id  # none found, return original
+
+#     # Download data from fileid. (Change to file name?)
+#     def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
+#         originalData = copy.deepcopy(data) # just in case of recheckt
+        
+#         # Check if exists to avoid breaks
+#         fileName = data["path"].split("/")
+#         exists, _ = self.checkIfExists(
+#             data['Id'].split("/")[0], fileName[len(fileName) - 1])
+
+#         if not exists:
+#             # attempts to redownload if not found
+#             print("File not found on server! Retrying in 5 seconds")
+#             Functions.clear(
+#                 5, "File not found on server! Retrying in 5 seconds", "red")
+#             return self.DownloadData(originalData, End)
+        
+#         # debug
+#         print('Original: ' + data['Id'])
+#         data['Id'] = self.GetFileFromParentId(data['Id'])
+#         print('New: {}'.format(data['Id']))
+
+#         try:
+#             # Gets the file data from drive
+#             request = self.service.files().get_media(fileId=data['Id'])
+#             fileHandler = io.BytesIO()
+#             downloader = MediaIoBaseDownload(fileHandler, request)
+#             done = False
+#             while done is False:
+#                 status, done = downloader.next_chunk()
+#                 print("Downloaded {}%".format(int(status.progress()) * 100),
+#                       end='\r')
+#             html = fileHandler.getvalue()
+
+#             # If the file should be presented as 'FILE.txt'
+#             fileEnd = ".txt" if End else ""
+
+#             # Sorts out the path incase '/' got included again.
+#             sPath = data['path'].split('/')
+#             start = 'Saves/.Temp'
+#             end = ''
+#             for i in range(len(sPath) - 2):
+#                 end += sPath[i + 2]
+#                 if i + 2 == len(sPath) - 2:
+#                     end += '-'
+#             data['path'] = os.path.join(start, end)
+
+#             # save
+#             with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
+#                 f.write(html)
+
+#             Functions.clear()
+#             return "{}{}".format(data['path'], fileEnd)
+#         except HttpError as error:
+#             # If this fires and then the above fires, do not worry.
+#             print("Error occured!: {}".format(error.reason))
+#             return False
+
+#     def ListFolder(self, folder=None, dir=False):
+#         if folder is None:
+#             folder = self.folder
+
+#         if isinstance(folder, dict):
+#             folder = folder['id']
+#         try:
+#             query = "'{}' in parents and trashed=false".format(folder)
+#             if dir:  # return only directories
+#                 query += " and mimeType = 'application/vnd.google-apps.folder'"
+
+#             # Some things don't work...
+#             results = self.service.files().list(
+#                 q=query,
+#                 pageSize=self.pageSize, fields="nextPageToken, files(id, name)").execute()  # noqa
+#             items = results.get('files', [])
+
+#             if not items:
+#                 print('No files found.')
+#                 return []
+#             return items
+#         except HttpError:
+
+#             # Attempts to take the folder as a name and find files in folder
+#             # SO, if folder != drive ID, find folder, return files in folder
+#             try:
+#                 files = self.ListFolder(dir=dir)
+#                 for file in files:
+#                     if file['name'] == folder:
+#                         return self.ListFolder(file['id'], dir=dir)
+#             except HttpError as error:
+#                 print('An error occurred: {}'.format(error))
+#                 return "Error"
+
+
 class Api:
-    # Setup the api class
+    def __slash(self):
+        # Determinds how to split paths
+        return "\\" if os.name == "nt" else "/"
+    
     def __init__(self, folderId):
+        self.msg = "Google Drive"  # message to show when on load screen,
         self.folder = folderId
         self.service = self.__LoadAPI__()
-        self.pageSize = 10  # Change to variable setting later.
+        self.pageSize = -1  # Change to variable setting later.
 
     # Loads the api for use later.
     # Complicated function taken from google.
     def __LoadAPI__(self):
+        """Load the API.
+
+        Returns:
+            Service: The api.
+        """
         setup.Setup(self.folder).main()
         try:
             creds = None
@@ -58,16 +312,36 @@ class Api:
                 if not os.path.exists('ApiFiles/credentials.json'):
                     os.sys.exit('ApiFiles/credentials.json has not been found! Please follow the google drive api setup instructions or contact the owner.')  # noqa
             return self.__LoadAPI__()
+    
+    def ListDirectory(self):
+        # Get everything except trashed items
+        query = "'{}' in parents and trashed=false".format(self.folder)
+        
+        result = self.service.find().list(
+            q=query,
+            pageSize=self.pageSize,
+            fields="nextPageToken, files(id, name)"
+        ).execute()
+        items = result.get("files", [])
+        
+        return items
+    
+    def __GetNameFromList(self, list):
+        names = []
+        for item in list:
+            if isinstance(item, dict):
+                names.append(item['name'])
+            else:
+                names.append(item)
+        
+        return names
 
-    def DeleteData(self, id):
-        try:
-            self.service.files().delete(fileId=id).execute()
-            return "Deleted"
-        except HttpError:
-            return "Not found"
-
-    # Checks if the folder / file exists before making a duplicate
-    def checkIfExists(self, folder, name):
+    def __FindItemInList(self, list, name):
+        for item in list:
+            if item['name'] == name:
+                return item
+    
+    def __checkIfExists(self, folder, name):
         # folder -> folder to check for file in
         # name -> name of the file to compare
         print({'folder': folder})
@@ -79,187 +353,91 @@ class Api:
                 if item['name'] == name:
                     return True, item
         return False, None
-
-    # Makes folder / uploads data based on input
-    def UploadData(self, data={'name': 'error', 'path': 'UploadFileTest.txt', 'folder': None}, folder=False, overwrite=False, game=False, gamePop=False):  # noqa
-
-        # Splits the name and path information to get the sub
-        # folder and name of the file
-        try:
-            savedPath = data['path']
-        except KeyError:
-            pass
-        if game:
-            data['path'] = data['path'].replace('-', '/')
-            splitName = os.path.split(data['name'])
-            data['folder'] = self.GetFileFromParentId(splitName[0], gamePop)
-            data['name'] = splitName[1]
-
-        print("Uploading... {}\tFolder:{}".format(data, folder))
-        metadata = {}
-        media = None
-
-        localFolder = self.folder
-        try:
-            if data['folder']:
-                localFolder = data['folder']
-        except KeyError:
-            # No need to do anything if error.
-            pass
-
-        if isinstance(localFolder, dict):
-            localFolder = localFolder['id']
-
-        # check if already exists, we don't want to make duplicates
-        exists, Id = self.checkIfExists(localFolder, data['name'])
-
-        # Deletes if we overwrite the data.
-        if overwrite and exists:
-            print(self.DeleteData(Id['id']))
-
-        if (not exists and Id is None) or overwrite:
-            if folder:  # folder metadata
-                metadata = {
-                    'name': data['name'],
+    
+    def MakeDirectory(self, name):
+        directories = name.split(self.__slash())
+        currentPath = self.folder
+        for item in directories:
+            exists, id = self.__checkIfExists(currentPath, item)            
+            if exists:
+                self.Delete(id)
+            
+            metadata = {
+                    'name': name,
                     'mimeType': 'application/vnd.google-apps.folder',
-                    'parents': [localFolder]
+                    'parents': [currentPath]
                 }
-            else:
-                # file metadata
-                metadata = {
-                    'name': data['name'],
-                    'mimeType': '*/*',  # not readable on drive
-                    'parents': [localFolder]
-                }
-                print(metadata)
-                media = MediaFileUpload(savedPath,
-                                        mimetype='*/*',
-                                        resumable=True)
-            if media:
-                return self.service.files().create(body=metadata,
-                                                   media_body=media,
+            currentPath = self.service.files().create(body=metadata,
                                                    fields='id').execute()
-            else:
-                return self.service.files().create(body=metadata,
-                                                   fields='id').execute()
-        else:
-            return Id
+        return currentPath
 
-    # Attempts to find the file in the id if the id is: 'PATH/NAME'
-    def GetFileFromParentId(self, id, game=False):
-        # Split up the path into each dir
-        pathSplit = id.split('/')
-        if game:
-            pathSplit.pop(0)
-        if len(pathSplit) == 1:
-            # return original if only id with nothing else
-            files = self.ListFolder(self.folder)
-            try:
-                for file in files:
-                    if file['name'] == pathSplit[0]:
-                        return file['id']
-            except ValueError:
-                pass
-            return id
+    def GetPath(self):
+        return self.folder
 
-        parentFolder = pathSplit[0]
-        for i in range(len(pathSplit)):
-            files = self.ListFolder(parentFolder)
-            for file in files:
-                if file['name'] == pathSplit[i]:
-                    if i + 1 == len(pathSplit):
-                        return file['id']
-                    parentFolder = file['id']
-                    break
-        return id  # none found, return original
-
-    # Download data from fileid. (Change to file name?)
-    def DownloadData(self, data={'Id': 'error', 'path': 'Saves'}, End=False):
-        originalData = copy.deepcopy(data) # just in case of recheckt
+    def ChangeDirectory(self, dir):
+        self.folder = dir
+    
+    def UploadFile(self, path):
+        pathInfo = path.split(self.__slash())
+        name = pathInfo[len(pathInfo) - 1]
         
-        # Check if exists to avoid breaks
-        fileName = data["path"].split("/")
-        exists, _ = self.checkIfExists(
-            data['Id'].split("/")[0], fileName[len(fileName) - 1])
+        exists, id = self.__checkIfExists(self.folder, name)
+        if exists:
+            self.Delete(id)
+        
+        metadata = {
+                    'name': name,
+                    'mimeType': '*/*',  # not readable on drive
+                    'parents': [self.folder]
+                }
+        print(metadata)
+        media = MediaFileUpload(path,
+                                mimetype='*/*',
+                                resumable=True)
 
-        if not exists:
-            # attempts to redownload if not found
+        id = self.service.files().create(body=metadata,
+                                         media_body=media,
+                                         fields='id').execute()
+        return id
+
+    def DownloadFile(self, path):
+        pathInfo = path.split(self.__slash())
+        name = pathInfo[len(pathInfo) - 1]
+        
+        attempts = 5
+        currentAttempt = 0
+        
+        while currentAttempt < attempts:
+            exists, id = self.__checkIfExists(self.folder, name)
+            if exists:
+                request = self.service.files().get_media(fileId=id)
+                fileHandler = io.BytesIO()
+                downloader = MediaIoBaseDownload(fileHandler, request)
+                done = False
+                while done is False:
+                    status, done = downloader.next_chunk()
+                    print("Downloaded {}%".format(int(status.progress()) * 100),
+                            end='\r')
+                html = fileHandler.getvalue()
+
+                # save
+                with open(path, 'wb+') as f:
+                    f.write(html)
+
+                Functions.clear()
+                return path
+
             print("File not found on server! Retrying in 5 seconds")
             Functions.clear(
                 5, "File not found on server! Retrying in 5 seconds", "red")
-            return self.DownloadData(originalData, End)
+            currentAttempt += 1
         
-        # debug
-        print('Original: ' + data['Id'])
-        data['Id'] = self.GetFileFromParentId(data['Id'])
-        print('New: {}'.format(data['Id']))
-
+        Functions.Print("Failed to find file on server, max attempts reached!", "red", "bold")
+        return 
+    
+    def Delete(self, id):
         try:
-            # Gets the file data from drive
-            request = self.service.files().get_media(fileId=data['Id'])
-            fileHandler = io.BytesIO()
-            downloader = MediaIoBaseDownload(fileHandler, request)
-            done = False
-            while done is False:
-                status, done = downloader.next_chunk()
-                print("Downloaded {}%".format(int(status.progress()) * 100),
-                      end='\r')
-            html = fileHandler.getvalue()
-
-            # If the file should be presented as 'FILE.txt'
-            fileEnd = ".txt" if End else ""
-
-            # Sorts out the path incase '/' got included again.
-            sPath = data['path'].split('/')
-            start = 'Saves/.Temp'
-            end = ''
-            for i in range(len(sPath) - 2):
-                end += sPath[i + 2]
-                if i + 2 == len(sPath) - 2:
-                    end += '-'
-            data['path'] = os.path.join(start, end)
-
-            # save
-            with open("{}{}".format(data['path'], fileEnd), 'wb+') as f:
-                f.write(html)
-
-            Functions.clear()
-            return "{}{}".format(data['path'], fileEnd)
-        except HttpError as error:
-            # If this fires and then the above fires, do not worry.
-            print("Error occured!: {}".format(error.reason))
-            return False
-
-    def ListFolder(self, folder=None, dir=False):
-        if folder is None:
-            folder = self.folder
-
-        if isinstance(folder, dict):
-            folder = folder['id']
-        try:
-            query = "'{}' in parents and trashed=false".format(folder)
-            if dir:  # return only directories
-                query += " and mimeType = 'application/vnd.google-apps.folder'"
-
-            # Some things don't work...
-            results = self.service.files().list(
-                q=query,
-                pageSize=self.pageSize, fields="nextPageToken, files(id, name)").execute()  # noqa
-            items = results.get('files', [])
-
-            if not items:
-                print('No files found.')
-                return []
-            return items
+            self.service.files().delete(fileId=id).execute()
+            return "Deleted"
         except HttpError:
-
-            # Attempts to take the folder as a name and find files in folder
-            # SO, if folder != drive ID, find folder, return files in folder
-            try:
-                files = self.ListFolder(dir=dir)
-                for file in files:
-                    if file['name'] == folder:
-                        return self.ListFolder(file['id'], dir=dir)
-            except HttpError as error:
-                print('An error occurred: {}'.format(error))
-                return "Error"
+            return "Not found"

@@ -3,6 +3,7 @@ import sys
 import argparse
 Functions = importlib.import_module('Files.Functions')
 newSave = importlib.import_module('Files.newSave')
+Settings = importlib.import_module('Files.Settings')
 
 
 def praser():
@@ -13,12 +14,18 @@ def praser():
     parser.add_argument('--delete',
                         help="Delete old game data.",
                         action='store_true')
+    parser.add_argument('--save',
+                        nargs=1,
+                        help="Overwrite the save location")
     args = vars(parser.parse_args())
     return args
 
 
 def command_options():
     args = praser()
+    if args['save']:
+        Settings.Settings().updateSave('path', args['save'][0])
+    
     if args['delete']:
         def yes():
             newSave = importlib.import_module('Files.newSave')

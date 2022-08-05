@@ -95,7 +95,7 @@ Please reload by giving no input, Choose a different location or make a game.
         if self.path != "Saves":
             msg = "External"
         if self.apiExternal:  # TODO: Fix
-            msg = "Google Drive"
+            msg = self.apiExternal.msg
 
         # banner information
         dashText = '-' * os.get_terminal_size().columns

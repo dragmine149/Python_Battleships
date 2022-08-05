@@ -67,7 +67,7 @@ class Process:
         if create:
             return self.__create()
         # get users
-        self.users = self.saveSystem.ls(True, folder=self.name)
+        self.users = self.saveSystem.ls()
 
         # Convert google drive list into normal data
         if isinstance(self.users[0], dict):

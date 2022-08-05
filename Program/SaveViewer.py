@@ -17,7 +17,7 @@ def Praser():
     return args
 
 
-class saveEditor:
+class saveViewer:
     # basic setup
     def __init__(self, folder=None):
         # Loads in folder
@@ -213,5 +213,5 @@ if __name__ == "__main__":
     folder = args['Location']
     if folder is not None:
         folder = os.path.abspath(folder)
-    se = saveEditor(folder)
+    se = saveViewer(folder)
     se.Main()

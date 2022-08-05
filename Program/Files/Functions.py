@@ -66,7 +66,8 @@ def RemoveNonGames(path="Saves"):
     api = saveLocation._api
 
     try:
-        games = saveLocation.ls(True)
+        games = saveLocation.ls()
+        print(games)
     except FileNotFoundError:
         return []
 
@@ -75,25 +76,15 @@ def RemoveNonGames(path="Saves"):
         return []
 
     newlist = []
+    BannedList = ['.Temp', 'multi',' turn', 'win']
     for folder in games:
         # Removes non directories
-        """ WINDOWS ALERT!!! # noqa E501
-        So, after doing some testing on windows, i noticed a file called 'desktop.ini'
-        This file is hidden and thankfully is at the end of the list but still needs
-        to be removed. I could add a list of hidden files and check for them but would
-        rather not do that to save time and stuff.
-        """
-        if not api:
-            if os.path.isdir(os.path.join(path, folder)):
-                if not folder.startswith(".") and not folder.startswith("__"):
-                    if folder != ".Temp":  # Remove google files
-                        newlist.append(folder)
-        else:
+        if isinstance(folder, dict):
             folder = folder['name']
-            if not folder.startswith(".") and not folder.startswith("__"):  # noqa
-                # Get more information from google Better check.
-                if not folder.lower() == "multi" and not folder.lower() == "turn" and not folder.lower() == "win":  # noqa
-                    newlist.append(folder)
+        
+        if not folder.startswith(".") and not folder.startswith("__") and folder not in BannedList:
+            newlist.append(folder)
+        
     return newlist
 
 
