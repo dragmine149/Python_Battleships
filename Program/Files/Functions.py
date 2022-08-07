@@ -405,8 +405,10 @@ def LocationTest(Location):
         print({'saveInfo vars': vars(saveInfo)})
 
         # Creates test folder
-        folder = saveInfo.makeFolder(replace=True)
+        folder = saveInfo.makeFolder()
         print({'folder': folder})
+        
+        saveInfo.ChangeDirectory(folder)
 
         # creates file
         savedLocation = saveInfo.writeFile("This is a test file")
