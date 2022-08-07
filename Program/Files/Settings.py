@@ -193,7 +193,7 @@ class Settings:
     # Saves settings
     def saveSettings(self):
         Print("Saving settings...", 'blue')
-        self.save.writeFile(self.data, True)
+        self.save.writeFile(self.data)
         Print("Successfully saved settings", "green")
 
     def loadFromFile(self):

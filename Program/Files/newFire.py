@@ -137,15 +137,13 @@ class Fire:
             # Saving data...
             takenShot = True
             self.userData[0].writeFile(
-                self.userBoards[0][0], True, "{}/shots".format(self.guInfo[0]),
-                True, True)
+                self.userBoards[0][0], "{}/shots".format(self.guInfo[0]))
             self.userData[1].writeFile(
-                self.userBoards[1][0], True, "{}/shots".format(self.guInfo[1]),
-                True, True)
+                self.userBoards[1][0], "{}/shots".format(self.guInfo[1]))
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
-            self.gameData.writeFile(self.game, True, "GameData")
+            self.gameData.writeFile(self.game, "GameData")
 
             # win check
             if self.WinGame() is True:
@@ -189,13 +187,10 @@ class Fire:
             winner = self.userInfo[self.turnIndex]
             looser = self.userInfo[self.opponentTurnIndex]
             Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
-            self.gameData.writeFile(self.game, True,
-                                    "GameData")
+            self.gameData.writeFile(self.game, "GameData")
             self.gameData.writeFile({
                 'win': self.userInfo[self.turnIndex]
-                },
-                                    True,
-                                    'win')
+                }, 'win')
             return True
 
         if not winCheck:

@@ -192,8 +192,7 @@ class Place:
                                     (self.ShowDisplay),
                                     (0, len(self.ships))).getInput()
             if place == 0:
-                self.info.writeFile(Settings.request(['colour'])[0],
-                                    True, "UserColour", True)
+                self.info.writeFile(Settings.request(['colour'])[0], "UserColour")
                 return 0
             if place is not None:
                 place -= 1
@@ -207,16 +206,8 @@ class Place:
                     print("Saved")
                     self.placedData[self.ships[place].Name] = True
                     loc = self.location[1]
-                    self.info.writeFile(self.boardData,
-                                        True,
-                                        "{}/ships".format(loc),
-                                        True,
-                                        True)
-                    self.info.writeFile(self.placedData,
-                                        True,
-                                        "{}/placedData".format(loc),
-                                        True,
-                                        True)
+                    self.info.writeFile(self.boardData, "{}/ships".format(loc))
+                    self.info.writeFile(self.placedData, "{}/placedData".format(loc))
 
     def Main(self):
         Functions.clear()
@@ -227,9 +218,5 @@ class Place:
             }).readFile(
                 '{}/GameData'.format(os.path.split(self.location[1])[0]),
                 True)
-            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']),
-                                True,
-                                "{}/shots".format(self.location[1]),
-                                True,
-                                True)  # noqa E501
+            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), "{}/shots".format(self.location[1]))
         return data == -2

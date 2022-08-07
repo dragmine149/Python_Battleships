@@ -340,7 +340,7 @@ Password: {}{}\033[0m
             'path': self.Loc,
         })
 
-        gameFolder = gameData.makeFolder(replace=True)
+        gameFolder = gameData.makeFolder()
         # print(gameFolder)
         gameFolder = gameFolder
 
@@ -352,18 +352,18 @@ Password: {}{}\033[0m
                 'path': gameFolder,
             })
             # create user folder
-            folder = userData.makeFolder(replace=True)
+            folder = userData.makeFolder()
             userFolders.append(folder[0])
 
             # create files for users
-            userData.writeFile(board, name='ships')
+            userData.writeFile(board, 'ships')
 
             placedData = {}
             for ship in ShipInfo.getShips():
                 placedData[ship.Name] = False
 
             # print(placedData)
-            userData.writeFile(placedData, name="placedData")
+            userData.writeFile(placedData, "placedData")
 # userData.writeFile(board, name='shots')
 
         # make turn file, notes whos turn it is.
@@ -373,7 +373,7 @@ Password: {}{}\033[0m
             'password': self.password,
             'size': self.siZe,
         }
-        gameData.writeFile(data, name="GameData")
+        gameData.writeFile(data, "GameData")
 
         return "Save"  # success!!!
 

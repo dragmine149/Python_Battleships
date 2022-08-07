@@ -171,11 +171,10 @@ class save:
     """
     writeFile(data, overwrite=False)
     data -> data to save
-    overwrite -> whever to overwrite the data on drive. Dones't work locally.
     name -> name of the file, just in case the file needs to be different from the current name inputted.
     - Save data to a file
     """  # noqa E501
-    def writeFile(self, data, overwrite=False, name="", game=False, gamePop=False):
+    def writeFile(self, data, name=""):
         if data is None:
             return None
         if name == "":
