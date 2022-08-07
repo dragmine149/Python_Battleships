@@ -550,7 +550,7 @@ def PrintTraceback():
 
 # Prints a message out with a timer whilst waiting
 def waiting(message):
-    time = Settings.request("CheckTimeout")
+    time = Settings.request(["CheckTimeout"])[0]
     # Waits for the opponent.
     try:
         back = "(ctrl + c to go back)"

@@ -1,3 +1,4 @@
+from cgitb import reset
 import os
 import importlib
 import getpass
@@ -246,10 +247,13 @@ Your personal settings.
 
 # Takes the input data and returns the output
 # useful for quick access to settings
-def request(data):
+def request(data=[]):
     setObj = Settings()
     # no need to load again as automatically done in class call.
-    try:
-        return setObj.data[data]
-    except KeyError:
-        return None
+    result = []
+    for item in data:
+        try:
+            result.append(setObj.data[item])
+        except KeyError:
+            result.append(None)
+    return result

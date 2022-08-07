@@ -29,10 +29,7 @@ class Fire:
         self.turnIndex = self.userInfo.index(self.turn)
         self.opponentTurnIndex = 0 if self.turnIndex == 1 else 1
         self.multiplayer = self.game["multi"]
-        self.userColours = [
-            Settings.request('colour'),
-            Settings.request('colour')
-        ]
+        self.userColours = Settings.request(['colour', 'colour'])
 
     def __RetrieveBoards(self):
         # Even more information

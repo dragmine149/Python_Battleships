@@ -1,6 +1,5 @@
 import importlib
 import sys
-Functions = importlib.import_module('Files.Functions')
 Loader = importlib.import_module('Files.Loader')
 pi = importlib.import_module('Files.ProcessInput')
 Settings = importlib.import_module('Files.Settings')
@@ -11,7 +10,6 @@ class Choices:
     def __init__(self):
         self.Loader = Loader.Loader()
         self.path = self.Loader.path
-        self.Settings = Settings.Settings()
         self.Process = pi.Process(self.path)
 
     # doesn't really generate, hard coded list
@@ -38,5 +36,5 @@ class Choices:
         return self.Process.Inputs(create=True)
 
     def settings(self):
-        result = self.Settings.showDisplay()
+        result = Settings.Settings().showDisplay()
         return result

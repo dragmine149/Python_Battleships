@@ -2,7 +2,7 @@ import ftplib
 import importlib
 import os
 import time
-# Functions = importlib.import_module('Files.Functions')
+Functions = importlib.import_module('Files.Functions')
 # Settings = importlib.import_module('Files.Settings')
 
 class FileTransferProtocole:
@@ -80,12 +80,21 @@ class FileTransferProtocole:
         return self.ftp.pwd()
 
     def ChangeDirectory(self, dir):
-        """Change the working directory on the server
+        """Changes the working directory on the FTP link
 
         Args:
-            dir (string): The path of the directory to change to
-        """
-        self.ftp.cwd(dir)
+            dir (string): The directory to change to
+
+        Returns:
+            Success: Whever the code was successfully in changing directory.
+        """        
+
+        try:
+            self.ftp.cwd(dir)
+            return True
+        except ftplib.error_perm:
+            Functions.PrintTraceback()
+            return False
 
     def UploadFile(self, path):
         """Upload a file to the server

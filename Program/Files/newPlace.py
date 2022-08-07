@@ -192,7 +192,7 @@ class Place:
                                     (self.ShowDisplay),
                                     (0, len(self.ships))).getInput()
             if place == 0:
-                self.info.writeFile(Settings.request('colour'),
+                self.info.writeFile(Settings.request(['colour'])[0],
                                     True, "UserColour", True)
                 return 0
             if place is not None:

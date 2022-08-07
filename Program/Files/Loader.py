@@ -17,7 +17,7 @@ class Loader:
         # loads
         print("Loading games...")
         self.game = None
-        path = Settings.request("path")
+        path = Settings.request(["path"])[0]
         self.games = path
         self.path = path
         saveInfo = Save.save({
@@ -86,8 +86,7 @@ Please reload by giving no input, Choose a different location or make a game.
 
     def getGames(self):
         print('loadinG Games')
-        self.games = Settings.request("path")
-        self.path = Settings.request("path")
+        self.games, self.path, LoadTimeMsg = Settings.request(['path', 'path', 'loadTimes'])
         loadtimeStart = time.time()
 
         # sets the message so the user knows where it is better
@@ -108,46 +107,42 @@ Games found in: {} ({}) (Load Time: +)
         options = ""
         self.gameList = Functions.RemoveNonGames(self.games)
         self.gameList.sort()
-        # print(self.gameList)
 
-        LTS2 = time.time()
-        # Adds (Winner: {winner}) to the list if the game has been completed.
-        for game in range(len(self.gameList)):
-            gTime = time.time()
-            completed = ''
-            try:
-                # Checks if there is a winner
-                winnerData = newSave.save({
-                    'name': self.gameList[game],
-                    'path': self.path
-                })
-                winner = winnerData.CheckForFile('win')
-                if winner:
-
-                    # reads winner if found
-                    winner = winnerData.readFile("win", joint=True)["win"]
-
-                if winner != '' and winner is not False:
-                    completed = '(Winner: {})'.format(winner)
-            except KeyError:
-                completed = ''
-
-            gTEnd = time.time()
-
-            # Sorts out the individal load times            
-            loadtimeMsg = ''
-            if Settings.request('loadTimes'):
-                loadtimeMsg = '({}s winner check time)'.format(round(gTEnd - gTime, 2))
-
-            options += "{}: {} {} {}\n".format(game + 1, self.gameList[game],
-                                               completed, loadtimeMsg)
+        # Winner check
+        gameData = Save.save({
+            'name': '',
+            'path': self.path
+        })
         
-        LTS2E = time.time()
+        LoadTime = time.time()
+        for gameIndex in range(len(self.gameList)):
+            game = self.gameList[gameIndex]
+            winnerLoadTime = time.time()
+            
+            completed = ''
+            gameData.data['name'] = game
+            winner = gameData.CheckForFile('win')
+            if winner:
+                    # reads winner if found
+                    winner = gameData.readFile("win", joint=True)["win"]
+                    if winner != '' and winner is not False:
+                        completed = '(Winner: {})'.format(winner)
+            
+            winnerEndLoadTime = time.time()
+            loadtimeMsg = ''
+            if LoadTimeMsg:
+                loadtimeMsg = '({}s winner check time)'.format(round(winnerEndLoadTime - winnerLoadTime, 2))
+
+            options += "{}: {} {} {}\n".format(gameIndex + 1, game,
+                                               completed, loadtimeMsg)
+            gameData.ChangeDirectory('..')
+
+        LoadEndTime = time.time()
 
         # Works out how long it took to load the files, mainly debug but
         loadtimeEnd = time.time()
         loadtime = round(loadtimeEnd - loadtimeStart, 2)
-        lts = round(LTS2E - LTS2, 2)
+        lts = round(LoadEndTime - LoadTime, 2)
         loadtimeMessage = "{}s total ({}s winner check)".format(loadtime, lts)
 
         info = info.replace('+', loadtimeMessage)
