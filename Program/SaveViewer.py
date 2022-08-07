@@ -2,7 +2,7 @@ import importlib
 import os
 import argparse
 readchar = importlib.import_module('.readchar', 'Files.readchar')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 colours = importlib.import_module('Files.colours')
 Functions = importlib.import_module('Files.Functions')
 Settings = importlib.import_module('Files.Settings')
@@ -23,10 +23,10 @@ class saveViewer:
         # Loads in folder
         requestFolder = folder
         if requestFolder is None:
-            requestFolder = Settings.request("path")
+            requestFolder = Settings.request(["path"])[0]
 
         # Loads in save system
-        self.saveSystem = newSave.save({
+        self.saveSystem = Save.save({
             'path': requestFolder
         })
 
@@ -192,7 +192,7 @@ D: Right
 class File:
     def __init__(self, file, name=''):
         self.file = file
-        self.saveData = newSave.save({
+        self.saveData = Save.save({
             'name': name,
             'path': file
         })

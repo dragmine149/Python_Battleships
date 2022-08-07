@@ -53,9 +53,10 @@ class save:
         # path is stored as IP::/PATH
         pathData = self.path.split(":/")
         
+        userInfo = Settings.request(['FTPname', 'FTPpass'])
         ftp = FTP.FileTransferProtocole(pathData[0],
-                                        Settings.request("FTPname"),
-                                        Settings.request("FTPpass"),
+                                        userInfo[0],
+                                        userInfo[1],
                                         pathData[1])
         ftp.login()
         return ftp
@@ -238,6 +239,23 @@ class save:
                 return self._Encode(file.read())
         Functions.Print("Failed to find data in path: {}".format(path), "red")
         return False
+
+    def ChangeDirectory(self, dir):
+        """Changes the directory stored.
+        """
+        self.data['name'] = dir
+        if self._api:
+            self._api.ChangeDirectory(dir)
+    
+    def GetPath(self):
+        """Gets the current path
+
+        Returns:
+            String: The path.
+        """        
+        if self._api:
+            return self._api.GetPath()
+        return self.path
 
     """
     ls(dir)

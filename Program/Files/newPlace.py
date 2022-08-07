@@ -1,7 +1,7 @@
 import importlib
 import copy
 import os
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Functions = importlib.import_module('Files.Functions')
 ShipInfo = importlib.import_module('Files.ShipInfo')
 colours = importlib.import_module('Files.colours')
@@ -19,7 +19,7 @@ class Place:
 
     # Load more information, Mainly save information.
     def LoadInfo(self):
-        self.info = newSave.save({
+        self.info = Save.save({
             'path': self.location[0],
         })
         loc = self.location[1]
@@ -222,7 +222,7 @@ class Place:
         Functions.clear()
         data = self.Place()
         if data == -2:
-            boardSize = newSave.save({
+            boardSize = Save.save({
                 'path': self.location[0]
             }).readFile(
                 '{}/GameData'.format(os.path.split(self.location[1])[0]),

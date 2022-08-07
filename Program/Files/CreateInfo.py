@@ -3,7 +3,7 @@ import string
 import random
 import importlib
 Functions = importlib.import_module('Files.Functions')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 ShipInfo = importlib.import_module('Files.ShipInfo')
 
 
@@ -335,7 +335,7 @@ Password: {}{}\033[0m
         board = Functions.board.CreateBoard(self.siZe)
 
         # Create folder for the game
-        gameData = newSave.save({
+        gameData = Save.save({
             'name': self.Gname,
             'path': self.Loc,
         })
@@ -347,7 +347,7 @@ Password: {}{}\033[0m
         userFolders = []
         for user in self.usernames:
             # create user data
-            userData = newSave.save({
+            userData = Save.save({
                 'name': user,
                 'path': gameFolder,
             })

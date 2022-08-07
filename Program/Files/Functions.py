@@ -5,7 +5,7 @@ import traceback
 import glob
 
 Settings = importlib.import_module('Files.Settings')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 colours = importlib.import_module('Files.colours')
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -60,7 +60,7 @@ def RemoveNonGames(path="Saves"):
         return []
 
     games = None
-    saveLocation = newSave.save({
+    saveLocation = Save.save({
         'path': path
     })
     api = saveLocation._api
@@ -101,7 +101,7 @@ def __messageSort(timeS=0, message=None, clear=False, colour=[None, None]):
     # Windows doesn't have 'clear' so having to use the other option.
     # Mac / Linux doesn't have 'cls' same issue as windows
     if clear:
-        if Settings.request('clear'):
+        if Settings.request(['clear'])[0]:
             # This clears the terminal without deleting the logs.
             print("\x1b[2J\x1b[H", end='')
         else:
@@ -398,7 +398,7 @@ class search:
 
 def LocationTest(Location):
     try:
-        saveInfo = newSave.save({
+        saveInfo = Save.save({
             'name': 'Test',
             'path': Location,
         })
@@ -515,7 +515,7 @@ def changePath():
                     apiExternal = True
 
                     # get the files
-                    games = newSave.save({
+                    games = Save.save({
                         'path': external
                     }).ls()
                     games = games

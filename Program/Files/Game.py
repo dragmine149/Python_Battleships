@@ -1,7 +1,7 @@
 import importlib
 import getpass
 import os
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Functions = importlib.import_module('Files.Functions')
 newPlace = importlib.import_module('Files.newPlace')
 newFire = importlib.import_module('Files.newFire')
@@ -15,7 +15,7 @@ class Game:
         self.location = data[3]
         self.gamePath = os.path.join(self.location, self.name)
         self.multiplayer = data[4]
-        self.gameData = newSave.save({
+        self.gameData = Save.save({
             'name': self.name,
             'path': self.location,
         })
@@ -26,7 +26,7 @@ class Game:
             for file in files:
                 if file['name'] == self.name:
                     self.location = file['id']
-                    self.gameData = newSave.save({
+                    self.gameData = Save.save({
                         'name': self.name,
                         'path': self.location
                     })
@@ -71,7 +71,7 @@ class Game:
     def PlaceCheck(self):
         placed = [False, False]
         for user in range(len(self.users)):
-            folder = newSave.save({
+            folder = Save.save({
                 'name': self.users[user],
                 'path': self.location
             }).CheckForFile('shots')    

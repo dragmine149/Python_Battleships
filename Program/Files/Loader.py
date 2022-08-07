@@ -4,7 +4,7 @@ import time
 
 Functions = importlib.import_module('Files.Functions')
 Menu = importlib.import_module('Files.GameMenu')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 pi = importlib.import_module('Files.ProcessInput')
 Settings = importlib.import_module('Files.Settings')
 colours = importlib.import_module('Files.colours')
@@ -20,7 +20,7 @@ class Loader:
         path = Settings.request("path")
         self.games = path
         self.path = path
-        saveInfo = newSave.save({
+        saveInfo = Save.save({
             'path': path
         })
         self.apiExternal = saveInfo._api
@@ -47,7 +47,7 @@ class Loader:
                 #             break
                 #     continue
                 deletePath = self.gameList[delGameIndex - 1]
-                newSave.save({
+                Save.save({
                             'path': self.path}).Delete(os.path.join(self.path, deletePath))  # noqa E501
                 delGameIndex = None
         self.game = None

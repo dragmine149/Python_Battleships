@@ -5,13 +5,12 @@ import getpass
 GameMenu = importlib.import_module('Files.GameMenu')
 Functions = importlib.import_module('Files.Functions')
 colours = importlib.import_module('Files.colours')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Setup = importlib.import_module('Files.Setup')
 
 Print = colours.Print
 colourRetrieve = colours.colourRetrieve
 c = colours.c
-
 
 class Settings:
 
@@ -19,7 +18,7 @@ class Settings:
     def __init__(self):
         print("Loading settings")
         self.display = None
-        self.save = newSave.save({
+        self.save = Save.save({
             'name': 'Settings',
             'path': 'Data',
         })
@@ -138,7 +137,7 @@ class Settings:
         print("Data Found: {}".format(Data))
         for file in Data:
             Print(f"Deleting: {file}", "orange")
-            newSave.save.delete(file)
+            Save.save.delete(file)
 
         Functions.warn(1, "Waiting...", "green")
     
@@ -206,7 +205,7 @@ class Settings:
 
             if os.path.exists(file):
                 try:
-                    pathData = newSave.save({
+                    pathData = Save.save({
                         'path': file
                     })
                     data = pathData.readFile(nameAllowed=False)

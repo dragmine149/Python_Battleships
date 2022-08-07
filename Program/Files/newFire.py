@@ -1,7 +1,7 @@
 import importlib
 import os
 ShipInfo = importlib.import_module('Files.ShipInfo')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Functions = importlib.import_module('Files.Functions')
 colours = importlib.import_module('Files.colours')
 Settings = importlib.import_module('Files.Settings')
@@ -36,20 +36,20 @@ class Fire:
 
     def __RetrieveBoards(self):
         # Even more information
-        self.gameData = newSave.save({
+        self.gameData = Save.save({
             'path': self.gameInfo[1]
         })
         # Paths for each individual users.
-        # Done like this because newSave.data['path'] can only be id for drive
+        # Done like this because Save.data['path'] can only be id for drive
         self.guInfo = [os.path.join(self.gameInfo[0],
                                     self.userInfo[0]),
                        os.path.join(self.gameInfo[0],
                                     self.userInfo[1])]
         self.userData = [
-            newSave.save({
+            Save.save({
                 'path': self.gameInfo[1]
             }),
-            newSave.save({
+            Save.save({
                 'path': self.gameInfo[1]
             })
         ]

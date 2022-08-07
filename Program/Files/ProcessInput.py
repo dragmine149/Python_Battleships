@@ -1,7 +1,7 @@
 import importlib
 import os
 Create = importlib.import_module('Files.CreateInfo')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Functions = importlib.import_module('Files.Functions')
 readchar = importlib.import_module('Files.readchar.readchar')
 Print = Functions.Print
@@ -13,7 +13,7 @@ class Process:
         self.name = name
         if name is not None:
             # Loads the save system
-            self.saveSystem = newSave.save({
+            self.saveSystem = Save.save({
                 'name': name,
                 'path': path
             })
@@ -31,7 +31,7 @@ class Process:
         data = []
         for user in self.users:
             print({"User": user})
-            boardSystem = newSave.save({
+            boardSystem = Save.save({
                 'name': self.name,
                 'path': self.path
             })
@@ -78,11 +78,11 @@ class Process:
 
         self.users.sort()
 
-        gameData = newSave.save({
+        gameData = Save.save({
             'name': self.name,
             'path': self.path
         }).readFile("GameData", joint=True)
-        winData = newSave.save({
+        winData = Save.save({
             'name': self.name,
             'path': self.path
         })
@@ -96,7 +96,7 @@ class Process:
         for userIndex in range(len(self.users)):
             user = self.users[userIndex]
             print({"User": user})
-            placeData = newSave.save({
+            placeData = Save.save({
                 'path': self.path
             }).readFile('{}/placedData'.format(os.path.join(self.name, user)))
 

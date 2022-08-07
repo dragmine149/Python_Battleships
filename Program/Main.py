@@ -2,7 +2,7 @@ import importlib
 import sys
 import argparse
 Functions = importlib.import_module('Files.Functions')
-newSave = importlib.import_module('Files.newSave')
+Save = importlib.import_module('Files.Save')
 Settings = importlib.import_module('Files.Settings')
 
 
@@ -24,13 +24,13 @@ def praser():
 def command_options():
     args = praser()
     if args['save']:
+        # Force updates the save location.
         Settings.Settings().updateSave('path', args['save'][0])
     
     if args['delete']:
         def yes():
-            newSave = importlib.import_module('Files.newSave')
-            newSave.save.delete('Saves')
-            newSave.save.delete('Data')
+            Save.save.delete('Saves')
+            Save.save.delete('Data')
             sys.exit('Deleted old data. Please rerun')
 
         def no():
@@ -61,7 +61,7 @@ def Main():
     menu = GameMenu.menu
 
     # Delete temparary data stored in Saves/.Temp
-    newSave.save.delete('Saves/.Temp')
+    Save.save.delete('Saves/.Temp')
 
     # banner
     dashText = '-' * Functions.os.get_terminal_size().columns
