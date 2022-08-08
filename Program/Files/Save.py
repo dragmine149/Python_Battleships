@@ -210,13 +210,14 @@ class save:
 
         path = os.path.join(self.path, name) if name != "" else self.path
         if self._api:
+
             nameInfo = name.split("/")
             saveLoc = "Saves/.Temp/{}".format(nameInfo[len(nameInfo) -1])
             
             directory = ""
             for item in nameInfo[:len(nameInfo) - 1]:
                 directory += item + "/"
-            
+
             self._api.ChangeDirectory(directory)
             try:
                 Id = self._api.DownloadFile(saveLoc)
@@ -281,22 +282,23 @@ class save:
     CheckForFile(path)
     path -> the sub folder to check for.
     - Checks if the file in path exists under self.path
+    Change -> Tries to go into self.data['name'] dir
     """
-    def CheckForFile(self, path):
+    def CheckForFile(self, path, change=True):
         Npath = self.__replace(path)
         if self._api:
-            path = self.path
-            self._api.ChangeDirectory(self.data['name'])
+            if change:
+                self._api.ChangeDirectory(self.data['name'])
             # Checks in self.data['name'] folder instead of self.path
-            if self.data['name'] != '':
+            if path != '':
                 files = self.ls()
                 for file in files:
                     
                     if isinstance(file, dict):
-                        if file['name'] == self.data['name']:
+                        if file['name'] == path:
                             return True
 
-                    if file == self.data['name']:
+                    if file == path:
                         return True
             
             return False
@@ -335,17 +337,19 @@ class save:
 
 
 if __name__ == "__main__":
-    ss = save({'name': 'NSTTest', 'path': 'Saves'})
-    print(vars(ss))
-    ss.makeFolder('1/2', True)
-    print(vars(ss))
-    path = ss.writeFile('Testinfo')
-    print(path)
-    data = ss.readFile()
-    print(data)
-    folderData = ss.ls()
-    print(folderData)
-    file = ss.CheckForFile("1/2/3")
-    print(file)
-    deleted = ss.Delete()
-    print(deleted)
+    # ss = save({'name': 'NSTTest', 'path': 'Saves'})
+    # print(vars(ss))
+    # ss.makeFolder('1/2', True)
+    # print(vars(ss))
+    # path = ss.writeFile('Testinfo')
+    # print(path)
+    # data = ss.readFile()
+    # print(data)
+    # folderData = ss.ls()
+    # print(folderData)
+    # file = ss.CheckForFile("1/2/3")
+    # print(file)
+    # deleted = ss.Delete()
+    # print(deleted)
+    ss = save({'name': 'win', 'path': 'Saves'})
+    ss.writeFile({'win': 'drag'})

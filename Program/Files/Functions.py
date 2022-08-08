@@ -67,7 +67,6 @@ def RemoveNonGames(path="Saves"):
 
     try:
         games = saveLocation.ls()
-        print(games)
     except FileNotFoundError:
         return []
 

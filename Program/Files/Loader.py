@@ -116,23 +116,27 @@ Games found in: {} ({}) (Load Time: +)
         
         LoadTime = time.time()
         for gameIndex in range(len(self.gameList)):
-            game = self.gameList[gameIndex]
-            winnerLoadTime = time.time()
+            game = self.gameList[gameIndex]  # load the current game name
+            winnerLoadTime = time.time()  # start of winner check time
             
             completed = ''
-            gameData.data['name'] = game
-            winner = gameData.CheckForFile('win')
+            gameData.ChangeDirectory(game)  # change to the game directory.
+            winner = gameData.CheckForFile('win', False)  # check if winner file is there
             if winner:
-                    # reads winner if found
-                    winner = gameData.readFile("win", joint=True)["win"]
-                    if winner != '' and winner is not False:
-                        completed = '(Winner: {})'.format(winner)
-            
-            winnerEndLoadTime = time.time()
+                # reads winner if found
+                winner = gameData.readFile("win")["win"]  # reads winner
+                if winner != '' and winner is not False:
+                    completed = '{}(Winner: {}){}'.format(c('green'), 
+                                                          winner, 
+                                                          c())  # adds winner to list
+
+            winnerEndLoadTime = time.time()  # end of winner check time
             loadtimeMsg = ''
             if LoadTimeMsg:
+                # The message showing the winner check time.
                 loadtimeMsg = '({}s winner check time)'.format(round(winnerEndLoadTime - winnerLoadTime, 2))
 
+            # the overall message of that row.
             options += "{}: {} {} {}\n".format(gameIndex + 1, game,
                                                completed, loadtimeMsg)
             gameData.ChangeDirectory('..')
