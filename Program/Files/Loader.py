@@ -36,19 +36,14 @@ class Loader:
             delGameIndex = Functions.check("Please enter game number to delete (-1 to stop): ", ui, (-1, len(self.gameList))).getInput()  # noqa E501
             if delGameIndex != -1:
                 deletePath = None
-                # if apiExternal:
-                #     deletePath = Functions.RemoveNonGames(self.path)[delGame - 1]  # noqa
-                #     for item in self.path:
-                #         if item['name'] == deletePath:
-                #             result = save.save(self.external).Delete(item['id'])  # noqa
-                #
-                #             # Reset ui to show new list instead of old  # noqa
-                #             self.path = save.save(self.external).ListDirectory(dir=True)  # noqa
-                #             break
-                #     continue
                 deletePath = self.gameList[delGameIndex - 1]
-                Save.save({
-                            'path': self.path}).Delete(os.path.join(self.path, deletePath))  # noqa E501
+                
+                # Difference from api and normal
+                pathToDelete = os.path.join(self.path, deletePath)
+                if self.apiExternal:
+                    pathToDelete = deletePath
+
+                Save.save({'path': self.path}).Delete(pathToDelete)  # noqa E501
                 delGameIndex = None
         self.game = None
 

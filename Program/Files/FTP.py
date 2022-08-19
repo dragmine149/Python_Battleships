@@ -147,6 +147,34 @@ class FileTransferProtocole:
         return path
     
     def Delete(self, path):
+        # loop through
+        # if dir, loop again
+        # at end of dir again loop, kill dir
+        # kill files
+        # kill original
+        print("Deleting: {}".format(path))
+        
+        def DeleteSubFiles():
+            # loop through all files in sub dir
+            for item in self.ListDirectory():
+                if self.IsDirectory(item):
+                    
+                    # check if dir, switch delete switch back
+                    
+                    self.ChangeDirectory(item)
+                    DeleteSubFiles()
+                    self.ChangeDirectory('..')
+                
+                # delete file (empty dir or file)
+                self.ftp.delete(item)
+            
+        if self.IsDirectory(path):
+            # switch, loop, switch
+            self.ChangeDirectory(path)
+            DeleteSubFiles()
+            self.ChangeDirectory('..')
+        
+        # delete final file
         self.ftp.delete(path)
 
 
