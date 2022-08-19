@@ -42,7 +42,7 @@ class save:
         """
         if self.path == "Saves" or self.path == "Data":
             return
-        
+
         if self.path.find(':/') != -1:
             return self.__loadFTP()
         
@@ -245,7 +245,8 @@ class save:
         """
         self.data['name'] = dir
         if self._api:
-            self._api.ChangeDirectory(dir)
+            return self._api.ChangeDirectory(dir)
+        return True
     
     def GetPath(self):
         """Gets the current path

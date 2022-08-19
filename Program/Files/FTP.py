@@ -90,6 +90,7 @@ class FileTransferProtocole:
         """        
 
         try:
+            print(f"Current directory: {self.GetPath()} New dir: {dir}")
             self.ftp.cwd(dir)
             return True
         except ftplib.error_perm:
