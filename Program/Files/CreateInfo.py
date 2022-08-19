@@ -371,6 +371,7 @@ Password: {}{}\033[0m
             'password': self.password,
             'size': self.siZe,
         }
+        gameData.ChangeDirectory(gameFolder)
         gameData.writeFile(data, "GameData")
 
         return "Save"  # success!!!
