@@ -19,14 +19,19 @@ class Place:
 
     # Load more information, Mainly save information.
     def LoadInfo(self):
+        print("Loading user placed data")
         self.info = Save.save({
             'path': self.location[0],
         })
         loc = self.location[1]
-        self.placedData = self.info.readFile(
-            "{}/placedData".format(loc), True)
-        self.boardData = self.info.readFile(
-            "{}/ships".format(loc), True)
+        
+        self.info.ChangeDirectory(loc)
+        
+        print("Loading pD")
+        self.placedData = self.info.readFile("placedData", True)
+        print("loading bd")
+        self.boardData = self.info.readFile("ships", True)
+        print("Finished!")
 
     # The display
     def ShowDisplay(self, showShips=True, board=None):

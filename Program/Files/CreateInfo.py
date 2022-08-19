@@ -2,6 +2,7 @@ import getpass
 import string
 import random
 import importlib
+import os
 Functions = importlib.import_module('Files.Functions')
 Save = importlib.import_module('Files.Save')
 ShipInfo = importlib.import_module('Files.ShipInfo')
@@ -347,12 +348,16 @@ Password: {}{}\033[0m
             # create user data
             userData = Save.save({
                 'name': user,
-                'path': self.Loc + "/" + gameFolder,
+                'path': os.path.join(self.Loc, gameFolder),
             })
             # create user folder
             folder = userData.makeFolder()
-            userFolders.append(folder[0])
-
+            
+            if isinstance(folder, dict):
+                folder = folder[0]
+            
+            userFolders.append(folder)
+            userData.ChangeDirectory(folder)
             # create files for users
             userData.writeFile(board, 'ships')
 

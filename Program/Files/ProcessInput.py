@@ -9,6 +9,7 @@ Print = Functions.Print
 
 class Process:
     def __init__(self, path, name=None):
+        print("Processing...")
         self.path = path
         self.name = name
         if name is not None:
@@ -66,8 +67,11 @@ class Process:
     def Inputs(self, create=False):
         if create:
             return self.__create()
+        self.saveSystem.ChangeDirectory(self.name)
         # get users
         self.users = self.saveSystem.ls()
+        print(self.users)
+        self.users.pop(0)  # remove game data as "not a user"
 
         # Convert google drive list into normal data
         if isinstance(self.users[0], dict):

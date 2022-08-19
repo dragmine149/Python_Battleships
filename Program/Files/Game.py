@@ -9,6 +9,7 @@ newFire = importlib.import_module('Files.newFire')
 
 class Game:
     def __init__(self, data):
+        print("Game.py loading!")
         self.name = data[0]
         self.users = data[1]
         self.placed = data[2]
@@ -20,16 +21,27 @@ class Game:
             'path': self.location,
         })
         
+        print(f"game.py: {self.location}")
+        
         # If drive, gets the sub folder for the game instead of where all the games are stored.
         if self.gameData._api:
             files = self.gameData.ls()
             for file in files:
-                if file['name'] == self.name:
-                    self.location = file['id']
-                    self.gameData = Save.save({
-                        'name': self.name,
-                        'path': self.location
-                    })
+                print('Checking file: {}'.format(file))
+                fName = file
+                fLoc = os.path.join(self.location, file)
+                # translates for google drive
+                if isinstance(file, dict):
+                    fName = file['name']
+                    fLoc = file['id']
+
+                if fName == self.name:
+                    self.location = fLoc
+                    self.gameData.ChangeDirectory(fName)
+                    # self.gameData = Save.save({
+                    #     'name': self.name,
+                    #     'path': self.location
+                    # })
                     self.gamePath = os.path.join(self.location, self.name)
                     break
 
@@ -37,32 +49,31 @@ class Game:
         self.localUserIndex = None
 
     def Place(self):
+        print("Placement check")
         if self.multiplayer[0] != 'y':
             # Go through each user and get them to place things
             for user in range(len(self.users)):
                 if not self.placed[user]:
+                    print({"name": self.name})
+                    print({"Location": self.location})
+                    print({"user": self.users[user]})
                     userPlace = newPlace.Place(self.name,
                                                [self.location,
-                                                os.path.join(
-                                                    self.name,
-                                                    self.users[user]
-                                                )],
+                                                self.users[user]],
                                                self.users[user])
                     self.placed[user] = userPlace.Main()
                     if self.placed[user] is False:
                         # person A quit, no need for person B to place.
                         return False
 
+            print("Finished placement")
             return self.placed[0] and self.placed[1]
 
         # Checks if the local user has placed in this multiplayer game
         if not self.placed[self.localUserIndex]:
             userPlace = newPlace.Place(self.name,
                                        [self.location,
-                                        os.path.join(
-                                            self.name,
-                                            self.users[self.localUserIndex]
-                                        )],
+                                        self.users[self.localUserIndex]],
                                        self.users[self.localUserIndex])
             return userPlace.Main()
 
@@ -80,6 +91,7 @@ class Game:
         return placed
 
     def Fire(self):
+        print("Time to fire!")
         # Easy call to fire system
         newFire.Fire([self.name,
                       self.location,
@@ -89,7 +101,7 @@ class Game:
 
     def Password(self):
         # Checks if there is a password stored and gets them to enter it.
-        gameData = self.gameData.readFile('{}/GameData'.format(self.name))
+        gameData = self.gameData.readFile('GameData')
         if gameData['password'] is not None:
             word = getpass.getpass("Please enter game password: ")
             if word == gameData['password']:
