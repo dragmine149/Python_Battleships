@@ -307,6 +307,11 @@ class save:
                                            self.data['name'],
                                            Npath))
 
+    def IsDirectory(self, dir):
+        if self._api:
+            return self._api.IsDirectory(dir)
+        return os.path.isdir(os.path.join(self.path, dir))
+
     """
     Delete(path)
     path -> path to delete

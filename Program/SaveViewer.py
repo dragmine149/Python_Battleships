@@ -167,15 +167,18 @@ D: Right
                 # sorts ouut file stuff.
                 file = self.files[self.activeFileIndex[0]][self.activeFileIndex[1] - 1]  # noqa E501
                 file = file.strip("> ")
-                if os.path.isdir(os.path.join(self.folder, file)):
+                
+                if self.saveSystem.IsDirectory(file):
+                    self.saveSystem.ChangeDirectory(file)
+
                     if file != "..":
                         self.folder = os.path.join(self.folder, file)
                     else:
                         self.folder = os.path.split(self.folder)[0]
                 else:
                     # Functions.clear(1, "This is a file!", "red").
-                    FileEditor = File(self.folder, file)
-                    FileEditor.Main(self)
+                    Viewer = File(self.folder, file)
+                    Viewer.Main(self)
 
                 self.activeFile = 0
                 self.activeFileIndex = []

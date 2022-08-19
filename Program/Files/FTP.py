@@ -3,7 +3,6 @@ import importlib
 import os
 import time
 Functions = importlib.import_module('Files.Functions')
-# Settings = importlib.import_module('Files.Settings')
 
 class FileTransferProtocole:
     """
@@ -53,6 +52,19 @@ class FileTransferProtocole:
         """
         return self.ftp.nlst()
 
+    def IsDirectory(self, dir):
+        """Returns true if the input is a directory
+
+        Args:
+            dir (bool): is the input a directory?
+        """
+        print(self.ftp.nlst(dir))
+        
+        dirList = self.ftp.nlst(dir)
+        if dirList == [dir]:
+            return False
+        return True
+
     def MakeDirectory(self, name):
         """Make a directory, automatically make sub directories if specified.
 
@@ -88,6 +100,10 @@ class FileTransferProtocole:
         Returns:
             Success: Whever the code was successfully in changing directory.
         """        
+
+        if os.path.basename(self.GetPath()) == dir and not dir in self.ListDirectory():
+            print("Already in directory!")
+            return False # returns false if we are already in that directory and that dir isn't in this dir.
 
         try:
             print(f"Current directory: {self.GetPath()} New dir: {dir}")
