@@ -341,15 +341,13 @@ Password: {}{}\033[0m
         })
 
         gameFolder = gameData.makeFolder()
-        # print(gameFolder)
-        gameFolder = gameFolder
 
         userFolders = []
         for user in self.usernames:
             # create user data
             userData = Save.save({
                 'name': user,
-                'path': gameFolder,
+                'path': self.Loc + "/" + gameFolder,
             })
             # create user folder
             folder = userData.makeFolder()
