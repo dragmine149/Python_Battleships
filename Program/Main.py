@@ -86,6 +86,7 @@ Github: https://www.github.com/dragmine149/Python_Battleships
         # print({'main temp result': result})
         result = Game.Game(result).Main()
         print({'Game result': result})
+        choice = -0.5 # reset choice so we don't go to that menu on back.
 
 
 if __name__ == "__main__":
