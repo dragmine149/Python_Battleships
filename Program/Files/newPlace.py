@@ -218,10 +218,9 @@ class Place:
         Functions.clear()
         data = self.Place()
         if data == -2:
-            boardSize = Save.save({
+            boardInfo = Save.save({
                 'path': self.location[0]
-            }).readFile(
-                '{}/GameData'.format(os.path.split(self.location[1])[0]),
-                True)
-            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), "{}/shots".format(self.location[1]))
+            })
+            boardSize = boardInfo.readFile('GameData', True)
+            self.info.writeFile(Functions.board.CreateBoard(boardSize['size']), "shots")
         return data == -2
