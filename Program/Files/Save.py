@@ -91,12 +91,14 @@ class save:
         # Data for files
         try:
             if not os.path.exists("Saves"):
+                print("Creating saves!")
                 os.mkdir("Saves")
         except FileExistsError:
             print("Saves already exists yet doesn't exists...")
 
         try:
             if not os.path.exists("Saves/.Temp"):
+                print("Create .Temp in Saves")
                 os.mkdir("Saves/.Temp")
         except FileExistsError:
             print("Saves/.Temp already exists yet doesn't exists...")
@@ -104,6 +106,7 @@ class save:
         try:
             # Settings and other data
             if not os.path.exists("Data"):
+                print("Creating data")
                 os.mkdir("Data")
         except FileExistsError:
             print("Data already exists yet doesn't exists...")
@@ -323,7 +326,7 @@ class save:
 
         if not self._api:
             Npath = self.__replace(path)
-            save.delete(Npath)
+            return save.delete(Npath)
         return self._api.Delete(path)
 
     """
@@ -332,13 +335,15 @@ class save:
     """
     @staticmethod
     def delete(path):
-        if os.path.exists(path):
-            if os.path.isdir(path):
-                shutil.rmtree(path)
+        if path != "" and path != None:
+            if os.path.exists(path):
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                    return True
+                os.remove(path)
                 return True
-            os.remove(path)
-            return True
-        print('Path not found! -> {}'.format(path))
+            print('Path not found! -> {}'.format(path))
+            return False
         return False
 
 

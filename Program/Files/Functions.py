@@ -410,11 +410,11 @@ def LocationTest(Location):
         saveInfo.ChangeDirectory(folder)
 
         # creates file
-        savedLocation = saveInfo.writeFile("This is a test file")
+        savedLocation = saveInfo.writeFile("This is a test file", "Test")
         print({'savedLocation': savedLocation})
 
         # reads file from same place
-        data = saveInfo.readFile()
+        data = saveInfo.readFile("Test/Test")
         print({'data': data})
 
         if data != "This is a test file":
@@ -422,10 +422,12 @@ def LocationTest(Location):
             clear(3, "Please make sure that this program has read and write ability to {}".format(Location))  # noqa
             Location = None
 
+        print("Folder to delete: {}".format(folder))
+        print(saveInfo.GetPath())
         deletion = saveInfo.Delete(folder)
-        deletion2 = saveInfo.delete('Saves/.Temp/Test')
+        # deletion2 = saveInfo.delete('Saves/.Temp/Test')
         print({'deletion': deletion})
-        print({'deletion2': deletion2})
+        # print({'deletion2': deletion2})
 
         return True, saveInfo._api
     except Exception:
@@ -500,38 +502,52 @@ def changePath():
     while not external:
         try:
             external = input("Please enter location of storage (leave blank to reset, Keyboard Interrupt to reset input): ").rstrip().replace('"', '')  # noqa
-            if external != "":
+            if external != "" and external != "Saves":  # external being equal to saves in annoying.
                 # Windows has different file structure AAA
                 if os.name != "nt":
                     external = external.replace("\\", "")  # noqa
 
                 # test and tells us
                 result = LocationTest(external)
+                print(result)
+                print(result[0])
+                print(result[1])
+                if result[0]:
+                    print("Success!")
+                    # set the path to the new external location
+                    path = external
 
-                # set the path to the new external location
-                path = external
+                    # tells the code to use different location
+                    if result[1]:
+                        apiExternal = True
 
-                # tells the code to use different location
-                if result[1]:
-                    apiExternal = True
+                        # get the files
+                        games = Save.save({
+                            'path': external
+                        }).ls()
+                        games = games
 
-                    # get the files
-                    games = Save.save({
-                        'path': external
-                    }).ls()
-                    games = games
-
-                    # checks if there is game data
-                    if games is None:
-                        external = None
-                        path = "Saves"
-                        clear(2, "No games found in desired location!")  # noqa E501
-                        continue
+                        # checks if there is game data
+                        if games is None:
+                            external = None
+                            path = "Saves"
+                            clear(2, "No games found in desired location!")  # noqa E501
+                            continue
+                        return games, path, apiExternal
+                
+                    apiExternal = False
+                    games = path
                     return games, path, apiExternal
-
-                apiExternal = False
-                games = path
-                return games, path, apiExternal
+                
+                print("Error!")
+                # break if error in stuff
+                external = None
+                games = None
+                path = None
+                apiExternal = None
+                clear(1, "Failed to find folder!", "red")
+                break
+                
             path = "Saves"
             games = "Saves"
             apiExternal = False
