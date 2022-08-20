@@ -23,8 +23,7 @@ class Fire:
 
     def __getGameInformation(self):
         # More information
-        self.game = self.gameData.readFile(
-            "{}/GameData".format(self.gameInfo[0]))
+        self.game = self.gameData.readFile("GameData")
         self.turn = self.game["turn"]
         self.turnIndex = self.userInfo.index(self.turn)
         self.opponentTurnIndex = 0 if self.turnIndex == 1 else 1
@@ -33,31 +32,29 @@ class Fire:
 
     def __RetrieveBoards(self):
         # Even more information
+        print({"Path": self.gameInfo[1]})
         self.gameData = Save.save({
             'path': self.gameInfo[1]
         })
         # Paths for each individual users.
-        # Done like this because Save.data['path'] can only be id for drive
-        self.guInfo = [os.path.join(self.gameInfo[0],
-                                    self.userInfo[0]),
-                       os.path.join(self.gameInfo[0],
-                                    self.userInfo[1])]
-        self.userData = [
-            Save.save({
-                'path': self.gameInfo[1]
-            }),
-            Save.save({
-                'path': self.gameInfo[1]
-            })
-        ]
+    
+        user1 = Save.save({
+            'path': os.path.join(self.gameInfo[1], self.userInfo[0])
+        })
+        user2 = Save.save({
+            'path': os.path.join(self.gameInfo[1], self.userInfo[1])
+        })
+    
+        self.userData = [user1, user2]
+
         self.userBoards = [
             [
-                self.userData[0].readFile("{}/shots".format(self.guInfo[0])),
-                self.userData[0].readFile("{}/ships".format(self.guInfo[0])),
+                user1.readFile("shots"),
+                user1.readFile("ships"),
             ],
             [
-                self.userData[1].readFile("{}/shots".format(self.guInfo[1])),
-                self.userData[1].readFile("{}/ships".format(self.guInfo[1])),
+                user2.readFile("shots"),
+                user2.readFile("ships"),
             ]
         ]
 
@@ -137,9 +134,9 @@ class Fire:
             # Saving data...
             takenShot = True
             self.userData[0].writeFile(
-                self.userBoards[0][0], "{}/shots".format(self.guInfo[0]))
+                self.userBoards[0][0], "shots")
             self.userData[1].writeFile(
-                self.userBoards[1][0], "{}/shots".format(self.guInfo[1]))
+                self.userBoards[1][0], "shots")
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
