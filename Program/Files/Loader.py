@@ -36,15 +36,18 @@ class Loader:
             delGameIndex = Functions.check("Please enter game number to delete (-1 to stop): ", ui, (-1, len(self.gameList))).getInput()  # noqa E501
             if delGameIndex != -1:
                 deletePath = None
-                deletePath = self.gameList[delGameIndex - 1]
-                
-                # Difference from api and normal
-                pathToDelete = os.path.join(self.path, deletePath)
-                if self.apiExternal:
-                    pathToDelete = deletePath
+                try:
+                    deletePath = self.gameList[delGameIndex - 1]
+                    # Difference from api and normal
+                    pathToDelete = os.path.join(self.path, deletePath)
+                    if self.apiExternal:
+                        pathToDelete = deletePath
 
-                Save.save({'path': self.path}).Delete(pathToDelete)  # noqa E501
-                delGameIndex = None
+                    Save.save({'path': self.path}).Delete(pathToDelete)  # noqa E501
+                    delGameIndex = None
+                except IndexError:
+                    Functions.Print("Index out of range!", "red")
+                
         self.game = None
 
     # go back to previous menu
