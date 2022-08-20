@@ -210,9 +210,9 @@ class Place:
                 if saved:
                     print("Saved")
                     self.placedData[self.ships[place].Name] = True
-                    loc = self.location[1]
-                    self.info.writeFile(self.boardData, "{}/ships".format(loc))
-                    self.info.writeFile(self.placedData, "{}/placedData".format(loc))
+
+                    self.info.writeFile(self.boardData, "ships")
+                    self.info.writeFile(self.placedData, "placedData")
 
     def Main(self):
         Functions.clear()
