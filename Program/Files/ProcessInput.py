@@ -30,15 +30,20 @@ class Process:
 
     def viewBoards(self):
         data = []
+        gameInfo = Save.save({
+            'path': self.path
+        })
+        gameInfo.ChangeDirectory(self.name)
+        
         for user in self.users:
             print({"User": user})
-            boardSystem = Save.save({
-                'name': self.name,
-                'path': self.path
-            })
-            ships = boardSystem.readFile(os.path.join(user, "ships"), joint=True)
-            shots = boardSystem.readFile(os.path.join(user, "shots"), joint=True)
+            gameInfo.ChangeDirectory(user)
+
+            ships = gameInfo.readFile("ships")
+            shots = gameInfo.readFile("shots")
             data.append([ships, shots])
+            
+            gameInfo.ChangeDirectory('..')
 
         print('-' * Functions.os.get_terminal_size().columns)
         for user in data:
@@ -70,8 +75,6 @@ class Process:
         self.saveSystem.ChangeDirectory(self.name)
         # get users
         self.users = self.saveSystem.ls()
-        print(self.users)
-        self.users.pop(0)  # remove game data as "not a user"
 
         # Convert google drive list into normal data
         if isinstance(self.users[0], dict):
@@ -81,19 +84,27 @@ class Process:
             self.users = newUsers
 
         self.users.sort()
-
-        gameData = Save.save({
-            'name': self.name,
-            'path': self.path
-        }).readFile("GameData", joint=True)
-        winData = Save.save({
-            'name': self.name,
+        
+        blackList = ['GameData', 'win']
+        newList = []
+        print({'original': self.users})
+        for i in range(len(self.users)):
+            if self.users[i] not in blackList:
+                newList.append(self.users[i])
+        
+        self.users = newList
+        
+        print({'new': self.users})
+        
+        gameInfo = Save.save({
             'path': self.path
         })
+        gameInfo.ChangeDirectory(self.name)
+        gameData = gameInfo.readFile("GameData")
 
         # checks if game already won
-        if winData.CheckForFile('win'):
-            return self.winView(winData.readFile('win', joint=True)["win"])
+        if gameInfo.CheckForFile('win'):
+            return self.winView(gameInfo.readFile('win')["win"])
 
         # Checks if users have placed their ships
         placed = [True, True]
