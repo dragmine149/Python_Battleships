@@ -205,6 +205,9 @@ class save:
     - If not found, returns False
     """
     def readFile(self, name="", nameAllowed=True, joint=False):
+        
+        print("Attempting to read with inputs. (name: {}, nameAllowed: {}, joint: {})".format(name, nameAllowed, joint))
+        
         # Multi use case
         if name == "" and nameAllowed:
             name = self.data['name']
@@ -237,6 +240,7 @@ class save:
         # local read area
         # Don't need to add name here as done eariler
         path = self.__replace(path)
+        print("Looking at: {}".format(path))
         if os.path.exists(path):
             with open(path, 'rb') as file:
                 return self._Encode(file.read())
@@ -247,6 +251,12 @@ class save:
         """Changes the directory stored.
         """
         self.data['name'] = dir
+
+        if dir == "..":
+            self.path = os.path.split(self.path)[0]
+        else:
+            self.path = os.path.join(self.path, dir)
+        
         if self._api:
             return self._api.ChangeDirectory(dir)
         return True

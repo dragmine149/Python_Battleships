@@ -119,4 +119,4 @@ class Process:
                 if not placeData[ship]:
                     placed[userIndex] = False
 
-        return self.name, self.users, placed, self.path, gameData["multi"]
+        return self.name, self.users, placed, gameInfo.GetPath(), gameData["multi"]

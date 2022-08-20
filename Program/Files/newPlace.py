@@ -23,9 +23,9 @@ class Place:
         self.info = Save.save({
             'path': self.location[0],
         })
-        loc = self.location[1]
-        
-        self.info.ChangeDirectory(loc)
+        print(self.location)
+        self.info.ChangeDirectory(self.location[1])
+        print(self.info.GetPath())
         
         print("Loading pD")
         self.placedData = self.info.readFile("placedData", True)

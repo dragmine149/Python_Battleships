@@ -414,7 +414,7 @@ def LocationTest(Location):
         print({'savedLocation': savedLocation})
 
         # reads file from same place
-        data = saveInfo.readFile("Test/Test")
+        data = saveInfo.readFile("Test")
         print({'data': data})
 
         if data != "This is a test file":

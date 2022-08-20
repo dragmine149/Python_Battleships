@@ -342,16 +342,22 @@ Password: {}{}\033[0m
         })
 
         gameFolder = gameData.makeFolder()
+        print({"Game Folder": gameFolder})
+        gameData.ChangeDirectory(self.Gname)
+        print(gameData.GetPath())
 
         userFolders = []
         for user in self.usernames:
             # create user data
             userData = Save.save({
                 'name': user,
-                'path': os.path.join(self.Loc, gameFolder),
+                'path': gameData.GetPath()
             })
+            print({"User Data Path": userData.GetPath()})
             # create user folder
             folder = userData.makeFolder()
+            print({"Created folder": folder})
+            # userData.ChangeDirectory(user)
             
             if isinstance(folder, dict):
                 folder = folder[0]

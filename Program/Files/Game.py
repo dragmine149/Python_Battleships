@@ -38,12 +38,10 @@ class Game:
                 if fName == self.name:
                     self.location = fLoc
                     self.gameData.ChangeDirectory(fName)
-                    # self.gameData = Save.save({
-                    #     'name': self.name,
-                    #     'path': self.location
-                    # })
                     self.gamePath = os.path.join(self.location, self.name)
                     break
+        else:
+            self.gameData.ChangeDirectory(self.name)
 
         self.localUser = None
         self.localUserIndex = None
