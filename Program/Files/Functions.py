@@ -192,6 +192,7 @@ class check:
 
         # tries again
         if callable(function):
+            # This is different as it has split up self._extra instead of the first instance
             if functionVars is not None:
                 return function(functionVars)
             return function()

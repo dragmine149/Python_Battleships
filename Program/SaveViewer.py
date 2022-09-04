@@ -83,6 +83,7 @@ Current Folder: {}
         files = self.__ListFiles()
         newFileList = []
         tempList = []
+        print(files)
         for file in range(len(files)):
 
             fileData = ""
@@ -113,6 +114,7 @@ Current Folder: {}
     # Prints out all the files
     def __ShowFiles(self):
         self.files = self.__SortFiles()
+        print(self.files)
 
         length_lst = [len(item) for row in self.files for item in row]
 
