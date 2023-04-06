@@ -35,10 +35,7 @@ Arguments:
     - Required: No
     - Value: String (result from colours.c)
 """
-import importlib
-colours = importlib.import_module('Files.colours')
-c = colours.c
-reverse = colours.reverse
+import colorama
 
 
 class Short:
@@ -47,7 +44,7 @@ class Short:
         self.Height = 1
         self.Name = "Destroyer (2 long)"
         self.Symbol = "{"
-        self.Colour = c('r')
+        self.Colour = colorama.Fore.RED
 
 
 class Medium1:
@@ -56,7 +53,7 @@ class Medium1:
         self.Height = 1
         self.Name = "Submarine (3 long)"
         self.Symbol = "}"
-        self.Colour = c('o')
+        self.Colour = colorama.Fore.YELLOW
 
 
 class Medium2:
@@ -65,7 +62,7 @@ class Medium2:
         self.Height = 1
         self.Name = "Cruiser (3 long)"
         self.Symbol = "="
-        self.Colour = c('y')
+        self.Colour = colorama.Fore.LIGHTYELLOW_EX
 
 
 class Long:
@@ -74,7 +71,7 @@ class Long:
         self.Height = 1
         self.Name = "Battleship (4 long)"
         self.Symbol = "("
-        self.Colour = c('g')
+        self.Colour = colorama.Fore.GREEN
 
 
 class ExtraLong:
@@ -83,7 +80,7 @@ class ExtraLong:
         self.Height = 1
         self.Name = "Aircraft Carrier (5 long)"
         self.Symbol = ")"
-        self.Colour = c('c')
+        self.Colour = colorama.Fore.CYAN
 
 
 def getShips():
@@ -151,14 +148,6 @@ class shipInfo:
             # set health
             ship.Health = self.calculate(ship)
             goodShips.append(ship)  # If reach, then good ship
-
-            # colour check
-            try:
-                reversedCode = reverse(ship.Colour).reverse()
-                if not reversedCode:
-                    ship.Colour = None
-            except AttributeError:
-                ship.Colour = None
 
         return goodShips
 

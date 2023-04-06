@@ -1,2 +1,0 @@
-Hello! This is a test upload file that contains no important information
-This file should not stay on your drive, if it does please contact a developer

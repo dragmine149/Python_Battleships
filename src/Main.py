@@ -1,9 +1,13 @@
 import importlib
 import sys
 import argparse
-Functions = importlib.import_module('Files.Functions')
-Save = importlib.import_module('Files.Save')
-Settings = importlib.import_module('Files.Settings')
+from PythonFunctions import Check
+from PythonFunctions.IsDigit import IsDigit
+from PythonFunctions.Save import save
+from PythonFunctions.TerminalDisplay import Display
+from Files import Settings
+
+sv = save()
 
 
 def praser():
@@ -25,6 +29,7 @@ def praser():
     args = vars(parser.parse_args())
     return args
 
+
 def command_options():
     """Takes the command lines arguments and translates them into commands
 
@@ -35,20 +40,20 @@ def command_options():
     if args['save']:
         # Force updates the save location.
         Settings.Settings().updateSave('path', args['save'][0])
-    
+
     if args['delete']:
         def yes():
-            Save.save.delete('Saves')
-            Save.save.delete('Data')
+            sv.RemoveFolder(['Saves', 'Data'])
             sys.exit('Deleted old data. Please rerun')
 
         def no():
             sys.exit('Aborted!')
 
-        Functions.check('Are you sure you want to delete all data?: ',
-                        returnFunc=(yes, no)).getInput('ynCheck')
+        chk = Check.Check()
+        chk.getInput("Are you sure you want to delete all data?: ",
+                     chk.ModeEnum.yesno, y=yes, n=no)
 
-    r = Functions.IsDigit(args['menu'])
+    r = IsDigit(args['menu'])
     print(r, args['menu'])
 
     if not r:
@@ -56,9 +61,11 @@ def command_options():
 
     return int(args['menu'])
 
+
 class Choices:
     """Stores information about what each option does
     """
+
     def __init__(self):
         Loader = importlib.import_module('Files.Loader')
         pi = importlib.import_module('Files.ProcessInput')
@@ -66,14 +73,19 @@ class Choices:
         self.path = self.Loader.path
         self.Process = pi.Process(self.path)
 
-    # doesn't really generate, hard coded list
-    def generate(self):
-        return {
+    def activate(self, pos):
+        pos = pos[1]
+        options = {
             1: self.selectGame,
             2: self.makeGame,
             3: self.settings,
-            4: self.quit,
+            4: lambda: sys.exit("Thank you for playing")
         }
+
+        method = options.get(pos)
+        if method:
+            return method()
+        raise ValueError("Unimplemented option!")
 
     def quit(self):
         sys.exit("Thank you for playing")
@@ -91,39 +103,39 @@ class Choices:
         result = Settings.Settings().showDisplay()
         return result
 
+
 def Main():
     # goes into menu
     result = command_options() or -0.5
-
-    Display = importlib.import_module('Files.Display')
+    choice = Choices()
 
     # Delete temparary data stored in Saves/.Temp
-    Save.save.delete('Saves/.Temp')
+    sv.RemoveFolder('Saves/.Temp')
 
     # banner
-    dashText = '-' * Functions.os.get_terminal_size().columns
-    info = """\033[32m{}
-Python Battleships
+    info = """Python Battleships
 
 Creator: dragmine149
-Github: https://www.github.com/dragmine149/Python_Battleships
-{}
-\033[0m""".format(dashText, dashText)
+Github: https://www.github.com/dragmine149/Python_Battleships"""
 
     while True:
         print("\x1b[2J\x1b[H", end='')
-        
+
         if result == -0.5:
-            dis = Display.Display(info)
-            dis.Header()
-            result = dis.Options(["Load Games", "Make New Game", "Settings"], ["Quit"]) + 1
+            dis = Display()
+            dis.ShowHeader(text=info)
+            dis.SetOptions(
+                {
+                    0: (choice.activate, "Load Games", 1),
+                    1: (choice.activate, "Make New Game", 2),
+                    2: (choice.activate, "Settings", 3),
+                    3: (choice.activate, "Quit", 4)
+                }
+            )
+            result = dis.ShowOptions()
             print("Returned Result: {}".format(result))
-        
-        Choices().generate()[result]()
-        # print({'main temp result': result})
-        # result = Game.Game(result).Main()
-        # print({'Game result': result})
-        result = -0.5 # reset choice so we don't go to that menu on back.
+
+        result = -0.5  # reset choice so we don't go to that menu on back.
 
 
 if __name__ == "__main__":

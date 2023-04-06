@@ -1,10 +1,8 @@
-import importlib
 import os
-Create = importlib.import_module('Files.CreateInfo')
-Save = importlib.import_module('Files.Save')
-Functions = importlib.import_module('Files.Functions')
-readchar = importlib.import_module('Files.readchar.readchar')
-Print = Functions.Print
+
+from PythonFunctions.Save import save
+from Files import CreateInfo as Create
+from Files import Settings
 
 
 class Process:
@@ -12,15 +10,10 @@ class Process:
         print("Processing...")
         self.path = path
         self.name = name
-        if name is not None:
-            # Loads the save system
-            self.saveSystem = Save.save({
-                'name': name,
-                'path': path
-            })
+        self.sv = save()
 
     def __create(self):
-        self.path = Functions.Settings.request(["path"])[0]
+        self.path = Settings.request(["path"])[0]
         Data = Create.CreateData(self.path, self.name).getOption()
         # checks if no data before trying to return chaos
         if Data is None:

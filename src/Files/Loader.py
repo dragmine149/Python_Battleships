@@ -1,53 +1,52 @@
 import os
 import importlib
 import time
+import colorama
 
-Functions = importlib.import_module('Files.Functions')
+from PythonFunctions.Save import save
+from PythonFunctions.Message import Message
+from PythonFunctions.Check import Check
+
 Menu = importlib.import_module('Files.GameMenu')
-Save = importlib.import_module('Files.Save')
 pi = importlib.import_module('Files.ProcessInput')
 Settings = importlib.import_module('Files.Settings')
-colours = importlib.import_module('Files.colours')
-
-c = colours.c
 
 
 class Loader:
     def __init__(self):
         # loads
         print("Loading games...")
+        self.save = save()
+        self.msg = Message()
+        self.chk = Check()
+
         self.game = None
         path = Settings.request(["path"])[0]
         self.games = path
         self.path = path
-        saveInfo = Save.save({
-            'path': path
-        })
-        self.apiExternal = saveInfo._api
         self.gameList = None
 
     # deletes a game
     def deleteGame(self):
         delGameIndex = None
         while delGameIndex is None:
-            Functions.clear()
+            self.msg.clear()
             info, options, choices, external = self.getGames()
             ui = info + "\n" + options
-            delGameIndex = Functions.check("Please enter game number to delete (-1 to stop): ", ui, (-1, len(self.gameList))).getInput()  # noqa E501
-            if delGameIndex != -1:
-                deletePath = None
-                try:
-                    deletePath = self.gameList[delGameIndex - 1]
-                    # Difference from api and normal
-                    pathToDelete = os.path.join(self.path, deletePath)
-                    if self.apiExternal:
-                        pathToDelete = deletePath
+            print(ui)
+            delGameIndex = self.chk.getInput(
+                "Please enter game number to delete (leave blank to stop): ",
+                self.chk.ModeEnum.int, lower=0, higher=self.gameList)
+            if delGameIndex is not None:
+                deletePath = self.gameList[delGameIndex - 1]
+                # Difference from api and normal
+                pathToDelete = os.path.join(self.path, deletePath)
+                if self.apiExternal:
+                    pathToDelete = deletePath
 
-                    Save.save({'path': self.path}).Delete(pathToDelete)  # noqa E501
-                    delGameIndex = None
-                except IndexError:
-                    Functions.Print("Index out of range!", "red")
-                
+                self.save.RemoveFolder(pathToDelete)
+                delGameIndex = None
+
         self.game = None
 
     # go back to previous menu
@@ -60,31 +59,23 @@ class Loader:
         self.games, self.path, self.apiExternal = data
         return "Changed"
 
-    def gameMenuInfo(self, options):
-        if options == "":
-            options = c('r') + """No games found!
+    def gameMenuInfo(self, optionsText):
+        if optionsText == "":
+            optionsText = f"""{colorama.Fore.RED}No games found!
 Please reload by giving no input, Choose a different location or make a game.
-""" + c()
+{colorama.Fore.RESET}"""
 
-        def all(choice):
-            Functions.Print('ALL OBJECT CALLED', 'green', 'bold')
-            return choice
-
-        choices = {
-            "All": all,
-            0: self.back,
-            -1: self.deleteGame,
-            -2: self.changePath
+        options = {
+            -2: (self.changePath, "Change Path"),
+            -1: (self.deleteGame, "Delete Game"),
+            0: (self.back, "Back")
         }
-        external = {
-            -1: 'Delete Game',
-            -2: 'Change Path'
-        }
-        return [options, choices, external]
+        return optionsText, options
 
     def getGames(self):
-        print('loadinG Games')
-        self.games, self.path, LoadTimeMsg = Settings.request(['path', 'path', 'loadTimes'])
+        print('loading Games')
+        self.games, self.path, LoadTimeMsg = Settings.request(
+            ['path', 'path', 'loadTimes'])
         loadtimeStart = time.time()
 
         # sets the message so the user knows where it is better
@@ -111,37 +102,41 @@ Games found in: {} ({}) (Load Time: +)
             'name': '',
             'path': self.path
         })
-        
+
         LoadTime = time.time()
         for gameIndex in range(len(self.gameList)):
             game = self.gameList[gameIndex]  # load the current game name
             print(f"Checking: {game}")
             winnerLoadTime = time.time()  # start of winner check time
-            
+
             completed = ''
-            result = gameData.ChangeDirectory(game)  # change to the game directory.
+            # change to the game directory.
+            result = gameData.ChangeDirectory(game)
             if result:
-                winner = gameData.CheckForFile('win', False)  # check if winner file is there
+                # check if winner file is there
+                winner = gameData.CheckForFile('win', False)
                 if winner:
                     # reads winner if found
                     winner = gameData.readFile("win")["win"]  # reads winner
                     if winner != '' and winner is not False:
-                        completed = '{}(Winner: {}){}'.format(c('green'), 
-                                                            winner, 
-                                                            c())  # adds winner to list
+                        completed = '{}(Winner: {}){}'.format(c('green'),
+                                                              winner,
+                                                              c())  # adds winner to list
 
                 winnerEndLoadTime = time.time()  # end of winner check time
                 loadtimeMsg = ''
                 if LoadTimeMsg:
                     # The message showing the winner check time.
-                    loadtimeMsg = '({}s winner check time)'.format(round(winnerEndLoadTime - winnerLoadTime, 2))
+                    loadtimeMsg = '({}s winner check time)'.format(
+                        round(winnerEndLoadTime - winnerLoadTime, 2))
 
                 # the overall message of that row.
                 options += "{}: {} {} {}\n".format(gameIndex + 1, game,
-                                                completed, loadtimeMsg)
+                                                   completed, loadtimeMsg)
                 gameData.ChangeDirectory('..')
             else:
-                Functions.Print("Failed to switch to directory: {}!".format(game), "red", "bold")
+                Functions.Print(
+                    "Failed to switch to directory: {}!".format(game), "red", "bold")
 
         LoadEndTime = time.time()
 

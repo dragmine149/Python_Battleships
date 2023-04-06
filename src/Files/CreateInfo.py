@@ -1,11 +1,13 @@
 import getpass
 import string
 import random
-import importlib
-import os
-Functions = importlib.import_module('Files.Functions')
-Save = importlib.import_module('Files.Save')
-ShipInfo = importlib.import_module('Files.ShipInfo')
+
+from PythonFunctions.CleanFolderData import Clean
+from PythonFunctions.Message import Message
+from PythonFunctions.Check import Check
+from PythonFunctions.Save import save
+from PythonFunctions import Board
+from Files import ShipInfo
 
 
 class CreateData:
@@ -14,12 +16,7 @@ class CreateData:
         self.Gname = name
         self.usernames = [getpass.getuser(), None]
         self.siZe = [10, 10]
-
         self.Loc = path
-        result = Functions.LocationTest(path)
-        if not result:
-            self.Loc = "Saves"
-
         self.Multi = "no"
         self.password = None
         self.VisiblePassword = "Disabled"
@@ -29,6 +26,10 @@ class CreateData:
                         '\033[32m',
                         '\033[32m',
                         '\033[33m']
+        self.msg = Message()
+        self.chk = Check()
+        self.cln = Clean()
+        self.saveModule = save() 
 
     def showOptions(self):
         # Prints off the current settings and what options are alvalible
@@ -83,10 +84,10 @@ Password: {}{}\033[0m
                 7: self.save
             }
 
-            Functions.clear()
-            choice = Functions.check("What would you like to change?: ",
-                                     self.showOptions,
-                                     (0, 7)).getInput()
+            self.msg.clear()
+            choice = self.chk.getInput("What would you like to change?: ",
+                                       self.chk.ModeEnum.int,
+                                       lower=0, higher=7)
 
             choiceFunction = options[choice]
             result = choiceFunction()
@@ -104,7 +105,7 @@ Password: {}{}\033[0m
                 self.Gname = None
                 continue
 
-            games = Functions.RemoveNonGames(self.Loc)
+            games = self.cln.clean(self.Loc)
             if self.Gname not in games:
                 self.colours[0] = '\033[32m'
                 return
@@ -122,7 +123,11 @@ Password: {}{}\033[0m
                 # Functions.clear(0, "Please enter a new game name!")
                 # return "Name"
 
-            result = Functions.check("Game with this name already exists. Rename to '{}_{}'?: ".format(self.Gname, randomEnd), returnFunc=(yesFunc, noFunc)).getInput("ynCheck")  # noqa E501
+            newName = '{self.Gname}_{randomEnd}'
+            self.chk.getInput(
+                f"Game with this name already exists. Rename to {newName}",
+                self.chk.ModeEnum.yesno,
+                y=yesFunc, n=noFunc)
 
     def __nameCheck(self, name, old, other=None):
         newName = name
@@ -165,9 +170,10 @@ Password: {}{}\033[0m
                 # Move cursor and stuff
                 print("\033[%d;%dH" % (19, 0))
                 space = " " * (len(str(oldUsers)) - 1)
-                print("Please enter player {}'s name (Blank to keep same)".format(i + 1), end='')  # noqa E501
+                print(f"Please enter player {i + 1}'s name (Blank to keep same)", end='')
                 print("\033[%d;%dHPlayers: [{}".format(space) % (3, 0), end='')
-                self.usernames[i] = input("\033[%d;%dH{}".format(pastNameText) % (3, 11))  # noqa E501
+                self.usernames[i] = input(
+                    f"\033[%d;%dH{pastNameText}" % (3, 11))
                 print("\033[%d;%dH" % (19, 0))
 
                 # Process input
@@ -194,33 +200,33 @@ Password: {}{}\033[0m
         y = None
 
         while x is None:
-            print("\033[%d;%dHSize: [{}".format(" " * len(str(oldSize))) % (4, 0))  # noqa E501
+            print(f"\033[%d;%dHSize: [{' ' * len(str(oldSize))}" % (4, 0))
             print("\033[%d;%dH" % (19, 0))
             x = input("Please enter X coordinate \033[%d;%dHSize: [" % (4, 0))
             print("\033[%d;%dH" % (19, 0))
 
             if not x.isdigit():
-                Functions.warn(2, "X is not a digit!{}".format(" " * 25), "red")  # noqa E501
+                self.msg.warn(f"X is not a digit!{' ' * 25}", 2)
                 x = None
 
             if x.isdigit():
                 x = int(x)
                 if x < 5:
-                    Functions.warn(2, "X is too small!", "red")
+                    self.msg.warn("X is too small!", 2)
                     x = None
 
         while y is None:
-            y = input("Please enter Y coordinate\033[%d;%dHSize: [{}, ".format(x) % (4, 0))  # noqa E501
+            y = input("Please enter Y coordinate\033[%d;%dHSize: [{}, ".format(x) % (4, 0))
             print("]\033[%d;%dH" % (19, 0))
 
             if not y.isdigit():
-                Functions.warn(2, "Y is not a digit!{}".format(" " * 25), "red")  # noqa E501
+                self.msg.warn(f"Y is not a digit!{' ' * 25}", 2)
                 y = None
 
             if y.isdigit():
                 y = int(y)
                 if y < 5:
-                    Functions.warn(2, "Y is too small!", "red")
+                    self.msg.warn("Y is too small!", 2)
                     y = None
 
         self.siZe = [x, y]
@@ -230,7 +236,7 @@ Password: {}{}\033[0m
         # get the game save location
         Location = None
         while Location is None:
-            Functions.clear()
+            self.msg.clear()
             print("""Save Location:
 - Supports google drive folder id (if google drive api installed)
 - Leave blank for default location
@@ -254,7 +260,8 @@ Password: {}{}\033[0m
                 allowed = Functions.LocationTest(Location)
                 if not allowed[0]:
                     Location = None
-                    Functions.warn(2, "Error occured whilst trying to change location.", ["", "red"])
+                    self.msg.warn(
+                        "Error occured whilst trying to change location.", 2)
 
         print({"Loc": Location})
         self.Loc = Location
@@ -262,24 +269,24 @@ Password: {}{}\033[0m
 
     def MultiPlayer(self):
         if self.Loc == "Saves":
-            Functions.clear(2, "Disabled! Save location is default, Please change to have multiplayer support!", "red")  # noqa E501
+            self.msg.clear(
+                "Disabled! Save location is default, Please change to have multiplayer support!", 2
+            )
             return
         # get if multiplayer or not
-        multi = None
-        while multi is None:
-            def returnFunc():
-                Functions.clear(2, "Please enter y or n!")
-                return None
-
-            multi = Functions.check("Online Multiplayer (y = 2 players on different devices, n = 2 players on the same device): ", returnFunc=("yes", "no", returnFunc)).getInput("ynCheck")  # noqa E501
-        self.Multi = multi
+        
+        multi = self.chk.getInput(
+            "Online multiplayer? (y = different devices, n = same device)",
+            self.chk.ModeEnum.yesno)
+        self.Multi = "yes" if multi else "no"
 
     def Password(self):
         self.password = None  # change to ask for password?
         self.VisiblePassword = "Disabled"
 
         while self.password is None:
-            password = getpass.getpass("Enter a password (blank for no passwords): ")  # noqa E501
+            password = getpass.getpass(
+                "Enter a password (blank for no passwords): ")
             if password.rstrip() == "":
                 self.password = None
                 self.VisiblePassword = "Disabled"
@@ -287,7 +294,8 @@ Password: {}{}\033[0m
                 return
             check = None
             while check is None:
-                check = getpass.getpass("Please re-enter the password (-1 to change password): ")  # noqa E501
+                check = getpass.getpass(
+                    "Please re-enter the password (-1 to change password): ")
                 if check == password:
                     self.VisiblePassword = "Enabled"
                     self.colours[5] = '\033[32m'
@@ -302,78 +310,63 @@ Password: {}{}\033[0m
         # Checks if all fields are valid.
         # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
         if self.Gname is None:
-            Functions.clear(2, "Please enter a name!")
+            self.msg.clear("Please enter a name!", 2)
             return "Name"
         if self.usernames[0] is None or self.usernames[1] is None:
-            Functions.clear(2, "Please enter player names!")
+            self.msg.clear("Please enter player names!", 2)
             return "Username"
 
         for user in self.usernames:
             if user.find('/') > -1 or user.find('\\') > -1:
-                Functions.clear(2, "Username cannot have '/' or '\\' in!")
+                self.msg.clear("Username cannot have '/' or '\\' in!", 2)
                 return "Invalid Name"
 
         # Password better than no password, Check
         if self.password is None:
-            continueChoice = Functions.check("No password has been set, Continue?: ", returnFunc=(None, "password")).getInput("ynCheck")  # noqa E501
+            continueChoice = self.chk.getInput(
+                "No password has been set, Continue?: ",
+                self.chk.ModeEnum.yesno,
+                y=None,
+                n="password"
+            )
             if continueChoice is not None:
                 return continueChoice
         return True
 
     def save(self):
         if self.check() is not True:
-            Functions.clear(2, "Please check settings")
+            self.msg.clear("Please check settings", 2)
             return False
 
         # Get the user to enter the password to save
         if self.password is not None:
-            check = getpass.getpass("Please enter the password to save the game: ")  # noqa E501
+            check = getpass.getpass("Please enter the password to save the game: ")
             if check != self.password:
-                Functions.clear(2, "Please make sure you can remeber the password")  # noqa E501
+                self.msg.clear("Please make sure you can remember the password", 2)
                 return False
 
         # Create board
-        board = Functions.board.CreateBoard(self.siZe)
+        board = Board.CreateBoard(self.siZe)
 
         # Create folder for the game
-        gameData = Save.save({
-            'name': self.Gname,
-            'path': self.Loc,
-        })
-
-        gameFolder = gameData.makeFolder()
-        print({"Game Folder": gameFolder})
-        gameData.ChangeDirectory(self.Gname)
-        print(gameData.GetPath())
+        gameLoc = f'{self.Loc}/{self.Gname}'
+        self.saveModule.MakeFolders(gameLoc)
 
         userFolders = []
         for user in self.usernames:
             # create user data
-            userData = Save.save({
-                'name': user,
-                'path': gameData.GetPath()
-            })
-            print({"User Data Path": userData.GetPath()})
-            # create user folder
-            folder = userData.makeFolder()
-            print({"Created folder": folder})
-            # userData.ChangeDirectory(user)
-            
-            if isinstance(folder, dict):
-                folder = folder[0]
-            
-            userFolders.append(folder)
-            userData.ChangeDirectory(folder)
-            # create files for users
-            userData.writeFile(board, 'ships')
+            userLoc = f'{gameLoc}/{user}'
+            self.saveModule.MakeFolders(userLoc)
+            userFolders.append(userLoc)
+            self.saveModule.Write(board, f'{userLoc}/ships',
+                                  encoding=self.saveModule.encoding.BINARY)
 
             placedData = {}
             for ship in ShipInfo.getShips():
                 placedData[ship.Name] = False
 
-            # print(placedData)
-            userData.writeFile(placedData, "placedData")
-# userData.writeFile(board, name='shots')
+            self.saveModule.Write(board, f'{userLoc}/placedData',
+                                  encoding=self.saveModule.encoding.BINARY)
 
         # make turn file, notes whos turn it is.
         data = {
@@ -382,8 +375,8 @@ Password: {}{}\033[0m
             'password': self.password,
             'size': self.siZe,
         }
-        gameData.ChangeDirectory(gameFolder)
-        gameData.writeFile(data, "GameData")
+        self.saveModule.Write(data, f'{gameLoc}/GameData',
+                              encoding=self.saveModule.encoding.BINARY)
 
         return "Save"  # success!!!
 
