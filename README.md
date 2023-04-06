@@ -29,8 +29,8 @@ I plan to keep maintain this program and updating it in the future. However due 
 
 # Credits (External modules used)
 - Google API
-- Colorama (official): https://github.com/tartley/colorama
-  This program version: https://github.com/dragmine149/python-Colorama-Modified
+- Colorama: https://github.com/tartley/colorama
 - readchar: https://github.com/magmax/python-readchar
+- PythonFunctions: https://github.com/FunAndHelpfulDragon/python-Functions
 
  All other modules used are built into python by default*

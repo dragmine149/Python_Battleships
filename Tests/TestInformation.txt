@@ -1,7 +1,0 @@
-Information about all tests.
-
-test_Switch
--- Tests the switch module i made, Might remove as haven't used the switch module at all.
-
-test_ShipInfo
--- Tests everything to do with ships and mod stuff basically
