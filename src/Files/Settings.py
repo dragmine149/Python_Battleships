@@ -1,11 +1,11 @@
 import os
 import importlib
-import getpass
 import colorama
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Check import Check
 from PythonFunctions.Searching import search
+from PythonFunctions.Message import Message
 
 GameMenu = importlib.import_module('Files.GameMenu')
 
@@ -18,11 +18,10 @@ class Settings:
         self.display = Display()
         self.save = save()
         self.chk = Check()
+        self.msg = Message()
 
         self.data = {
             "path": "Saves",
-            "clear": True,
-            "loadTimes": False,
             "CheckTimeout": 3,
         }
         self.defaultData = self.data.copy()
@@ -38,13 +37,11 @@ class Settings:
                 -1: (self.loadFromFile, "Load fron file"),
                 0: (self.back, "Back"),
                 1: (self.changeLocation, "Change Location"),
-                2: (self.changeClear, "Change Console Clear"),
-                3: (self.changeLoad, "Change Load"),
-                4: (self.changeWait, "Check Timeout"),
+                2: (self.changeWait, "Check Timeout"),
             }
         )
 
-    def back(self):
+    def back(self, _):
         return "Returned"
 
     """
@@ -56,11 +53,9 @@ class Settings:
     def updateSave(self, obj, data):
         self.data[obj] = data
         self.saveSettings()
-        if self.display is not None:
-            self.display.options = self.updateDisplay()
 
     # Changes default location
-    def changeLocation(self):
+    def changeLocation(self, _):
         path = self.chk.getInput(
             "Enter new save location (Leave blank to return): ",
             self.chk.ModeEnum.path)
@@ -69,25 +64,17 @@ class Settings:
 
         self.updateSave("path", path)
 
-    # Changes how the terminal gets cleared
-    def changeClear(self):
-        self.updateSave("clear", not self.data['clear'])
-
-    # Change whever to show the load time
-    def changeLoad(self):
-        self.updateSave("loadTimes", not self.data['loadTimes'])
-
     # Change the wait time between checks
-    def changeWait(self):
+    def changeWait(self, _):
         time = self.chk.getInput(
             "Please enter the wait time (leave blank to keep the same): ",
             self.chk.ModeEnum.int, lower=0, higher=20)
 
         self.updateSave("CheckTimeout", time)
 
-    def deleteCache(self):
+    def deleteCache(self, _):
         print(f"{colorama.Fore.RED}Deleting Cache...{colorama.Fore.RESET}")
-        Data = search().Locate(['*.pyc', '*_cache', '.Temp'], directory='..')
+        Data = search().Locate(['*.pyc', '*_cache', '.Temp'], logging=True)
         print("Data Found: {}".format(Data))
         for file in Data:
             self.save.RemoveFile(file)
@@ -95,6 +82,11 @@ class Settings:
     # Loads settings stored
     def loadSettings(self):
         print(f"{colorama.Fore.BLUE}Loading settings...{colorama.Fore.RESET}")
+        if not os.path.exists('Data/Settings'):
+            self.save.Write(self.defaultData, 'Data/Settings',
+                            encoding=self.save.encoding.BINARY)
+            return
+
         self.data = self.save.Read('Data/Settings',
                                    encoding=[self.save.encoding.BINARY])
 
@@ -129,7 +121,7 @@ class Settings:
                                   self.save.encoding.BINARY])
         print(f"{colorama.Fore.GREEN}Saved Settings!{colorama.Fore.RESET}")
 
-    def loadFromFile(self):
+    def loadFromFile(self, _):
         file = self.chk.getInput(
             "Please enter location of file (leave blank to stop): ",
             self.chk.ModeEnum.path)
@@ -142,8 +134,11 @@ class Settings:
 
     # Shows the settings menu
     def showDisplay(self):
-        self.display.ShowHeader(text="Options")
-        self.display.ShowOptions(useList=True)
+        result = None
+        while result != "Returned":
+            self.msg.clear()
+            self.display.ShowHeader(text="Options")
+            result = self.display.ShowOptions(useList=True)
 
 
 # Takes the input data and returns the output

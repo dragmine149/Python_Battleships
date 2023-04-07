@@ -1,105 +1,110 @@
-import importlib
+from colorama import Fore
+from PythonFunctions.Message import Message
+from PythonFunctions.CleanFolderData import Clean
+from PythonFunctions.Check import Check
+from PythonFunctions.TerminalDisplay import Display
+from PythonFunctions.Save import save
+from PythonFunctions import Run
+
+from Files import ProcessInput as pi
 
 
-class menu:
-    """
-    menu(info, options, choiceData, back)
-    info -> any information you want to display before the options
-    options -> what you want to display
-    choiceData -> what happens when that option is selected (MUST BE A DICT)
-               -> Each element must be callable
-    external -> options that aren't included (like -1)
-    Back -> the message to go back. default: quit
-    """
-    def __init__(self,
-                 info,
-                 options=None,
-                 choiceData=None,
-                 external=None,
-                 back="Quit"):
-        print('Loading data...')
+class Menu:
+    def __init__(self) -> None:
+        self.msg = Message()
+        self.chk = Check()
+        self.dis = Display()
+        self.save = save()
+        self.cln = Clean()
+        self.path = self.save.Read('Data/Settings',
+                                   encoding=self.save.encoding.BINARY).get('path')
+        self.header = None
 
-        empty = options is None and choiceData is None and external is None
-        if not callable(info) and empty:
-            raise TypeError("Failed to find callable function!")
+    def GetGameInfo(self):
+        Run.Mark("get game start")
 
-        self.callableFunction = None
-        if callable(info):
-            self.callableFunction = info
-            info, options, choiceData, external = info()
-            self.start = True
+        # sets the message so the user knows where it is better
+        msg = "Local"
+        if self.path != "Saves":
+            msg = "External"
 
-        self.info = info
-        self.options = options
-        self.choiceData = choiceData
-        self.back = back
-        self.external = external
+        # alvalible options
+        options = {}
+        self.gameList = self.cln.clean(self.save.ListFolder(self.path))
+        self.gameList.sort()
 
-    # shows menu using user inputs
-    def showMenu(self):
-        if self.callableFunction is not None and not self.start:
-            self.info, self.options, self.choiceData, self.external = self.callableFunction()  # noqa E501
-            Functions.clear()  # clear after calling for clean screen.
-        self.start = False
-        print("""{}
-Options:
-{}
+        # Winner check
 
-Other Options:
-00: {}""".format(self.info, self.options, self.back))
-        if self.external is not None:
-            for item in self.external:
-                print("{}: {}".format(item, self.external[item]))
+        Run.Mark("load game start")
+        for gameIndex, game in enumerate(self.gameList):
+            print(f"Checking: {game}")
+            Run.Mark("win check")
 
-    # gets their choice and does stuff
-    def process(self, choice):
-        if len(self.choiceData) == 1:
-            for i in self.choiceData.values():
-                return i(choice)
+            completed = ''
+            winner = self.save.Read(f'{self.path}/{game}/win',
+                                    encoding=self.save.encoding.BINARY)
+            if winner != '' and winner is not False:
+                completed = f'{Fore.GREEN}(Winner: {winner}){Fore.RESET}'
 
-        # try and call their choice
-        try:
-            return self.choiceData[choice]()
-        except KeyError:
-            Functions.Print('Key Error 1', 'red', ['bold', 'underline'])
-            # tries and calls all their choices
-            try:
-                return self.choiceData['All'](choice)
-            except KeyError:
-                Functions.PrintTraceback()
-                Functions.Print('Key Error 2', 'red', 'bold')
-                return None
-        except NameError as NE:
-            Functions.PrintTraceback()
-            Functions.warn(2, "Error in calling function! -> {}\n\n{}".format(self.choiceData[choice], NE), "light red")  # noqa E501
-            return None
-        except TypeError as TE:
-            Functions.PrintTraceback()
-            Functions.clear(2, "Error in calling function! Missing arguments\n\n{}".format(TE), "light red")  # noqa E501
-            return None
+            Run.Mark("win check end")
 
-    def getInput(self, choice=-0.5, values=()):
-        if len(values) != 2:
-            return "Values length is not 2"
-        if choice != -0.5:
-            # complete Choice
-            result = self.process(choice)
+            # The message showing the winner check time.
+            timeDiff = Run.CompareMarkers("win check", "win check end", 2)
+            loadtimeMsg = f'({timeDiff}s winner check time)'
 
-            # Fix issue with going back after having a different choice input
-            if result is None or result == "back":
-                choice = -0.5
-            else:
+            # the overall message of that row.
+            options[gameIndex + 1] = (self.selectGame,
+                                      f"{game} {completed} {loadtimeMsg}",
+                                      gameIndex)
+
+        Run.Mark("load game end")
+
+        # Works out how long it took to load the files, mainly debug but
+        Run.Mark("get game end")
+        totalloadtime = Run.CompareMarkers("get game start", "get game end", 2)
+        winloadtime = Run.CompareMarkers("load game start", "load game end",
+                                         2)
+        loadtimeMessage = f"{totalloadtime}s total ({winloadtime}s winner check)"
+
+        self.header = f"Games found in: {self.path} ({msg}) (Load Time: {loadtimeMessage})"
+        self.dis.SetOptions(options)
+
+    def deleteGame(self, _):
+        gameIndex = None
+        while gameIndex != "":
+            gameIndex = self.chk.getInput(
+                "Please enter game number to delete (leave blank to stop): ",
+                self.chk.ModeEnum.int,
+                lower=0,
+                higher=len(self.gameList))
+
+            if gameIndex is None:
+                return
+
+            game = self.gameList[gameIndex - 1]
+            self.save.RemoveFolder(f'{self.path}/{game}')
+
+    def back(self, _):
+        return "Returned"
+
+    def changePath(self, _):
+        self.path = input("Please enter the new path location: ")
+
+    def selectGame(self, pos):
+        return pi.Process(self.path, self.gameList[pos]).Inputs()
+
+    def MakeDisplay(self):
+        self.dis.AddOption((self.back, "Back"), index=0)
+        self.dis.AddOption((self.changePath, "Change Path"), index=-1)
+        self.dis.AddOption((self.deleteGame, "Delete Game"), index=-2)
+
+    def main(self):
+        self.GetGameInfo()
+        self.MakeDisplay()
+        self.msg.clear()
+        result = None
+        while result is None:
+            self.dis.ShowHeader(text=self.header)
+            result = self.dis.ShowOptions(useList=True)
+            if result is not None:
                 return result
-
-        while choice == -0.5:
-            Functions.clear()  # clears
-
-            # process
-            choice = Functions.check("Your choice (number): ",
-                                     (self.showMenu, None),
-                                     rangeCheck=(values[0], values[1])).getInput()  # noqa E501
-            result = self.process(choice)
-            if result is None or result == "back":
-                choice = -0.5
-                continue
-            return result

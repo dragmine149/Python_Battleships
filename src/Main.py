@@ -1,4 +1,3 @@
-import importlib
 import sys
 import argparse
 from PythonFunctions import Check
@@ -67,10 +66,9 @@ class Choices:
     """
 
     def __init__(self):
-        Loader = importlib.import_module('Files.Loader')
-        pi = importlib.import_module('Files.ProcessInput')
-        self.Loader = Loader.Loader()
-        self.path = self.Loader.path
+        from Files import ProcessInput as pi
+        self.path = sv.Read('Data/Settings',
+                            encoding=sv.encoding.BINARY).get('path')
         self.Process = pi.Process(self.path)
 
     def activate(self, pos):
@@ -79,7 +77,6 @@ class Choices:
             1: self.selectGame,
             2: self.makeGame,
             3: self.settings,
-            4: lambda: sys.exit("Thank you for playing")
         }
 
         method = options.get(pos)
@@ -91,12 +88,10 @@ class Choices:
         sys.exit("Thank you for playing")
 
     def selectGame(self):
-        self.Loader.game = None
-        result = self.Loader.selectGame()
-        return result
+        from Files.GameMenu import Menu
+        return Menu().main()
 
     def makeGame(self):
-        self.path = self.Loader.path
         return self.Process.Inputs(create=True)
 
     def settings(self):
@@ -111,6 +106,10 @@ def Main():
 
     # Delete temparary data stored in Saves/.Temp
     sv.RemoveFolder('Saves/.Temp')
+    
+    # Make setup files
+    sv.MakeFolders('Saves')
+    sv.MakeFolders('Data')
 
     # banner
     info = """Python Battleships
@@ -123,17 +122,20 @@ Github: https://www.github.com/dragmine149/Python_Battleships"""
 
         if result == -0.5:
             dis = Display()
+            quitMsg = "Thank you for playing!"
+            dis.SetQuitMessage(quitMsg)
             dis.ShowHeader(text=info)
             dis.SetOptions(
                 {
                     0: (choice.activate, "Load Games", 1),
                     1: (choice.activate, "Make New Game", 2),
                     2: (choice.activate, "Settings", 3),
-                    3: (choice.activate, "Quit", 4)
                 }
             )
             result = dis.ShowOptions()
-            print("Returned Result: {}".format(result))
+            print(result)
+            if result == quitMsg:
+                return
 
         result = -0.5  # reset choice so we don't go to that menu on back.
 

@@ -7,14 +7,9 @@ How to add new ship:
 - Add the class to the list at the very bottom with the other ships
 
 Example:
-class Short:
-    def __init__(self):
-        self.Length = 2
-        self.Height = 1
-        self.Name = "Destroyer (2 long)"
-        self.Symbol = "{"
-        self.Health = 2
-        Self.Colour = c('r')
+class Short(ShipTemplate):
+    def __init__(self) -> None:
+        super().__init__(2, 1, "Destroyer (2 long)", "{", Fore.RED)
 
 Arguments:
 - Length
@@ -26,61 +21,86 @@ Arguments:
 - Name
     - Required: No
     - Value: String
-    - Default: Ship size
+    - Default: 'Length' by 'Height'
 - Symbol
     - Required: No
     - Value: String
     - Default: Unclaimed symbol
 - Colour
     - Required: No
-    - Value: String (result from colours.c)
+    - Value: String (colorama.Fore)
 """
-import colorama
+import typing
+from colorama import Fore
 
 
-class Short:
+class ShipTemplate:
+    def __init__(self, Length: int, Height: int,
+                 Name: str = None, Symbol: str = None, Colour: str = ""):
+        self.__Length = Length
+        self.__Height = Height
+        self.__Name = Name
+        self.__Symbol = Symbol
+        self.__Colour = Colour
+
+        if self.__Name is None:
+            self.setName()
+
+    def getLength(self):
+        return self.__Length
+
+    def getHeight(self):
+        return self.__Height
+
+    def getTotalArea(self):
+        return self.__Length * self.__Height
+
+    def getName(self):
+        return self.__Name
+
+    def setName(self, name: str):
+        if name is None:
+            self.__Name = f'{self.__Length} by {self.__Height}'
+            return
+
+        self.__Name = name
+
+    def getSymbol(self):
+        return self.__Symbol
+
+    def setSymbol(self, symbol: str):
+        self.__Symbol = symbol
+
+    def getColour(self):
+        return self.__Colour
+
+
+class Short(ShipTemplate):
+    def __init__(self) -> None:
+        super().__init__(2, 1, "Destroyer (2 long)", "{", Fore.RED)
+
+
+class Medium1(ShipTemplate):
     def __init__(self):
-        self.Length = 2
-        self.Height = 1
-        self.Name = "Destroyer (2 long)"
-        self.Symbol = "{"
-        self.Colour = colorama.Fore.RED
+        super().__init__(3, 1, "Submarine (3 long)", "}", Fore.YELLOW)
 
 
-class Medium1:
+class Medium2(ShipTemplate):
     def __init__(self):
-        self.Length = 3
-        self.Height = 1
-        self.Name = "Submarine (3 long)"
-        self.Symbol = "}"
-        self.Colour = colorama.Fore.YELLOW
+        super().__init__(3, 1, "Cruiser (3 long)",
+                         "=", Fore.LIGHTYELLOW_EX)
 
 
-class Medium2:
+class Long(ShipTemplate):
     def __init__(self):
-        self.Length = 3
-        self.Height = 1
-        self.Name = "Cruiser (3 long)"
-        self.Symbol = "="
-        self.Colour = colorama.Fore.LIGHTYELLOW_EX
+        super().__init__(4, 1, "Battleship (4 long)",
+                         "(", Fore.GREEN)
 
 
-class Long:
+class ExtraLong(ShipTemplate):
     def __init__(self):
-        self.Length = 4
-        self.Height = 1
-        self.Name = "Battleship (4 long)"
-        self.Symbol = "("
-        self.Colour = colorama.Fore.GREEN
-
-
-class ExtraLong:
-    def __init__(self):
-        self.Length = 5
-        self.Height = 1
-        self.Name = "Aircraft Carrier (5 long)"
-        self.Symbol = ")"
-        self.Colour = colorama.Fore.CYAN
+        super().__init__(5, 1, "Aircraft Carrier (5 long)",
+                         ")", Fore.CYAN)
 
 
 def getShips():
@@ -93,6 +113,14 @@ def getShips():
     ]
 
 
+def getDefaultPlaced():
+    data = {}
+    for ship in getShips():
+        data[ship.getName()] = False
+
+    return data
+
+
 """
 CODE
 Here is stuff to controll the ship data and get accruate inputs.
@@ -102,24 +130,16 @@ Please do not touch
 
 class shipInfo:
     def __init__(self, ships):
-        self.ships = ships
+        self.ships: typing.List[ShipTemplate] = ships
         # Symbol set defined, These are symbols that the text will work without
         # having the grid be messed up
         self.symbols = [
-            "{",
-            "}",
-            "(",
-            ")",
-            "=",
-            "[",
-            "]",
-            "<",
-            ">"
+            "{", "}", "(", ")", "=",  # Default
+            # Custom set
+            "[", "]", "<", ">", "!",
+            "@", "£", "#", '$', "%",
+            "^", "&", "*", "±", "§"
         ]
-
-    # gets health
-    def calculate(self, ship):
-        return ship.Length * ship.Height
 
     # Checks if all values of the class are correct
     def valid_Check(self):
@@ -127,26 +147,16 @@ class shipInfo:
         for shipNum in range(len(self.ships)):
             ship = self.ships[shipNum]
             # Length check
-            try:
-                if ship.Length == 0:
-                    continue
-            except AttributeError:
+            if ship.getLength() <= 0:
+                print("Invalid ship length! (must be positive)")
                 continue
             # Height check
-            try:
-                if ship.Height == 0:
-                    continue
-            except AttributeError:
+            if ship.getHeight() <= 0:
+                print("Invalid ship height! (must be positive)")
                 continue
 
-            # Set name
-            try:
-                ship.Name
-            except AttributeError:
-                ship.Name = "({} by {})".format(ship.Length, ship.Height)
-
             # set health
-            ship.Health = self.calculate(ship)
+            ship.Health = ship.getTotalArea()
             goodShips.append(ship)  # If reach, then good ship
 
         return goodShips
@@ -154,27 +164,23 @@ class shipInfo:
     # This is called after to make sure symbols don't get taken out if the ship
     # is bad and could be used for something else.
     def setSymbol(self):
-        noSymbol = []
+        noSymbol: typing.List[ShipTemplate] = []
         # Removes all symbols already assigned
         # Adds ships without symbols to array
         for ship in self.ships:
-            try:
-                if ship.Symbol in self.symbols:
-                    self.symbols.remove(ship.Symbol)
-                else:
-                    noSymbol.append(ship)
-            except AttributeError:
-                noSymbol.append(ship)
-                pass
+            if ship.getSymbol() in self.symbols:
+                self.symbols.remove(ship.getSymbol())
+                continue
+            noSymbol.append(ship)
 
         # For ships without symbols, Add a symbol from the global array
         # If run out of symbols, then erm... Just remove the ship (need to add result other than remove for this case)  # noqa E501
-        for noShip in range(len(noSymbol)):
-            if len(self.symbols) > 0:
-                noSymbol[noShip].Symbol = self.symbols[0]
-                self.symbols.pop(0)
-            else:
-                self.ships.remove(noShip)
+        for index, noShip in enumerate(noSymbol):
+            if len(self.symbols) <= 0:
+                break
+
+            noShip.setSymbol(self.symbols[0])
+            self.symbols.pop(0)
 
     # Groups everything up into one funciton
     def Main(self):
