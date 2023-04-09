@@ -1,10 +1,11 @@
 import os
-import colorama
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Check import Check
 from PythonFunctions.Searching import search
 from PythonFunctions.Message import Message
+from colorama import Fore
+
 
 class Settings:
 
@@ -69,7 +70,7 @@ class Settings:
         self.updateSave("CheckTimeout", time)
 
     def deleteCache(self, _):
-        print(f"{colorama.Fore.RED}Deleting Cache...{colorama.Fore.RESET}")
+        print(f"{Fore.RED}Deleting Cache...{Fore.RESET}")
         Data = search().Locate(['*.pyc', '*_cache', '.Temp'], logging=True)
         print("Data Found: {}".format(Data))
         for file in Data:
@@ -77,7 +78,7 @@ class Settings:
 
     # Loads settings stored
     def loadSettings(self):
-        print(f"{colorama.Fore.BLUE}Loading settings...{colorama.Fore.RESET}")
+        print(f"{Fore.BLUE}Loading settings...{Fore.RESET}")
         if not os.path.exists('Data/Settings'):
             self.save.Write(self.defaultData, 'Data/Settings',
                             encoding=self.save.encoding.BINARY)
@@ -92,30 +93,30 @@ class Settings:
             if item not in self.data.keys():
                 missing.append(item)
                 print(
-                    f"{colorama.Fore.RED}Error Missing data found: {item}{colorama.Fore.RESET}")
+                    f"{Fore.RED}Error Missing data found: {item}{Fore.RESET}")
 
         # if missing data, attempts to fix without causing issue
         if len(missing) >= 1:
             print(
-                f"{colorama.Fore.YELLOW}Attempting to fix data{colorama.Fore.RESET}")
+                f"{Fore.YELLOW}Attempting to fix data{Fore.RESET}")
             for missed in range(len(missing), 0, -1):
                 missed = missing[missed - 1]
                 print(
-                    f"{colorama.Fore.CYAN}Currently fixing {missed}{colorama.Fore.RESET}")
+                    f"{Fore.CYAN}Currently fixing {missed}{Fore.RESET}")
                 self.data[missed] = self.defaultData[missed]
             print("Fixed settings, No data lost")
             self.saveSettings()
 
         print(
-            f"{colorama.Fore.GREEN}Successfully loaded settings!{colorama.Fore.RESET}")
+            f"{Fore.GREEN}Successfully loaded settings!{Fore.RESET}")
 
     # Saves settings
     def saveSettings(self):
-        print(f"{colorama.Fore.BLUE}Saving Settings...{colorama.Fore.RESET}")
+        print(f"{Fore.BLUE}Saving Settings...{Fore.RESET}")
         self.save.Write(self.data, 'Data/Settings.json',
                         encoding=[self.save.encoding.JSON,
                                   self.save.encoding.BINARY])
-        print(f"{colorama.Fore.GREEN}Saved Settings!{colorama.Fore.RESET}")
+        print(f"{Fore.GREEN}Saved Settings!{Fore.RESET}")
 
     def loadFromFile(self, _):
         file = self.chk.getInput(
