@@ -1,12 +1,16 @@
+import shutil
+import readchar
+import typing
 from colorama import Fore
+from PythonFunctions.Instance import checkInstances
 from PythonFunctions.Message import Message
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Check import Check
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Save import save
-from PythonFunctions import Run
+from PythonFunctions import Run, Board
 
-from Files import ProcessInput as pi
+from Files import newPlace, newFire
 
 
 class Menu:
@@ -90,8 +94,68 @@ class Menu:
     def changePath(self, _):
         self.path = input("Please enter the new path location: ")
 
-    def selectGame(self, pos):
-        return pi.Process(self.path, self.gameList[pos]).Inputs()
+    def __ViewBoards(self, gamePath: str, users: typing.List[str]):
+        data = []
+
+        for user in users:
+            print({"User": user})
+            ships = self.save.Read(f'{gamePath}/{user}/ships',
+                                   encoding=self.save.encoding.BINARY)
+            shots = self.save.Read(f'{gamePath}/{user}/shots',
+                                   encoding=self.save.encoding.BINARY)
+
+            if checkInstances(bool, ships, shots):
+                self.msg.clear(
+                    "Invalid data found! Either the game is not completed or corrupted. Press anything to continue.")
+                readchar.readchar()
+                return False
+
+            data.append([ships, shots])
+
+        print('-' * shutil.get_terminal_size().columns)
+        for user in data:
+            print('Ships\t\t\tShots')
+            Board.MultiBoardDisplay(user[0], user[1])
+            print('-' * shutil.get_terminal_size().columns)
+
+        print("\n\nPlease press any key when you are ready to move on")
+        readchar.readchar()
+        return True
+
+    def __checkShipPlacement(self, users: typing.List, path: str):
+        placed = [True, True]
+        for index, user in enumerate(users):
+            data = self.save.Read(f'{path}/{user}/placedData',
+                                  encoding=self.save.encoding.BINARY)
+            for ship in data:
+                if not data[ship]:
+                    placed[index] = False
+
+        return placed[0] and placed[1]
+
+    def selectGame(self, _, pos):
+        gamePath = f"{self.path}/{self.gameList[pos]}"
+
+        users = self.cln.clean(self.save.ListFolder(gamePath), ['GameData'])
+
+        winner = self.save.Read(f'{gamePath}/win')
+        if winner is not False:
+            self.msg.clear()
+            print(f'{"-" * shutil.get_terminal_size().columns}')
+            print(f'{Fore.GREEN}GAME OVER!!!{Fore.RESET}')
+            print(f'{Fore.CYAN}WINNER:{winner}{Fore.RESET}')
+            return self.chk.getInput("Would you like to view the boards?: ",
+                                     self.chk.ModeEnum.yesno,
+                                     y=self.__ViewBoards, yA=(gamePath, users),
+                                     n=None)
+
+        if not self.__checkShipPlacement(users, gamePath):
+            newPlace.Place(gamePath, users[0]).Place()
+            newPlace.Place(gamePath, users[1]).Place()
+
+        # newFire.Fire()
+
+        return
 
     def MakeDisplay(self):
         self.dis.AddOption((self.back, "Back"), index=0)

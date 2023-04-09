@@ -64,13 +64,6 @@ def command_options():
 class Choices:
     """Stores information about what each option does
     """
-
-    def __init__(self):
-        from Files import ProcessInput as pi
-        self.path = sv.Read('Data/Settings',
-                            encoding=sv.encoding.BINARY).get('path')
-        self.Process = pi.Process(self.path)
-
     def activate(self, pos):
         pos = pos[1]
         options = {
@@ -92,7 +85,10 @@ class Choices:
         return Menu().main()
 
     def makeGame(self):
-        return self.Process.Inputs(create=True)
+        from Files import CreateInfo
+        path = sv.Read('Data/Settings',
+                       encoding=sv.encoding.BINARY).get('path')
+        return CreateInfo.CreateData(path).main()
 
     def settings(self):
         result = Settings.Settings().showDisplay()
@@ -106,7 +102,7 @@ def Main():
 
     # Delete temparary data stored in Saves/.Temp
     sv.RemoveFolder('Saves/.Temp')
-    
+
     # Make setup files
     sv.MakeFolders('Saves')
     sv.MakeFolders('Data')

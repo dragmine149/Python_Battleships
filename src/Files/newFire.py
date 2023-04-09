@@ -1,10 +1,8 @@
-import importlib
 import os
-ShipInfo = importlib.import_module('Files.ShipInfo')
-Save = importlib.import_module('Files.Save')
-Functions = importlib.import_module('Files.Functions')
-colours = importlib.import_module('Files.colours')
-Settings = importlib.import_module('Files.Settings')
+
+from PythonFunctions.Save import save
+from PythonFunctions.Message import Message
+from Files import ShipInfo
 
 
 class Fire:
@@ -13,6 +11,9 @@ class Fire:
     userInfo -> Contains user data [fire, target]
     """
     def __init__(self, gameInfo, userInfo, localUser=None):
+        self.save = save()
+        self.msg = Message()
+        
         # Loads information
         self.gameInfo = gameInfo
         self.userInfo = userInfo
@@ -28,7 +29,7 @@ class Fire:
         self.turnIndex = self.userInfo.index(self.turn)
         self.opponentTurnIndex = 0 if self.turnIndex == 1 else 1
         self.multiplayer = self.game["multi"]
-        self.userColours = Settings.request(['colour', 'colour'])
+        # self.userColours = Settings.request(['colour', 'colour'])
 
     def __RetrieveBoards(self):
         # Even more information

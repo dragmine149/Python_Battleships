@@ -106,7 +106,7 @@ class CreateData:
     def quit(self):
         return
 
-    def getOption(self):
+    def main(self):
         # Get the option inputed and do the command required / called.
         choice = None
         while choice != 0:

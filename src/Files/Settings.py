@@ -1,14 +1,10 @@
 import os
-import importlib
 import colorama
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Check import Check
 from PythonFunctions.Searching import search
 from PythonFunctions.Message import Message
-
-GameMenu = importlib.import_module('Files.GameMenu')
-
 
 class Settings:
 
