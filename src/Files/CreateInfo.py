@@ -127,17 +127,9 @@ class CreateData:
                                        self.chk.ModeEnum.int,
                                        lower=0, higher=7)
 
-            choiceFunction = options[choice]
-            result = choiceFunction()
+            result = options.get(choice)()
             if result == "Save":
-                return [
-                    self.getInfoFieldValue('Name'),
-                    [self.getInfoFieldValue('Players', 'Player 1'),
-                     self.getInfoFieldValue('Players', 'Player 2')],
-                    self.getInfoFieldValue('Location'),
-                    self.getInfoFieldValue('Multiplayer')
-                ]
-        return None
+                return
 
     def name(self) -> str:
         gameName = None

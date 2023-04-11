@@ -1,92 +1,68 @@
-import importlib
 import getpass
-import os
-Save = importlib.import_module('Files.Save')
-Functions = importlib.import_module('Files.Functions')
-newPlace = importlib.import_module('Files.newPlace')
-newFire = importlib.import_module('Files.newFire')
+import typing
+
+from PythonFunctions.Save import save
+from PythonFunctions.Message import Message
+from PythonFunctions.CleanFolderData import Clean
+from PythonFunctions.Check import Check
+from PythonFunctions.Logic import MultiCheck
+
+from Files import newFire, newPlace
 
 
 class Game:
-    def __init__(self, data):
+    def __init__(self, gamePath: str, gameName: str):
         print("Game.py loading!")
-        self.name = data[0]
-        self.users = data[1]
-        self.placed = data[2]
-        self.location = data[3]
-        self.gamePath = os.path.join(self.location, self.name)
-        self.multiplayer = data[4]
-        self.gameData = Save.save({
-            'name': self.name,
-            'path': self.location,
-        })
-        
-        print(f"game.py: {self.location}")
-        
-        # If drive, gets the sub folder for the game instead of where all the games are stored.
-        if self.gameData._api:
-            files = self.gameData.ls()
-            for file in files:
-                print('Checking file: {}'.format(file))
-                fName = file
-                fLoc = os.path.join(self.location, file)
-                # translates for google drive
-                if isinstance(file, dict):
-                    fName = file['name']
-                    fLoc = file['id']
+        self.save = save()
+        self.msg = Message()
+        self.cln = Clean()
+        self.chk = Check()
 
-                if fName == self.name:
-                    self.location = fLoc
-                    self.gameData.ChangeDirectory(fName)
-                    self.gamePath = os.path.join(self.location, self.name)
-                    break
-        else:
-            self.gameData.ChangeDirectory(self.name)
+        self.name = gameName
+        self.gamePath = f'{gamePath}/{gameName}'
+        self.gameData = self.save.Read(f'{self.gamePath}/GameData',
+                                       encoding=self.save.encoding.BINARY)
+        self.localUser = {}
 
-        self.localUser = None
-        self.localUserIndex = None
+        self.GetGameInfo()
+
+    def GetGameInfo(self):
+        self.users = self.cln.clean(self.save.ListFolder(self.gamePath),
+                                    'GameData')
+        self.multiplayer = self.gameData.get('multi')
 
     def Place(self):
         print("Placement check")
+        placed = self.__checkShipPlacement(self.users)
+        if MultiCheck(*placed):
+            return True
+
         if self.multiplayer[0] != 'y':
             # Go through each user and get them to place things
             for user in range(len(self.users)):
-                if not self.placed[user]:
-                    print({"name": self.name})
-                    print({"Location": self.location})
-                    print({"user": self.users[user]})
-                    userPlace = newPlace.Place(self.name,
-                                               [self.location,
-                                                self.users[user]],
+                if not placed[user]:
+                    userPlace = newPlace.Place(self.gamePath,
                                                self.users[user])
-                    self.placed[user] = userPlace.Main()
-                    if self.placed[user] is False:
+                    placed[user] = userPlace.Main()
+                    if placed[user] is False:
                         # person A quit, no need for person B to place.
                         return False
 
             print("Finished placement")
-            return self.placed[0] and self.placed[1]
+            return MultiCheck(*self.placed)
 
         # Checks if the local user has placed in this multiplayer game
         if not self.placed[self.localUserIndex]:
-            userPlace = newPlace.Place(self.name,
-                                       [self.location,
-                                        self.users[self.localUserIndex]],
-                                       self.users[self.localUserIndex])
+            userPlace = newPlace.Place(self.gamePath,
+                                       self.localUser.get('name'))
             return userPlace.Main()
 
         return True
 
-    def PlaceCheck(self):
-        placed = [False, False]
-        for user in range(len(self.users)):
-            folder = Save.save({
-                'name': self.users[user],
-                'path': self.location
-            }).CheckForFile('shots')    
-            if folder:
-                placed[user] = True
-        return placed
+    def __checkShipPlacement(self, users: typing.List):
+        user1Placed = self.save.Read(f'{self.gamePath}/{users[0]}/shots')
+        user2Placed = self.save.Read(f'{self.gamePath}/{users[1]}/shots')
+        return [user1Placed, user2Placed]
 
     def Fire(self):
         print("Time to fire!")
@@ -99,37 +75,39 @@ class Game:
 
     def Password(self):
         # Checks if there is a password stored and gets them to enter it.
-        gameData = self.gameData.readFile('GameData')
-        if gameData['password'] is not None:
+        if self.gameData.get('password') != 'Disabled':
             word = getpass.getpass("Please enter game password: ")
-            if word == gameData['password']:
-                return True
-            return False
+            return word == self.gameData.get('password')
         return True
 
     def UsernameCheck(self):
-        if self.multiplayer == 'y':
+        if self.multiplayer == 'yes':
             # Check to see if same to account name
             localUser = getpass.getuser()
             if localUser in self.users:
-                return localUser, self.users.index(localUser)
+                return {
+                    'name': localUser,
+                    'index': self.users.index(localUser)
+                }
 
-            # Gets them to manualy enter it in.
             user = None
             while user is None:
-                user = input("Please enter your username: ")
-                
-                # Loops through all users and find if the input is correct.
-                for usIndex in range(len(self.users)):
-                    us = self.users[usIndex]
-                    if isinstance(us, dict):
-                        us = us['name']
-                    if user == us:
-                        return user, usIndex
-                
-                Functions.clear(2, "User not found! (Spectating comming in Update 3)")  # noqa E501
-                user = None
-        return None, None
+                found, user = self.chk.getInput("Please enter you username: ",
+                                                self.chk.ModeEnum.str,
+                                                rCheck=True,
+                                                info=self.users)
+
+                if not found:
+                    self.msg.clear(
+                        "User not found! (Spectating comming in Update 3)",
+                        timeS=2)
+                    user = None
+
+            return {
+                'name': user,
+                'index': self.users.index(localUser)
+            }
+        return None
 
     def MultiPlaceCheck(self):
         # Multiplayer placement check
@@ -155,7 +133,7 @@ class Game:
 
     def Main(self):
         # Main loop
-        self.localUser, self.localUserIndex = self.UsernameCheck()
+        self.localUser = self.UsernameCheck()
         if self.Password():
             result = self.Place()
 

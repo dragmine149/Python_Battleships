@@ -2,7 +2,7 @@ import shutil
 import readchar
 import typing
 from colorama import Fore
-from PythonFunctions.Instance import checkInstances
+from PythonFunctions.Logic import checkInstances
 from PythonFunctions.Message import Message
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Check import Check
@@ -10,7 +10,7 @@ from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Save import save
 from PythonFunctions import Run, Board
 
-from Files import newPlace, newFire
+from Files import Game
 
 
 class Menu:
@@ -122,17 +122,6 @@ class Menu:
         readchar.readchar()
         return True
 
-    def __checkShipPlacement(self, users: typing.List, path: str):
-        placed = [True, True]
-        for index, user in enumerate(users):
-            data = self.save.Read(f'{path}/{user}/placedData',
-                                  encoding=self.save.encoding.BINARY)
-            for ship in data:
-                if not data[ship]:
-                    placed[index] = False
-
-        return placed[0] and placed[1]
-
     def selectGame(self, _, pos):
         gamePath = f"{self.path}/{self.gameList[pos]}"
 
@@ -149,13 +138,10 @@ class Menu:
                                      y=self.__ViewBoards, yA=(gamePath, users),
                                      n=None)
 
-        if not self.__checkShipPlacement(users, gamePath):
-            newPlace.Place(gamePath, users[0]).Place()
-            newPlace.Place(gamePath, users[1]).Place()
-
-        # newFire.Fire()
-
-        return
+        gameResult = Game.Game(self.path, self.gameList[pos]).Main()
+        print(gameResult)
+        if gameResult.find('Ended') > -1:
+            return None
 
     def MakeDisplay(self):
         self.dis.AddOption((self.back, "Back"), index=0)
