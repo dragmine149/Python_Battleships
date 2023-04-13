@@ -19,7 +19,7 @@ class Settings:
 
         self.data = {
             "path": "Saves",
-            "CheckTimeout": 3,
+            "Timeout": 3,
         }
         self.defaultData = self.data.copy()
 
@@ -33,8 +33,10 @@ class Settings:
                 -2: (self.deleteCache, "Delete Cache"),
                 -1: (self.loadFromFile, "Load fron file"),
                 0: (self.back, "Back"),
-                1: (self.changeLocation, "Change Location"),
-                2: (self.changeWait, "Check Timeout"),
+                1: (self.changeLocation,
+                    f"Change Location (Current: {self.data.get('path')})"),
+                2: (self.changeWait,
+                    f"Timeout (Current: {self.data.get('Timeout')})"),
             }
         )
 
@@ -53,12 +55,16 @@ class Settings:
 
     # Changes default location
     def changeLocation(self, _):
-        path = self.chk.getInput(
+        check, path = self.chk.getInput(
             "Enter new save location (Leave blank to return): ",
-            self.chk.ModeEnum.path)
-        if path is False:
+            self.chk.ModeEnum.path, rCheck=True)
+        if check is False:
             return
 
+        self.display.RemoveOption(1)
+        self.display.AddOption((self.changeLocation,
+                                f"Change Location (Current: {path})"),
+                               index=1)
         self.updateSave("path", path)
 
     # Change the wait time between checks
@@ -67,6 +73,10 @@ class Settings:
             "Please enter the wait time (leave blank to keep the same): ",
             self.chk.ModeEnum.int, lower=0, higher=20)
 
+        self.display.RemoveOption(2)
+        self.display.AddOption((self.changeLocation,
+                                f"Change Timeout (Current: {time})"),
+                               index=2)
         self.updateSave("CheckTimeout", time)
 
     def deleteCache(self, _):
@@ -80,12 +90,11 @@ class Settings:
     def loadSettings(self):
         print(f"{Fore.BLUE}Loading settings...{Fore.RESET}")
         if not os.path.exists('Data/Settings'):
-            self.save.Write(self.defaultData, 'Data/Settings',
-                            encoding=self.save.encoding.BINARY)
-            return
+            return self.saveSettings()
 
         self.data = self.save.Read('Data/Settings',
-                                   encoding=[self.save.encoding.BINARY])
+                                   encoding=[self.save.encoding.JSON,
+                                             self.save.encoding.BINARY])
 
         # checks for missing data in the dictonary of data
         missing = []
@@ -113,7 +122,7 @@ class Settings:
     # Saves settings
     def saveSettings(self):
         print(f"{Fore.BLUE}Saving Settings...{Fore.RESET}")
-        self.save.Write(self.data, 'Data/Settings.json',
+        self.save.Write(self.data, 'Data/Settings',
                         encoding=[self.save.encoding.JSON,
                                   self.save.encoding.BINARY])
         print(f"{Fore.GREEN}Saved Settings!{Fore.RESET}")

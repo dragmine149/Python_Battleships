@@ -75,9 +75,10 @@ class Game:
 
     def Password(self):
         # Checks if there is a password stored and gets them to enter it.
-        if self.gameData.get('password') != 'Disabled':
+        password = self.gameData.get('password')
+        if password != 'Disabled':
             word = getpass.getpass("Please enter game password: ")
-            return word == self.gameData.get('password')
+            return word == password
         return True
 
     def UsernameCheck(self):

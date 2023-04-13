@@ -1,3 +1,4 @@
+import time
 import shutil
 import readchar
 import typing
@@ -21,7 +22,8 @@ class Menu:
         self.save = save()
         self.cln = Clean()
         self.path = self.save.Read('Data/Settings',
-                                   encoding=self.save.encoding.BINARY).get('path')
+                                   encoding=[self.save.encoding.JSON,
+                                             self.save.encoding.BINARY]).get('path')
         self.header = None
 
     def GetGameInfo(self):
@@ -41,7 +43,6 @@ class Menu:
 
         Run.Mark("load game start")
         for gameIndex, game in enumerate(self.gameList):
-            print(f"Checking: {game}")
             Run.Mark("win check")
 
             completed = ''
@@ -82,11 +83,15 @@ class Menu:
                 lower=0,
                 higher=len(self.gameList))
 
-            if gameIndex is None:
+            if gameIndex is False:
                 return
 
             game = self.gameList[gameIndex - 1]
             self.save.RemoveFolder(f'{self.path}/{game}')
+            self.msg.clear()
+            self.dis.ShowHeader(text=self.header)
+            self.dis.RemoveOption(gameIndex)
+            self.dis.ShowOptions(useList=True, requireResult=False)
 
     def back(self, _):
         return "Returned"
@@ -140,6 +145,7 @@ class Menu:
 
         gameResult = Game.Game(self.path, self.gameList[pos]).Main()
         print(gameResult)
+        time.sleep(2)
         if gameResult.find('Ended') > -1:
             return None
 
@@ -149,11 +155,16 @@ class Menu:
         self.dis.AddOption((self.deleteGame, "Delete Game"), index=-2)
 
     def main(self):
-        self.GetGameInfo()
-        self.MakeDisplay()
-        self.msg.clear()
         result = None
         while result is None:
+            # Reset
+            self.msg.clear()
+            self.dis.RemoveAllOptions()
+
+            # Make Stuff
+            self.GetGameInfo()
+            self.MakeDisplay()
+
             self.dis.ShowHeader(text=self.header)
             result = self.dis.ShowOptions(useList=True)
             if result is not None:

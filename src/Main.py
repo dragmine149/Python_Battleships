@@ -4,6 +4,7 @@ from PythonFunctions import Check
 from PythonFunctions.IsDigit import IsDigit
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
+from PythonFunctions.Watermark import LINKCODE
 from Files import Settings
 
 sv = save()
@@ -87,7 +88,8 @@ class Choices:
     def makeGame(self):
         from Files import CreateInfo
         path = sv.Read('Data/Settings',
-                       encoding=sv.encoding.BINARY).get('path')
+                       encoding=[sv.encoding.JSON,
+                                 sv.encoding.BINARY]).get('path')
         return CreateInfo.CreateData(path).main()
 
     def settings(self):
@@ -108,10 +110,11 @@ def Main():
     sv.MakeFolders('Data')
 
     # banner
-    info = """Python Battleships
+    url = LINKCODE(
+        'https://www.github.com/dragmine149/Python_Battleships', 'Github')
+    info = f"""Python Battleships ({url})
 
-Creator: dragmine149
-Github: https://www.github.com/dragmine149/Python_Battleships"""
+Creator: dragmine149"""
 
     while True:
         print("\x1b[2J\x1b[H", end='')

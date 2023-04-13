@@ -4,6 +4,7 @@ import random
 from colorama import Fore
 from PythonFunctions.PrintTraceback import PrintTraceback
 from PythonFunctions.CleanFolderData import Clean
+from PythonFunctions.Watermark import LINKCODE
 from PythonFunctions.Message import Message
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
@@ -70,8 +71,9 @@ class CreateData:
 
     def PrintSetting(self, setting):
         data = self.info.get(setting)
-        if data.get('value') is not None:
-            return f"{setting}: {data.get('colour')}{data.get('value')}{Fore.RESET}"
+        value = data.get('value')
+        if value is not None:
+            return f"{setting}: {data.get('colour')}{value}{Fore.RESET}"
 
         msg = f"{setting}: ["
         for index, value in enumerate(data):
@@ -115,7 +117,7 @@ class CreateData:
                 1: self.name,
                 2: self.username,
                 3: self.size,
-                4: self.saveLoc,
+                4: self.SaveLocation,
                 5: self.MultiPlayer,
                 6: self.Password,
                 7: self.save
@@ -125,7 +127,7 @@ class CreateData:
             self.showOptions()
             choice = self.chk.getInput("What would you like to change?: ",
                                        self.chk.ModeEnum.int,
-                                       lower=0, higher=7)
+                                       lower=0, higher=7, clear=False)
 
             result = options.get(choice)()
             if result == "Save":
@@ -134,8 +136,8 @@ class CreateData:
     def name(self) -> str:
         gameName = None
         while gameName is None:
-            gameName = input(
-                "Please enter the game name (blank to keep same)\033[%d;%dH" % (2, 7))
+            print("Please enter the game name (blank to keep same)")
+            gameName = input("\033[%d;%dH" % (2, 7))
             if gameName == "":
                 return gameName
 
@@ -151,10 +153,11 @@ class CreateData:
             for _ in range(10):
                 randomEnd += random.choice(string.ascii_letters)
 
+            newName = f'{gameName}_{randomEnd}'
             self.chk.getInput(
-                f"Game already exists in location. Rename to {gameName}_{randomEnd}?: ",
+                f"Game already exists in location. Rename to {newName}?: ",
                 self.chk.ModeEnum.yesno,
-                y=SetName, yA=f'{gameName}_{randomEnd}'
+                y=SetName, yA=newName
             )
 
     def __nameCheck(self, name: str, old: str, other: str = None):
@@ -242,40 +245,34 @@ class CreateData:
         self.info['Size']['X']['value'] = y
         self.info['Size']['Y']['colour'] = Fore.GREEN
 
-    def saveLoc(self):
-        # get the game save location
+    def SaveLocation(self):
         Location = None
         while Location is None:
-            self.msg.clear()
-            print("""Save Location:
-- Supports google drive folder id (if google drive api installed)
-- Leave blank for default location
-- Type path to folder for different location than the default
-""")
-            Location = input("Save location: ")
+            fss = LINKCODE(
+                ('https://python-functions.readthedocs.io/en/latest/' +
+                    'Modules/Save.html#file-system-support'),
+                'File System Support')
+            print(f"""Enter save location
+NOTE: Multiple types of file systems are supported. use FILESYSTEM://LOCATION
+Please check out {fss} for more information about supported filesystems""")
 
-            # Saves is the default location, only chosen if the input is blank.
-            if Location == "":
-                Location = "Saves"
-                # automatically reset multiplayer
-                self.info['Multiplayer']['value'] = "no"
+            # Move curosr
+            print("\033[%d;%dH" % (5, 0), end='')
+            result, Location = self.chk.getInput("Location: ",
+                                                 self.chk.ModeEnum.path,
+                                                 rCheck=True)
+            if result is False:
+                continue
 
-            # If default, don't need to do much
-            # If drive, run test
-            # If external, run test
-
-            # skip doing stuff to saves
-            if Location != "Saves":
-                # attmepts to write file and read file from dir specified
-                # creates save obj
-                try:
-                    self.saveModule.Write('test', f'{Location}/test')
-                    self.saveModule.RemoveFile(f'{Location}/test')
-                except Exception as e:
-                    PrintTraceback()
-                    Location = None
-                    self.msg.warn(
-                        "Error occured whilst trying to change location.", 2)
+            try:
+                self.saveModule.Write('test', f'{Location}/test')
+                self.saveModule.RemoveFile(f'{Location}/test')
+            except Exception:
+                PrintTraceback()
+                self.msg.warn(
+                    "Error occured whilst trying to change location.",
+                    timeS=2)
+                Location = None
 
         self.info['Location']['value'] = Location
         self.info['Location']['colour'] = Fore.GREEN
@@ -283,7 +280,8 @@ class CreateData:
     def MultiPlayer(self):
         if self.getInfoFieldValue('Location') == "Saves":
             self.msg.clear(
-                "Disabled! Save location is default, Please change to have multiplayer support!", timeS=2
+                "Save location is default. Multiplayer is disabled!",
+                timeS=2
             )
             return
         # get if multiplayer or not
@@ -294,14 +292,13 @@ class CreateData:
         self.info['Multiplayer']['value'] = "yes" if multi else "no"
 
     def __setPasswordUI(self, value: str, colour: str, shown: str):
-        self.info['Password']['true'] = shown
+        self.info['Password']['true'] = value
         self.info['Password']['colour'] = colour
-        self.info['Password']['value'] = value
+        self.info['Password']['value'] = shown
 
     def Password(self):
         self.__setPasswordUI(None, Fore.YELLOW, "Disabled")
-
-        while self.info['Password']['true'] is None:
+        while self.info.get('Password').get('true') is None:
             password = getpass.getpass(
                 "Enter a password (blank for no passwords): ")
             if password.rstrip() == "":
@@ -312,7 +309,7 @@ class CreateData:
                 check = getpass.getpass(
                     "Please re-enter the password (-1 to change password): ")
                 if check == password:
-                    self.__setPasswordUI(password, Fore.GREEN, "Disabled")
+                    self.__setPasswordUI(password, Fore.GREEN, "Enabled")
                     return True
                 if check == -1:
                     self.__setPasswordUI(None, Fore.YELLOW, "Disabled")
@@ -321,8 +318,8 @@ class CreateData:
         # Checks if all fields are valid.
         # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
 
-        if self.getInfoFieldValue('Name') is None:
-            self.msg.clear("Please enter a name!", 2)
+        if self.getInfoFieldValue('Name') == 'None':
+            self.msg.warn("Please enter a name")
             return "Name"
 
         users = [
@@ -330,12 +327,12 @@ class CreateData:
             self.getInfoFieldValue('Players', 'Player 2')
         ]
 
-        if any(user is None for user in users):
-            self.msg.clear("Please enter player names!", 2)
+        if any(user == 'None' for user in users):
+            self.msg.warn("Please check players name. (Someone has 'None')")
             return "Username"
 
         if any(['/' in user or '\\' in user for user in users]):
-            self.msg.clear("Usernames cannot have '/' or '\\' in!", 2)
+            self.msg.clear("Usernames cannot have '/' or '\\' in!", timeS=2)
             return "Invalid Name"
 
         # Password better than no password, Check
@@ -352,7 +349,7 @@ class CreateData:
 
     def save(self):
         if self.check() is not True:
-            self.msg.clear("Please check settings", 2)
+            self.msg.clear("Please check settings", timeS=2)
             return False
 
         # Get the user to enter the password to save
@@ -362,7 +359,7 @@ class CreateData:
                 "Please enter the password to save the game: ")
             if check != password:
                 self.msg.clear(
-                    "Please make sure you can remember the password", 2)
+                    "Please make sure you can remember the password", timeS=2)
                 return False
 
         # Create board
@@ -370,7 +367,9 @@ class CreateData:
                                   self.getInfoFieldValue('Size', 'Y'))
 
         # Create folder for the game
-        gameLoc = f'{self.getInfoFieldValue("Location")}/{self.getInfoFieldValue("Name")}'
+        loc = self.getInfoFieldValue("Location")
+        name = self.getInfoFieldValue("Name")
+        gameLoc = f'{loc}/{name}'
         self.saveModule.MakeFolders(gameLoc)
 
         users = [
@@ -389,10 +388,11 @@ class CreateData:
                                   encoding=self.saveModule.encoding.BINARY)
 
         # make turn file, notes whos turn it is.
+        turn = random.randrange(2) + 1
         data = {
-            'turn': self.getInfoFieldValue('Players', f'Player {random.randrange(2) + 1}'),
+            'turn': self.getInfoFieldValue('Players', f'Player {turn}'),
             'multi': self.getInfoFieldValue('Multiplayer'),
-            'password': self.getInfoFieldValue('Password'),
+            'password': self.info.get('Password').get('true'),
             'size': [self.getInfoFieldValue('Size', 'X'),
                      self.getInfoFieldValue('Size', 'Y')],
         }
