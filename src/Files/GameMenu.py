@@ -80,7 +80,7 @@ class Menu:
             gameIndex = self.chk.getInput(
                 "Please enter game number to delete (leave blank to stop): ",
                 self.chk.ModeEnum.int,
-                lower=0,
+                lower=1,
                 higher=len(self.gameList))
 
             if gameIndex is False:
