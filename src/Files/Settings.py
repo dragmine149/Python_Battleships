@@ -15,7 +15,6 @@ class Settings:
         self.display = Display()
         self.save = save()
         self.chk = Check()
-        self.msg = Message()
 
         self.data = {
             "path": "Saves",
@@ -142,7 +141,7 @@ class Settings:
     def showDisplay(self):
         result = None
         while result != "Returned":
-            self.msg.clear()
+            Message.clear()
             self.display.ShowHeader(text="Options")
             result = self.display.ShowOptions(useList=True)
 

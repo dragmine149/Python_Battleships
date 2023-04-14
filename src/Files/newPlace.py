@@ -14,7 +14,6 @@ class Place:
     # setup the place system
     def __init__(self, location, user):
         self.save = save()
-        self.msg = Message()
         self.chk = Check()
 
         self.location = location
@@ -136,7 +135,7 @@ class Place:
         return board
 
     def PlaceData(self, place):
-        self.msg.clear()
+        Message.clear()
 
         # Prints out a smaller, updated display
         self.ShowDisplay(False)
@@ -148,7 +147,7 @@ class Place:
 
         # Attempts to place the ship on the map and show the board.
         board = self.AttemptPlace(backupCopy, shipPlacing)
-        self.msg.clear()
+        Message.clear()
         self.ShowDisplay(False, board)
 
         # Checks if the board and what has been placed is correct.
@@ -173,7 +172,7 @@ class Place:
     def Place(self):
         Finished = False
         while not Finished:
-            self.msg.clear()
+            Message.clear()
             if self.PlacedAll():
                 return -2
             # Gets ship to place
@@ -189,7 +188,7 @@ class Place:
                 place -= 1
 
                 if self.placedData[self.ships[place].getName()]:
-                    self.msg.clear(
+                    Message.clear(
                         "Moving ships comming in Update 3 (Sorry, big task to do atm.)",
                         timeS=2
                     )
@@ -209,7 +208,7 @@ class Place:
                                     encoding=self.save.encoding.BINARY)
 
     def Main(self):
-        self.msg.clear()
+        Message.clear()
         data = self.Place()
         if data == -2:
             boardSize = self.save.Read(f"{self.location}/GameData",

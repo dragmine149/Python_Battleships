@@ -54,7 +54,6 @@ class CreateData:
                 'colour': Fore.YELLOW
             }
         }
-        self.msg = Message()
         self.chk = Check()
         self.cln = Clean()
         self.saveModule = save()
@@ -122,7 +121,7 @@ class CreateData:
                 6: self.Password,
                 7: self.save
             }
-            self.msg.clear()
+            Message.clear()
 
             self.showOptions()
             choice = self.chk.getInput("What would you like to change?: ",
@@ -269,7 +268,7 @@ Please check out {fss} for more information about supported filesystems""")
                 self.saveModule.RemoveFile(f'{Location}/test')
             except Exception:
                 PrintTraceback()
-                self.msg.warn(
+                Message.warn(
                     "Error occured whilst trying to change location.",
                     timeS=2)
                 Location = None
@@ -279,7 +278,7 @@ Please check out {fss} for more information about supported filesystems""")
 
     def MultiPlayer(self):
         if self.getInfoFieldValue('Location') == "Saves":
-            self.msg.clear(
+            Message.clear(
                 "Save location is default. Multiplayer is disabled!",
                 timeS=2
             )
@@ -319,7 +318,7 @@ Please check out {fss} for more information about supported filesystems""")
         # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
 
         if self.getInfoFieldValue('Name') == 'None':
-            self.msg.warn("Please enter a name")
+            Message.warn("Please enter a name")
             return "Name"
 
         users = [
@@ -328,11 +327,11 @@ Please check out {fss} for more information about supported filesystems""")
         ]
 
         if any(user == 'None' for user in users):
-            self.msg.warn("Please check players name. (Someone has 'None')")
+            Message.warn("Please check players name. (Someone has 'None')")
             return "Username"
 
         if any(['/' in user or '\\' in user for user in users]):
-            self.msg.clear("Usernames cannot have '/' or '\\' in!", timeS=2)
+            Message.clear("Usernames cannot have '/' or '\\' in!", timeS=2)
             return "Invalid Name"
 
         # Password better than no password, Check
@@ -349,7 +348,7 @@ Please check out {fss} for more information about supported filesystems""")
 
     def save(self):
         if self.check() is not True:
-            self.msg.clear("Please check settings", timeS=2)
+            Message.clear("Please check settings", timeS=2)
             return False
 
         # Get the user to enter the password to save
@@ -358,7 +357,7 @@ Please check out {fss} for more information about supported filesystems""")
             check = getpass.getpass(
                 "Please enter the password to save the game: ")
             if check != password:
-                self.msg.clear(
+                Message.clear(
                     "Please make sure you can remember the password", timeS=2)
                 return False
 

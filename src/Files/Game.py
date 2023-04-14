@@ -14,7 +14,6 @@ class Game:
     def __init__(self, gamePath: str, gameName: str):
         print("Game.py loading!")
         self.save = save()
-        self.msg = Message()
         self.cln = Clean()
         self.chk = Check()
 
@@ -99,7 +98,7 @@ class Game:
                                                 info=self.users)
 
                 if not found:
-                    self.msg.clear(
+                    Message.clear(
                         "User not found! (Spectating comming in Update 3)",
                         timeS=2)
                     user = None
