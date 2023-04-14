@@ -1,10 +1,11 @@
 import copy
 
-from PythonFunctions import Board, Convert
+from PythonFunctions import Board
 from PythonFunctions.Save import save
 from PythonFunctions.Message import Message
 from PythonFunctions.Check import Check
-from PythonFunctions.Colours import FORMAT
+from PythonFunctions.Colours import Translate, Format
+from PythonFunctions.Run import Timer
 from colorama import Fore
 
 from Files import ShipInfo
@@ -12,35 +13,24 @@ from Files import ShipInfo
 
 class Place:
     # setup the place system
-    def __init__(self, location, user):
+    def __init__(self, gamePath: str, user: str):
         self.save = save()
         self.chk = Check()
 
-        self.location = location
+        self.location = gamePath
         self.user = user
         self.ships = ShipInfo.shipInfo(ShipInfo.getShips()).Main()
-        self.LoadInfo()
-
-    # Load more information, Mainly save information.
-    def LoadInfo(self):
-        print("Loading user placed data")
-        print("Loading placed Data")
         self.placedData = self.save.Read(
             f'{self.location}/{self.user}/placedData',
             encoding=self.save.encoding.BINARY)
-        print("Loading board data")
         self.boardData = self.save.Read(
             f'{self.location}/{self.user}/ships',
             encoding=self.save.encoding.BINARY)
-        print("Finished!")
 
     # The display
-    def ShowDisplay(self, showShips=True, board=None):
-        print("{}'s turn to place!\n".format(self.user))
-        if board is None:
-            board = self.boardData
-        print("Your Board")
-        Board.DisplayBoard(board)
+    def ShowDisplay(self, board, showShips=True):
+        print(f"{self.user}'s turn to place!", end='\n\n')
+        Board.DisplayBoard(board, coords=True)
 
         # Shows the alvalible ships to place etc
         if showShips:
@@ -54,7 +44,7 @@ class Place:
                 print(msg)
 
     # Custom check for the rotation
-    def _rotationCheck(self):
+    def __rotationCheck(self):
         rotation = {
             "n": 0,
             "e": 90,
@@ -63,17 +53,23 @@ class Place:
         }
         # Highlights important letters
         # shows you that you don't have to type whole word.
-        north = f"{FORMAT.UNDERLINE}N{FORMAT.RESET}orth"
-        east = f"{FORMAT.UNDERLINE}E{FORMAT.RESET}ast"
-        south = f"{FORMAT.UNDERLINE}S{FORMAT.RESET}outh"
-        west = f"{FORMAT.UNDERLINE}W{FORMAT.RESET}est"
+        north = f"{Translate('N', Format.UNDERLINE)}orth"
+        east = f"{Translate('E', Format.UNDERLINE)}ast"
+        south = f"{Translate('S', Format.UNDERLINE)}outh"
+        west = f"{Translate('W', Format.UNDERLINE)}est"
         string = self.chk.getInput(
             f"Enter rotation of ship ({north}, {east}, {south}, {west}): ",
             self.chk.ModeEnum.yesno,
             info=('n', 'e', 's', 'w'))
 
         return rotation[string]
-    
+
+    def GetShipPlacementInfo(self):
+        return self.chk.getInput('Please enter location to place ship:',
+                                 self.chk.ModeEnum.location,
+                                 x=len(self.boardData[0]),
+                                 y=len(self.boardData)), self.__rotationCheck()
+
     def __ShipLocationCheck(self, placeId, index):
         if placeId + index < 0:
             raise IndexError("Ship goes off side of board!")
@@ -81,49 +77,42 @@ class Place:
 
     # fLoatcation -> Curtestly of sophie
     def AttemptPlace(self, board, ship: ShipInfo.ShipTemplate):
+        validShip = False
+        tempShipValue = Translate(
+            f'{Fore.YELLOW}{ship.getSymbol()}{Fore.RESET}', Format.BOLD)
+        data = {
+            0: (1, 1, -1),
+            90: (0, 0, 1),
+            180: (1, 1, 1),
+            270: (0, 0, -1)
+        }
+        while not validShip:
+            # Ability to get information in this loop
+            fLoatcation, rotation = self.GetShipPlacementInfo()
+            backupboard = copy.deepcopy(board)
+            info = data.get(rotation)
 
-        # Ability to get information in this loop
-        fLoatcation = Convert.Location(
-            input("Please enter location to place ship: "))
-        rotation = self._rotationCheck()
-        backupboard = copy.deepcopy(board)
+            # board       -> copy of the current board.
+            # ship        -> ship with data to place.
+            # fLoatcation -> position to place ship.
+            # rotation    -> rotation of ship.
+            validShip = True
+            for i in range(ship.getLength()):
+                fLoatcation[info[0]] = self.__ShipLocationCheck(
+                    info[1], i * info[2])
 
-        # board       -> copy of the current board.
-        # ship        -> ship with data to place.
-        # fLoatcation -> position to place ship.
-        # rotation    -> rotation of ship.
-        while True:
-            try:
-                for i in range(ship.getLength()):
-                    placeId = [fLoatcation[0], fLoatcation[1]]
+                if board[fLoatcation[1]][fLoatcation[0]] != "-":
+                    board = backupboard
+                    validShip = False
+                    break
 
-                    # A Bunch of checks, Personally don't like these but if we
-                    # don't want ships to rotate off the board, these have to
-                    # be included.
-                    if rotation == 0:
-                        placeId[1] = self.__ShipLocationCheck(placeId[1], -i)
-                    if rotation == 90:
-                        placeId[0] = self.__ShipLocationCheck(placeId[0], i)
-                    if rotation == 180:
-                        placeId[1] = self.__ShipLocationCheck(placeId[1], i)
-                    if rotation == 270:
-                        placeId[0] = self.__ShipLocationCheck(placeId[0], -i)
+                board[fLoatcation[1]][fLoatcation[0]] = tempShipValue
 
-                    if board[placeId[1]][placeId[0]] != "-":
-                        raise IndexError('Collides with another ship!')
-
-                    board[placeId[1]][placeId[0]] = f"{Fore.YELLOW}{ship.getSymbol()}{Fore.RESET}"
-
+            if validShip:
                 return board
-            except IndexError as ie:
-                # Report error, reget input
-                print(f"Invalid ship placement -> {ie}")
-                fLoatcation = Convert.Location(
-                    input("Please enter location to place ship: "))
-                rotation = self._rotationCheck()
-                board = backupboard
 
-    def _ChangeColour(self, board, ship: ShipInfo.ShipTemplate):
+    @Timer
+    def __ChangeColour(self, board, ship: ShipInfo.ShipTemplate):
         symbol = ship.getSymbol()
         item = ship.getColour() + symbol + Fore.RESET
         for yIndex, yValue in enumerate(board):
@@ -138,7 +127,7 @@ class Place:
         Message.clear()
 
         # Prints out a smaller, updated display
-        self.ShowDisplay(False)
+        self.ShowDisplay(self.boardData, False)
         shipPlacing = self.ships[place]
         print(f'\nPlacing Ship: {shipPlacing.getName()}')
 
@@ -148,7 +137,7 @@ class Place:
         # Attempts to place the ship on the map and show the board.
         board = self.AttemptPlace(backupCopy, shipPlacing)
         Message.clear()
-        self.ShowDisplay(False, board)
+        self.ShowDisplay(board, False)
 
         # Checks if the board and what has been placed is correct.
         cont, saved = self.chk.getInput("\nDoes this look correct?: ",
@@ -156,7 +145,7 @@ class Place:
                                         y=lambda: (True, True),
                                         n=lambda: (self.boardData, False))
         if cont is True:
-            cont = self._ChangeColour(board, self.ships[place])
+            cont = self.__ChangeColour(board, self.ships[place])
 
         return cont, saved
 
@@ -176,7 +165,7 @@ class Place:
             if self.PlacedAll():
                 return -2
             # Gets ship to place
-            self.ShowDisplay()
+            self.ShowDisplay(self.boardData)
             place = self.chk.getInput("Enter ship number you want to place: ",
                                       self.chk.ModeEnum.int,
                                       lower=0, higher=len(self.ships))
@@ -202,7 +191,7 @@ class Place:
                     self.save.Write(self.boardData,
                                     f'{self.location}/{self.user}/ships',
                                     encoding=self.save.encoding.BINARY)
-                    
+
                     self.save.Write(self.placedData,
                                     f'{self.location}/{self.user}/placedData',
                                     encoding=self.save.encoding.BINARY)

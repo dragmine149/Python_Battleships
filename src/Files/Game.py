@@ -33,7 +33,7 @@ class Game:
     def Place(self):
         print("Placement check")
         placed = self.__checkShipPlacement(self.users)
-        if MultiCheck(*placed):
+        if MultiCheck(placed):
             return True
 
         if self.multiplayer[0] != 'y':
