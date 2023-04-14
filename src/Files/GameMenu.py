@@ -16,7 +16,6 @@ from Files import Game
 
 class Menu:
     def __init__(self) -> None:
-        self.msg = Message()
         self.chk = Check()
         self.dis = Display()
         self.save = save()
@@ -88,7 +87,7 @@ class Menu:
 
             game = self.gameList[gameIndex - 1]
             self.save.RemoveFolder(f'{self.path}/{game}')
-            self.msg.clear()
+            Message.clear()
             self.dis.ShowHeader(text=self.header)
             self.dis.RemoveOption(gameIndex)
             self.dis.ShowOptions(useList=True, requireResult=False)
@@ -110,7 +109,7 @@ class Menu:
                                    encoding=self.save.encoding.BINARY)
 
             if checkInstances(bool, ships, shots):
-                self.msg.clear(
+                Message.clear(
                     "Invalid data found! Either the game is not completed or corrupted. Press anything to continue.")
                 readchar.readchar()
                 return False
@@ -134,7 +133,7 @@ class Menu:
 
         winner = self.save.Read(f'{gamePath}/win')
         if winner is not False:
-            self.msg.clear()
+            Message.clear()
             print(f'{"-" * shutil.get_terminal_size().columns}')
             print(f'{Fore.GREEN}GAME OVER!!!{Fore.RESET}')
             print(f'{Fore.CYAN}WINNER:{winner}{Fore.RESET}')
@@ -158,7 +157,7 @@ class Menu:
         result = None
         while result is None:
             # Reset
-            self.msg.clear()
+            Message.clear()
             self.dis.RemoveAllOptions()
 
             # Make Stuff

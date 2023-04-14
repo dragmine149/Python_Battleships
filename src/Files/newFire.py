@@ -12,7 +12,6 @@ class Fire:
     """
     def __init__(self, gameInfo, userInfo, localUser=None):
         self.save = save()
-        self.msg = Message()
         
         # Loads information
         self.gameInfo = gameInfo
