@@ -8,6 +8,8 @@ from PythonFunctions.Watermark import LINKCODE
 from Files import Settings
 
 sv = save()
+# Pre load settings to make sure all the files are there etc...
+settings = Settings.Settings()
 
 
 def praser():
@@ -39,7 +41,7 @@ def command_options():
     args = praser()
     if args['save']:
         # Force updates the save location.
-        Settings.Settings().updateSave('path', args['save'][0])
+        settings.updateSave('path', args['save'][0])
 
     if args['delete']:
         def yes():
@@ -93,7 +95,7 @@ class Choices:
         return CreateInfo.CreateData(path).main()
 
     def settings(self):
-        result = Settings.Settings().showDisplay()
+        result = settings.showDisplay()
         return result
 
 

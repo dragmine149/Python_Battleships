@@ -24,6 +24,8 @@ class Settings:
 
         # checks and makes file if doesn't exist.
         if not os.path.exists('Data/Settings'):
+            print(f"{Fore.RED}DETECTED MISSING SETTINGS FILE!{Fore.RESET}")
+            self.save.MakeFolders('Data')
             self.saveSettings()
         self.loadSettings()
 
