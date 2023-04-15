@@ -5,7 +5,6 @@ from PythonFunctions.Save import save
 from PythonFunctions.Message import Message
 from PythonFunctions.Check import Check
 from PythonFunctions.Colours import Translate, Format
-from PythonFunctions.Run import Timer
 from colorama import Fore
 
 from Files import ShipInfo
@@ -57,18 +56,20 @@ class Place:
         east = f"{Translate('E', Format.UNDERLINE)}ast"
         south = f"{Translate('S', Format.UNDERLINE)}outh"
         west = f"{Translate('W', Format.UNDERLINE)}est"
-        string = self.chk.getInput(
+        _, string = self.chk.getInput(
             f"Enter rotation of ship ({north}, {east}, {south}, {west}): ",
-            self.chk.ModeEnum.yesno,
-            info=('n', 'e', 's', 'w'))
+            self.chk.ModeEnum.str,
+            rCheck=True,
+            info=['n', 'e', 's', 'w'])
 
         return rotation[string]
 
     def GetShipPlacementInfo(self):
-        return self.chk.getInput('Please enter location to place ship:',
-                                 self.chk.ModeEnum.location,
-                                 x=len(self.boardData[0]),
-                                 y=len(self.boardData)), self.__rotationCheck()
+        location = self.chk.getInput('Please enter location to place ship:',
+                                     self.chk.ModeEnum.location,
+                                     x=len(self.boardData[0]) - 1,
+                                     y=len(self.boardData) - 1)
+        return location, self.__rotationCheck()
 
     def __ShipLocationCheck(self, placeId, index):
         if placeId + index < 0:
@@ -89,6 +90,7 @@ class Place:
         while not validShip:
             # Ability to get information in this loop
             fLoatcation, rotation = self.GetShipPlacementInfo()
+            fLoatcation = list(fLoatcation)
             backupboard = copy.deepcopy(board)
             info = data.get(rotation)
 
@@ -99,7 +101,7 @@ class Place:
             validShip = True
             for i in range(ship.getLength()):
                 fLoatcation[info[0]] = self.__ShipLocationCheck(
-                    info[1], i * info[2])
+                    info[1], (i - 1) * info[2])
 
                 if board[fLoatcation[1]][fLoatcation[0]] != "-":
                     board = backupboard
@@ -111,17 +113,14 @@ class Place:
             if validShip:
                 return board
 
-    @Timer
-    def __ChangeColour(self, board, ship: ShipInfo.ShipTemplate):
-        symbol = ship.getSymbol()
-        item = ship.getColour() + symbol + Fore.RESET
-        for yIndex, yValue in enumerate(board):
+    def __ChangeColour(self):
+        for yIndex, yValue in enumerate(self.boardData):
             for xIndex, xValue in enumerate(yValue):
-                if xValue != symbol:
-                    # Skip other checks
+                if xValue == '-':
                     continue
-                board[yIndex][xIndex] = item
-        return board
+                ship = ShipInfo.getShipFromSymbol(xValue)
+                text = f'{ship.getColour()}{ship.getSymbol()}{Fore.RESET}'
+                self.boardData[yIndex][xIndex] = text
 
     def PlaceData(self, place):
         Message.clear()
@@ -135,74 +134,74 @@ class Place:
         backupCopy = copy.deepcopy(self.boardData)
 
         # Attempts to place the ship on the map and show the board.
-        board = self.AttemptPlace(backupCopy, shipPlacing)
+        self.boardData = self.AttemptPlace(backupCopy, shipPlacing)
         Message.clear()
-        self.ShowDisplay(board, False)
+        self.ShowDisplay(self.boardData, False)
 
         # Checks if the board and what has been placed is correct.
-        cont, saved = self.chk.getInput("\nDoes this look correct?: ",
-                                        self.chk.ModeEnum.yesno,
-                                        y=lambda: (True, True),
-                                        n=lambda: (self.boardData, False))
-        if cont is True:
-            cont = self.__ChangeColour(board, self.ships[place])
+        return self.chk.getInput("\nDoes this look correct?: ",
+                                 self.chk.ModeEnum.yesno,
+                                 y=True,
+                                 n=False)
 
-        return cont, saved
+    def moveShip(self, place):
+        ship = self.ships[place]
+        # Remove ship then place ship
+        symbol = ship.getSymbol()
+        for yIndex, yValue in enumerate(self.boardData):
+            for xIndex, xValue in enumerate(yValue):
+                if xValue != symbol:
+                    continue
 
-    # Checks if all ships have been placed
-    def PlacedAll(self) -> bool:
-        print(self.placedData)
-        for ship in self.placedData:
-            if not self.placedData[ship]:
-                return False
-        return True
+                self.boardData[yIndex][xIndex] = '-'
 
     # Main part of placing
     def Place(self):
         Finished = False
         while not Finished:
             Message.clear()
-            if self.PlacedAll():
+            if any(not self.placedData.get(ship) for ship in self.placedData):
                 return -2
+
+            self.boardData = self.__ChangeColour()
             # Gets ship to place
             self.ShowDisplay(self.boardData)
             place = self.chk.getInput("Enter ship number you want to place: ",
                                       self.chk.ModeEnum.int,
                                       lower=0, higher=len(self.ships))
             if place == 0:
-                # self.info.writeFile(Settings.request(['colour'])[0], "UserColour")
-                print("User colour is disabled at the moment. Sorry")
                 return 0
-            if place is not None:
-                place -= 1
 
-                if self.placedData[self.ships[place].getName()]:
-                    Message.clear(
-                        "Moving ships comming in Update 3 (Sorry, big task to do atm.)",
-                        timeS=2
-                    )
-                    continue
+            if place is None:
+                continue
 
-                self.boardData, saved = self.PlaceData(place)
-                if saved:
-                    print("Saved")
-                    self.placedData[self.ships[place].getName()] = True
+            place -= 1
 
-                    self.save.Write(self.boardData,
-                                    f'{self.location}/{self.user}/ships',
-                                    encoding=self.save.encoding.BINARY)
+            if self.placedData.get(self.ships.get(place).getName()):
+                self.moveShip(place)
 
-                    self.save.Write(self.placedData,
-                                    f'{self.location}/{self.user}/placedData',
-                                    encoding=self.save.encoding.BINARY)
+            saved = self.PlaceData(place)
+            if saved:
+                print("Saved")
+                self.placedData[self.ships.get(place).getName()] = True
+
+                self.save.Write(self.boardData,
+                                f'{self.location}/{self.user}/ships',
+                                encoding=self.save.encoding.BINARY)
+
+                self.save.Write(self.placedData,
+                                f'{self.location}/{self.user}/placedData',
+                                encoding=self.save.encoding.BINARY)
 
     def Main(self):
         Message.clear()
         data = self.Place()
         if data == -2:
             boardSize = self.save.Read(f"{self.location}/GameData",
-                                       self.save.encoding.BINARY)
+                                       encoding=self.save.encoding.BINARY)
             self.save.Write(Board.CreateBoard(boardSize[0], boardSize[1]),
                             f'{self.location}/{self.user}/shots',
-                            self.save.encoding.BINARY)
+                            encoding=self.save.encoding.BINARY)
+            # self.info.writeFile(Settings.request(['colour'])[0],
+            #                     "UserColour")
         return data == -2

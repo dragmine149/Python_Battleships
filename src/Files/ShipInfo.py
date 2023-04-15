@@ -121,6 +121,15 @@ def getDefaultPlaced():
     return data
 
 
+def getShipFromSymbol(symbol: str) -> ShipTemplate | None:
+    for ship in getShips():
+        ship: ShipTemplate
+        if ship.getSymbol() == symbol:
+            return ship
+
+    return None
+
+
 """
 CODE
 Here is stuff to controll the ship data and get accruate inputs.

@@ -7,12 +7,11 @@ from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Check import Check
 from PythonFunctions.Logic import MultiCheck
 
-from Files import newFire, newPlace
+from Files import Place, newFire
 
 
 class Game:
     def __init__(self, gamePath: str, gameName: str):
-        print("Game.py loading!")
         self.save = save()
         self.cln = Clean()
         self.chk = Check()
@@ -40,8 +39,8 @@ class Game:
             # Go through each user and get them to place things
             for user in range(len(self.users)):
                 if not placed[user]:
-                    userPlace = newPlace.Place(self.gamePath,
-                                               self.users[user])
+                    userPlace = Place.Place(self.gamePath,
+                                            self.users[user])
                     placed[user] = userPlace.Main()
                     if placed[user] is False:
                         # person A quit, no need for person B to place.
@@ -52,8 +51,8 @@ class Game:
 
         # Checks if the local user has placed in this multiplayer game
         if not self.placed[self.localUserIndex]:
-            userPlace = newPlace.Place(self.gamePath,
-                                       self.localUser.get('name'))
+            userPlace = Place.Place(self.gamePath,
+                                    self.localUser.get('name'))
             return userPlace.Main()
 
         return True
