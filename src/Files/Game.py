@@ -1,8 +1,8 @@
 import getpass
 import typing
 
+from PythonFunctions import Message
 from PythonFunctions.Save import save
-from PythonFunctions.Message import Message
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Check import Check
 from PythonFunctions.Logic import MultiCheck

@@ -1,7 +1,7 @@
 import os
 
 from PythonFunctions.Save import save
-from PythonFunctions.Message import Message
+from PythonFunctions import Message
 from Files import ShipInfo
 
 

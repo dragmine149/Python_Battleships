@@ -4,12 +4,11 @@ import readchar
 import typing
 from colorama import Fore
 from PythonFunctions.Logic import checkInstances
-from PythonFunctions.Message import Message
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Check import Check
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Save import save
-from PythonFunctions import Run, Board
+from PythonFunctions import Run, Board, Message
 
 from Files import Game
 

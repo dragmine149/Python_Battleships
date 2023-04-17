@@ -1,8 +1,7 @@
 import copy
 
-from PythonFunctions import Board
+from PythonFunctions import Board, Message
 from PythonFunctions.Save import save
-from PythonFunctions.Message import Message
 from PythonFunctions.Check import Check
 from PythonFunctions.Colours import Translate, Format
 from colorama import Fore

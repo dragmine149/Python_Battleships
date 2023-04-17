@@ -3,7 +3,7 @@ from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Check import Check
 from PythonFunctions.Searching import search
-from PythonFunctions.Message import Message
+from PythonFunctions import Message
 from colorama import Fore
 
 

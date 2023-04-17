@@ -5,10 +5,9 @@ from colorama import Fore
 from PythonFunctions.PrintTraceback import PrintTraceback
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Watermark import LINKCODE
-from PythonFunctions.Message import Message
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
-from PythonFunctions import Board
+from PythonFunctions import Board, Message
 from Files import ShipInfo
 
 
