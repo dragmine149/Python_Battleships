@@ -3,7 +3,7 @@ import copy
 from PythonFunctions import Board, Message
 from PythonFunctions.Save import save
 from PythonFunctions.Check import Check
-from PythonFunctions.Colours import Translate, Format
+from PythonFunctions.Colours import Translate, Format, Revert
 from colorama import Fore
 
 from Files import ShipInfo
@@ -26,9 +26,9 @@ class Place:
             encoding=self.save.encoding.BINARY)
 
     # The display
-    def ShowDisplay(self, board, showShips=True):
+    def ShowDisplay(self, showShips=True):
         print(f"{self.user}'s turn to place!", end='\n\n')
-        Board.DisplayBoard(board, coords=True)
+        Board.DisplayBoard(self.boardData, coords=True)
 
         # Shows the alvalible ships to place etc
         if showShips:
@@ -117,15 +117,22 @@ class Place:
             for xIndex, xValue in enumerate(yValue):
                 if xValue == '-':
                     continue
+
+                xValue = Revert(xValue)
+
                 ship = ShipInfo.getShipFromSymbol(xValue)
-                text = f'{ship.getColour()}{ship.getSymbol()}{Fore.RESET}'
+                if ship is None:
+                    print(f"Invalid ship at ({xIndex},{yIndex}) Symbol: {xValue}")
+                    continue
+
+                text = Translate(ship.getSymbol(), ship.getColour())
                 self.boardData[yIndex][xIndex] = text
 
     def PlaceData(self, place):
         Message.clear()
 
         # Prints out a smaller, updated display
-        self.ShowDisplay(self.boardData, False)
+        self.ShowDisplay(False)
         shipPlacing = self.ships[place]
         print(f'\nPlacing Ship: {shipPlacing.getName()}')
 
@@ -135,7 +142,7 @@ class Place:
         # Attempts to place the ship on the map and show the board.
         self.boardData = self.AttemptPlace(backupCopy, shipPlacing)
         Message.clear()
-        self.ShowDisplay(self.boardData, False)
+        self.ShowDisplay(False)
 
         # Checks if the board and what has been placed is correct.
         return self.chk.getInput("\nDoes this look correct?: ",
@@ -164,7 +171,7 @@ class Place:
 
             self.boardData = self.__ChangeColour()
             # Gets ship to place
-            self.ShowDisplay(self.boardData)
+            self.ShowDisplay()
             place = self.chk.getInput("Enter ship number you want to place: ",
                                       self.chk.ModeEnum.int,
                                       lower=0, higher=len(self.ships))
