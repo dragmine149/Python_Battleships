@@ -1,11 +1,13 @@
 import sys
 import argparse
+import getpass
 from PythonFunctions import Check
 from PythonFunctions.IsDigit import IsDigit
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Watermark import LINKCODE
-from Files import Settings
+from Files import Settings, CreateInfo
+from Files.GameMenu import Menu
 
 sv = save()
 # Pre load settings to make sure all the files are there etc...
@@ -18,10 +20,46 @@ def praser():
     Returns:
         args (list): the arguments inputted via command line
     """
-    parser = argparse.ArgumentParser(description="Battleships, in python in a python terminal.")  # noqa E501
+    parser = argparse.ArgumentParser(
+        description="Battleships, in python in a python terminal.")
     parser.add_argument('menu', default=-.5,
                         help="The menu or game to load",
                         metavar="Menu / Game Name", nargs='?')
+    createGroup = parser.add_argument_group(
+        'Create', 'Arguments for creating a game')
+    createGroup.add_argument('-c', '--create',
+                             help='Create a game.',
+                             action='store_true')
+    createGroup.add_argument('-cn',
+                             help='Name of the game',
+                             nargs=1,
+                             default=None,
+                             metavar='Name')
+    createGroup.add_argument('-cu1',
+                             help='Name of user 1',
+                             nargs=1,
+                             default=getpass.getuser(),
+                             metavar='User')
+    createGroup.add_argument('-cu2',
+                             help='Name of user 2',
+                             nargs=1,
+                             default=None,
+                             metavar='User')
+    createGroup.add_argument('-cX',
+                             help='X size of the board',
+                             nargs=1,
+                             default=10,
+                             metavar='Size')
+    createGroup.add_argument('-cY',
+                             help='Y size of the board',
+                             nargs=1,
+                             default=10,
+                             metavar='Size')
+    createGroup.add_argument('-cM',
+                             help='If multiplayer is enabled',
+                             nargs=1,
+                             default=False,
+                             metavar='Multiplayer')
     parser.add_argument('--delete',
                         help="Delete old game data.",
                         action='store_true')
@@ -39,40 +77,48 @@ def command_options():
         int: The choice that you choice
     """
     args = praser()
-    if args['save']:
-        # Force updates the save location.
-        settings.updateSave('path', args['save'][0])
+    print(args)
+    if args.get('create'):
+        path = sv.Read('Data/Settings',
+                       encoding=[sv.encoding.JSON,
+                                 sv.encoding.BINARY]).get('path')
+        c = CreateInfo.CreateData(path)
+        c.SetDefaults(args.get('cn'), args.get('cu1'), args.get(
+            'cu2'), args.get('cX'), args.get('cY'), args.get('cM'))
+        c.main()
 
-    if args['delete']:
+    if args.get('save'):
+        # Force updates the save location.
+        settings.saveSettings('path', args.get('save')[0])
+
+    if args.get('delete'):
         def yes():
             sv.RemoveFolder(['Saves', 'Data'])
             sys.exit('Deleted old data. Please rerun')
 
-        def no():
-            sys.exit('Aborted!')
-
         chk = Check.Check()
         chk.getInput("Are you sure you want to delete all data?: ",
-                     chk.ModeEnum.yesno, y=yes, n=no)
+                     chk.ModeEnum.yesno, y=yes, n=sys.exit, nA='Aborted!')
 
-    r = IsDigit(args['menu'])
-    print(r, args['menu'])
+    if args.get('menu') != -0.5:
+        if IsDigit(args.get('menu')):
+            Menu().main(args.get('menu'))
+            return
 
-    if not r:
-        sys.exit("Comming soon (Probably in Update 3)")
-
-    return int(args['menu'])
+        sys.exit('Invalid game argument')
 
 
+# pylint: disable=C0415
 class Choices:
     """Stores information about what each option does
     """
+
     def activate(self, pos):
         pos = pos[1]
         options = {
             1: self.selectGame,
             2: self.makeGame,
-            3: self.settings,
+            3: settings.showDisplay,
         }
 
         method = options.get(pos)
@@ -84,19 +130,15 @@ class Choices:
         sys.exit("Thank you for playing")
 
     def selectGame(self):
-        from Files.GameMenu import Menu
         return Menu().main()
 
     def makeGame(self):
-        from Files import CreateInfo
         path = sv.Read('Data/Settings',
                        encoding=[sv.encoding.JSON,
                                  sv.encoding.BINARY]).get('path')
         return CreateInfo.CreateData(path).main()
 
-    def settings(self):
-        result = settings.showDisplay()
-        return result
+# pylint: enable=C0415
 
 
 def Main():

@@ -1,7 +1,7 @@
 import time
 import shutil
-import readchar
 import typing
+import readchar
 from colorama import Fore
 from PythonFunctions.Logic import checkInstances
 from PythonFunctions.CleanFolderData import Clean
@@ -23,6 +23,7 @@ class Menu:
                                    encoding=[self.save.encoding.JSON,
                                              self.save.encoding.BINARY]).get('path')
         self.header = None
+        self.gameList = []
 
     def GetGameInfo(self):
         Run.Mark("get game start")
@@ -144,17 +145,20 @@ class Menu:
         gameResult = Game.Game(self.path, self.gameList[pos]).Main()
         print(gameResult)
         time.sleep(2)
-        if gameResult.find('Ended') > -1:
-            return None
+        return None
 
     def MakeDisplay(self):
         self.dis.AddOption((self.back, "Back"), index=0)
         self.dis.AddOption((self.changePath, "Change Path"), index=-1)
         self.dis.AddOption((self.deleteGame, "Delete Game"), index=-2)
 
-    def main(self):
+    def main(self, gameIndex: int = None):
         result = None
         while result is None:
+            if gameIndex is not None:
+                result = self.selectGame(None, gameIndex)
+                if result is not None:
+                    return result
             # Reset
             Message.clear()
             self.dis.RemoveAllOptions()

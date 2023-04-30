@@ -44,16 +44,6 @@ class Settings:
     def back(self, _):
         return "Returned"
 
-    """
-    updateSave(obj, data)
-    obj -> name of object, e.g. path
-    data -> data to save in that object
-    """
-
-    def updateSave(self, obj, data):
-        self.data[obj] = data
-        self.saveSettings()
-
     # Changes default location
     def changeLocation(self, _):
         check, path = self.chk.getInput(
@@ -66,7 +56,7 @@ class Settings:
         self.display.AddOption((self.changeLocation,
                                 f"Change Location (Current: {path})"),
                                index=1)
-        self.updateSave("path", path)
+        self.saveSettings("path", path)
 
     # Change the wait time between checks
     def changeWait(self, _):
@@ -78,12 +68,12 @@ class Settings:
         self.display.AddOption((self.changeLocation,
                                 f"Change Timeout (Current: {time})"),
                                index=2)
-        self.updateSave("CheckTimeout", time)
+        self.saveSettings("CheckTimeout", time)
 
     def deleteCache(self, _):
         print(f"{Fore.RED}Deleting Cache...{Fore.RESET}")
         Data = search().Locate(['*.pyc', '*_cache', '.Temp'], logging=True)
-        print("Data Found: {}".format(Data))
+        print(f"Data found: {Data}")
         for file in Data:
             self.save.RemoveFile(file)
 
@@ -120,8 +110,13 @@ class Settings:
         print(
             f"{Fore.GREEN}Successfully loaded settings!{Fore.RESET}")
 
+        return None
+
     # Saves settings
-    def saveSettings(self):
+    def saveSettings(self, obj=None, data=None):
+        if None not in (obj, data):
+            self.data[obj] = data
+
         print(f"{Fore.BLUE}Saving Settings...{Fore.RESET}")
         self.save.Write(self.data, 'Data/Settings',
                         encoding=[self.save.encoding.JSON,
@@ -146,17 +141,3 @@ class Settings:
             Message.clear()
             self.display.ShowHeader(text="Options")
             result = self.display.ShowOptions(useList=True)
-
-
-# Takes the input data and returns the output
-# useful for quick access to settings
-def request(data=[]):
-    setObj = Settings()
-    # no need to load again as automatically done in class call.
-    result = []
-    for item in data:
-        try:
-            result.append(setObj.data[item])
-        except KeyError:
-            result.append(None)
-    return result

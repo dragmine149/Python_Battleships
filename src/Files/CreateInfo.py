@@ -57,6 +57,14 @@ class CreateData:
         self.cln = Clean()
         self.saveModule = save()
 
+    def SetDefaults(self, name, user1, user2, sizeX, sizeY, Multi):
+        self.info.get('Name')['value'] = name
+        self.info.get('Players').get('Player 1')['value'] = user1
+        self.info.get('Players').get('Player 2')['value'] = user2
+        self.info.get('Size').get('X')['value'] = sizeX
+        self.info.get('Size').get('Y')['value'] = sizeY
+        self.info.get('Multiplayer')['value'] = Multi
+
     def getGameList(self):
         return self.cln.clean(self.saveModule.ListFolder(
             self.info.get('Location').get('value')))

@@ -122,7 +122,9 @@ class Place:
 
                 ship = ShipInfo.getShipFromSymbol(xValue)
                 if ship is None:
-                    print(f"Invalid ship at ({xIndex},{yIndex}) Symbol: {xValue}")
+                    print(
+                        f"Invalid ship at ({xIndex},{yIndex}) Symbol: {xValue}"
+                    )
                     continue
 
                 text = Translate(ship.getSymbol(), ship.getColour())

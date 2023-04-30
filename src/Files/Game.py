@@ -1,6 +1,7 @@
 import getpass
 import typing
 
+from secrets import compare_digest
 from PythonFunctions import Message
 from PythonFunctions.Save import save
 from PythonFunctions.CleanFolderData import Clean
@@ -76,7 +77,7 @@ class Game:
         password = self.gameData.get('password')
         if password != 'Disabled':
             word = getpass.getpass("Please enter game password: ")
-            return word == password
+            return compare_digest(word, password)
         return True
 
     def UsernameCheck(self):
