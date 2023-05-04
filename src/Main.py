@@ -33,32 +33,32 @@ def praser():
     createGroup.add_argument('-cn',
                              help='Name of the game',
                              nargs=1,
-                             default=None,
+                             default=['None'],
                              metavar='Name')
     createGroup.add_argument('-cu1',
                              help='Name of user 1',
                              nargs=1,
-                             default=getpass.getuser(),
+                             default=[getpass.getuser()],
                              metavar='User')
     createGroup.add_argument('-cu2',
                              help='Name of user 2',
                              nargs=1,
-                             default=None,
+                             default=['None'],
                              metavar='User')
     createGroup.add_argument('-cX',
                              help='X size of the board',
                              nargs=1,
-                             default=10,
+                             default=[10],
                              metavar='Size')
     createGroup.add_argument('-cY',
                              help='Y size of the board',
                              nargs=1,
-                             default=10,
+                             default=[10],
                              metavar='Size')
     createGroup.add_argument('-cM',
                              help='If multiplayer is enabled',
                              nargs=1,
-                             default=False,
+                             default=['no'],
                              metavar='Multiplayer')
     parser.add_argument('--delete',
                         help="Delete old game data.",
@@ -83,8 +83,8 @@ def command_options():
                        encoding=[sv.encoding.JSON,
                                  sv.encoding.BINARY]).get('path')
         c = CreateInfo.CreateData(path)
-        c.SetDefaults(args.get('cn'), args.get('cu1'), args.get(
-            'cu2'), args.get('cX'), args.get('cY'), args.get('cM'))
+        c.SetDefaults(args.get('cn')[0], args.get('cu1')[0], args.get(
+            'cu2')[0], args.get('cX')[0], args.get('cY')[0], args.get('cM')[0])
         c.main()
 
     if args.get('save'):

@@ -1,4 +1,5 @@
 import getpass
+import shutil
 import string
 import random
 from colorama import Fore
@@ -7,7 +8,7 @@ from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Watermark import LINKCODE
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
-from PythonFunctions import Board, Message
+from PythonFunctions import Board, Message, cursor
 from Files import ShipInfo
 
 
@@ -58,11 +59,14 @@ class CreateData:
         self.saveModule = save()
 
     def SetDefaults(self, name, user1, user2, sizeX, sizeY, Multi):
-        self.info.get('Name')['value'] = name
-        self.info.get('Players').get('Player 1')['value'] = user1
-        self.info.get('Players').get('Player 2')['value'] = user2
-        self.info.get('Size').get('X')['value'] = sizeX
-        self.info.get('Size').get('Y')['value'] = sizeY
+        self.name(name)
+        # self.__nameCheck(user1, self.getInfoFieldValue('Players', 'Player 1'))
+        # self.__nameCheck(user2, self.getInfoFieldValue('Players', 'Player 2'), user1)
+        # self.info['Players']['Player 1']['value'] = usernames[0]
+        # self.info['Players']['Player 2']['value'] = usernames[1]
+        # self.info['Players']['Player 1']['colour'] = Fore.GREEN
+        # self.info['Players']['Player 2']['colour'] = Fore.GREEN
+        self.size(sizeX, sizeY)
         self.info.get('Multiplayer')['value'] = Multi
 
     def getGameList(self):
@@ -99,7 +103,7 @@ class CreateData:
 {self.PrintSetting('Location')}
 {self.PrintSetting('Multiplayer')}
 {self.PrintSetting('Password')}""")
-
+        print('-' * shutil.get_terminal_size().columns)
         print('''Options:
 0: Quit
 1: Game Name
@@ -139,13 +143,15 @@ class CreateData:
             if result == "Save":
                 return
 
-    def name(self) -> str:
+    def name(self, passedName: str = None) -> str:
         gameName = None
         while gameName is None:
-            print("Please enter the game name (blank to keep same)")
-            gameName = input("\033[%d;%dH" % (2, 7))
-            if gameName == "":
-                return gameName
+            gameName = passedName
+            if passedName is None:
+                print("Please enter the game name (blank to keep same)")
+                gameName = input(f"\033[{2};{7}H")
+                if gameName == "":
+                    return gameName
 
             def SetName(name: str):
                 self.info['Name']['value'] = name
@@ -208,15 +214,14 @@ class CreateData:
                     pastNameText = pastName + ', '
 
                 # Move cursor and stuff
-                print("\033[%d;%dH" % (19, 0))
+                cursor(19, 0)
                 space = " " * (len(str(oldUsers)) - 1)
                 print(
                     f"Please enter player {i + 1}'s name (Blank to keep same)",
                     end='')
-                print("\033[%d;%dHPlayers: [{}".format(space) % (3, 0), end='')
-                usernames[i] = input(
-                    f"\033[%d;%dH{pastNameText}" % (3, 11))
-                print("\033[%d;%dH" % (19, 0))
+                print(f"{cursor(3, 0, True)}Players: [{space}", end='')
+                usernames[i] = input(f"\033[{3};{11}H{pastNameText}")
+                cursor(19, 0)
 
                 # Process input
                 nameResult = self.__nameCheck(usernames[i],
@@ -237,14 +242,14 @@ class CreateData:
         self.info['Players']['Player 1']['colour'] = Fore.GREEN
         self.info['Players']['Player 2']['colour'] = Fore.GREEN
 
-    def size(self):
+    def size(self, x: int = None, y: int = None):
         # get the size of the game board.
         x = self.chk.getInput("Please enter X length: ",
                               self.chk.ModeEnum.int,
-                              lower=5)
+                              lower=5, vCheck=x)
         y = self.chk.getInput("Please enter Y length: ",
                               self.chk.ModeEnum.int,
-                              lower=5)
+                              lower=5, vCheck=y)
 
         self.info['Size']['X']['value'] = x
         self.info['Size']['X']['colour'] = Fore.GREEN
