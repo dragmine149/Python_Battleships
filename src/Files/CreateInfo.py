@@ -8,7 +8,7 @@ from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Watermark import LINKCODE
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
-from PythonFunctions import Board, Message, cursor
+from PythonFunctions import Board, Message, cursor, SPACE, lenstr, n, clearLine
 from Files import ShipInfo
 
 
@@ -58,16 +58,18 @@ class CreateData:
         self.cln = Clean()
         self.saveModule = save()
 
-    def SetDefaults(self, name, user1, user2, sizeX, sizeY, Multi):
-        self.name(name)
-        # self.__nameCheck(user1, self.getInfoFieldValue('Players', 'Player 1'))
-        # self.__nameCheck(user2, self.getInfoFieldValue('Players', 'Player 2'), user1)
-        # self.info['Players']['Player 1']['value'] = usernames[0]
-        # self.info['Players']['Player 2']['value'] = usernames[1]
-        # self.info['Players']['Player 1']['colour'] = Fore.GREEN
-        # self.info['Players']['Player 2']['colour'] = Fore.GREEN
+    def SetDefaults(self, name, users, sizeX, sizeY, Multi):
+        # Perpare screen for information later on
+        Message.clear()
+        self.showOptions()
+
+        if name is not None:
+            self.name(name)
+        if users is not None:
+            self.username(users)
         self.size(sizeX, sizeY)
-        self.info.get('Multiplayer')['value'] = Multi
+        self.MultiPlayer(Multi)
+        print('Defaults have been set')
 
     def getGameList(self):
         return self.cln.clean(self.saveModule.ListFolder(
@@ -173,6 +175,9 @@ class CreateData:
             )
 
     def __nameCheck(self, name: str, old: str, other: str = None):
+        if name is None:
+            return name
+
         name = name.rstrip()
         newName = name
 
@@ -180,7 +185,7 @@ class CreateData:
         if name.lower()[:2] == 'me':
             newName = getpass.getuser()
             if name[2:] != '':
-                newName += '({})'.format(name[2:])
+                newName += f'({name[2:]})'
 
         # check for blank
         if name == '':
@@ -195,65 +200,64 @@ class CreateData:
             return False
         return newName
 
-    def username(self):
-        # Get the players names
-        oldUsers = [
-            self.getInfoFieldValue('Players', 'Player 1'),
-            self.getInfoFieldValue('Players', 'Player 2')
-        ]
-        usernames = [None, None]
+    def username(self, users: list[str] = None) -> None:
+        def checkName(name, old, other=None) -> str:
+            name: str = self.__nameCheck(name, old, other)
+            name = n(None, name, name, False)
+            return name
 
-        # loop
-        for i in range(2):
-            while usernames[i] is None:
-                # get the last name
-                pastName = None
-                pastNameText = ''
-                if i >= 1:
-                    pastName = usernames[i - 1]
-                    pastNameText = pastName + ', '
+        if users is None:
+            users = [None, None]
 
-                # Move cursor and stuff
+        oldusers = [self.getInfoFieldValue('Players', 'Player 1'),
+                    self.getInfoFieldValue('Players', 'Player 2')]
+
+        puser: str = None
+        for i, olduser in enumerate(oldusers):
+            newuser: str = checkName(users[i], olduser, puser)
+            while newuser is None:
                 cursor(19, 0)
-                space = " " * (len(str(oldUsers)) - 1)
                 print(
-                    f"Please enter player {i + 1}'s name (Blank to keep same)",
+                    f'Please enter player {i + 1} name (blank to keep same)',
                     end='')
-                print(f"{cursor(3, 0, True)}Players: [{space}", end='')
-                usernames[i] = input(f"\033[{3};{11}H{pastNameText}")
+                clearLength = SPACE * lenstr(oldusers, -1)
+                print(
+                    f'{cursor(3, 0, True)}Players: [{clearLength}',
+                    end='')
+
+                newuser = input(
+                    f'{cursor(3, 11, True)}{n(puser, "")}{n(",", "", i, 1)}')
+                newuser = checkName(newuser, olduser, puser)
                 cursor(19, 0)
 
-                # Process input
-                nameResult = self.__nameCheck(usernames[i],
-                                              oldUsers[i],
-                                              pastName)
+            if i == 0:
+                puser = newuser
 
-                # annoyed
-                if not nameResult:
-                    usernames[i] = None
-                    print("Player {} name is not allowed!".format(i + 1))
-                    continue
-
-                # save
-                usernames[i] = nameResult
-
-        self.info['Players']['Player 1']['value'] = usernames[0]
-        self.info['Players']['Player 2']['value'] = usernames[1]
-        self.info['Players']['Player 1']['colour'] = Fore.GREEN
-        self.info['Players']['Player 2']['colour'] = Fore.GREEN
+            self.info['Players'][f'Player {i + 1}'].update(
+                value=newuser, colour=Fore.GREEN)
 
     def size(self, x: int = None, y: int = None):
+        x = n(x, x, v2=str(x))
+        x = n(y, y, v2=str(y))
+
+        print(f"{cursor(4, 0, True)}{clearLine(True)}")
+        cursor(19, 0)
         # get the size of the game board.
-        x = self.chk.getInput("Please enter X length: ",
-                              self.chk.ModeEnum.int,
-                              lower=5, vCheck=x)
-        y = self.chk.getInput("Please enter Y length: ",
-                              self.chk.ModeEnum.int,
-                              lower=5, vCheck=y)
+        x = self.chk.getInput(
+            f"Please enter X length {cursor(4, 0, True)}Size: [",
+            self.chk.ModeEnum.int,
+            lower=5, vCheck=x)
+
+        cursor(19, 0)
+        y = self.chk.getInput(
+            f"Please enter Y length {cursor(4, 0, True)}Size: [{x}, ",
+            self.chk.ModeEnum.int,
+            lower=5, vCheck=y)
+        cursor(19, 0)
 
         self.info['Size']['X']['value'] = x
         self.info['Size']['X']['colour'] = Fore.GREEN
-        self.info['Size']['X']['value'] = y
+        self.info['Size']['Y']['value'] = y
         self.info['Size']['Y']['colour'] = Fore.GREEN
 
     def SaveLocation(self):
@@ -265,20 +269,27 @@ class CreateData:
                 'File System Support')
             print(f"""Enter save location
 NOTE: Multiple types of file systems are supported. use FILESYSTEM://LOCATION
-Please check out {fss} for more information about supported filesystems""")
+Please check out {fss} for more information about supported filesystems
+To return to the default save location, use: ~/r!""")
 
             # Move curosr
-            print("\033[%d;%dH" % (5, 0), end='')
+            cursor(5, 0, end='')
             result, Location = self.chk.getInput("Location: ",
                                                  self.chk.ModeEnum.path,
                                                  rCheck=True)
+            if Location == '~/r!':
+                enc = [self.saveModule.encoding.JSON,
+                       self.saveModule.encoding.BINARY]
+                Location = self.saveModule.Read('Data/Settings',
+                                                encoding=enc).get('path')
+
             if result is False:
                 continue
 
             try:
                 self.saveModule.Write('test', f'{Location}/test')
                 self.saveModule.RemoveFile(f'{Location}/test')
-            except Exception:
+            except (FileNotFoundError, OSError):
                 PrintTraceback()
                 Message.warn(
                     "Error occured whilst trying to change location.",
@@ -288,7 +299,7 @@ Please check out {fss} for more information about supported filesystems""")
         self.info['Location']['value'] = Location
         self.info['Location']['colour'] = Fore.GREEN
 
-    def MultiPlayer(self):
+    def MultiPlayer(self, Multiplayer: bool = None):
         if self.getInfoFieldValue('Location') == "Saves":
             Message.clear(
                 "Save location is default. Multiplayer is disabled!",
@@ -297,9 +308,12 @@ Please check out {fss} for more information about supported filesystems""")
             return
         # get if multiplayer or not
 
-        multi = self.chk.getInput(
-            "Online multiplayer? (y = different devices, n = same device)",
-            self.chk.ModeEnum.yesno)
+        multi = Multiplayer
+        if Multiplayer is None:
+            multi = self.chk.getInput(
+                "Online multiplayer? (y = different devices, n = same device)",
+                self.chk.ModeEnum.yesno)
+
         self.info['Multiplayer']['value'] = "yes" if multi else "no"
 
     def __setPasswordUI(self, value: str, colour: str, shown: str):
@@ -327,7 +341,6 @@ Please check out {fss} for more information about supported filesystems""")
 
     def check(self):
         # Checks if all fields are valid.
-        # This is done because game name might relay on save location but will still let you enter it.  # noqa E051
 
         if self.getInfoFieldValue('Name') == 'None':
             Message.warn("Please enter a name")
@@ -342,7 +355,7 @@ Please check out {fss} for more information about supported filesystems""")
             Message.warn("Please check players name. (Someone has 'None')")
             return "Username"
 
-        if any(['/' in user or '\\' in user for user in users]):
+        if any(('/' in user or '\\' in user for user in users)):
             Message.clear("Usernames cannot have '/' or '\\' in!", timeS=2)
             return "Invalid Name"
 
@@ -411,9 +424,3 @@ Please check out {fss} for more information about supported filesystems""")
                               encoding=self.saveModule.encoding.BINARY)
 
         return "Save"  # success!!!
-
-
-if __name__ == '__main__':
-    c = CreateData("Saves")
-    result = c.getOption()
-    # print(result)

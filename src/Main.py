@@ -1,6 +1,5 @@
 import sys
 import argparse
-import getpass
 from PythonFunctions import Check
 from PythonFunctions.IsDigit import IsDigit
 from PythonFunctions.Save import save
@@ -25,25 +24,20 @@ def praser():
     parser.add_argument('menu', default=-.5,
                         help="The menu or game to load",
                         metavar="Menu / Game Name", nargs='?')
+    # Create args
     createGroup = parser.add_argument_group(
         'Create', 'Arguments for creating a game')
     createGroup.add_argument('-c', '--create',
                              help='Create a game.',
                              action='store_true')
-    createGroup.add_argument('-cn',
+    createGroup.add_argument('-cN',
                              help='Name of the game',
                              nargs=1,
-                             default=['None'],
+                             default=[None],
                              metavar='Name')
-    createGroup.add_argument('-cu1',
-                             help='Name of user 1',
-                             nargs=1,
-                             default=[getpass.getuser()],
-                             metavar='User')
-    createGroup.add_argument('-cu2',
-                             help='Name of user 2',
-                             nargs=1,
-                             default=['None'],
+    createGroup.add_argument('-cU',
+                             help='Name of the users',
+                             nargs=2,
                              metavar='User')
     createGroup.add_argument('-cX',
                              help='X size of the board',
@@ -57,9 +51,8 @@ def praser():
                              metavar='Size')
     createGroup.add_argument('-cM',
                              help='If multiplayer is enabled',
-                             nargs=1,
-                             default=['no'],
-                             metavar='Multiplayer')
+                             action='store_true')
+    # end create args
     parser.add_argument('--delete',
                         help="Delete old game data.",
                         action='store_true')
@@ -83,8 +76,11 @@ def command_options():
                        encoding=[sv.encoding.JSON,
                                  sv.encoding.BINARY]).get('path')
         c = CreateInfo.CreateData(path)
-        c.SetDefaults(args.get('cn')[0], args.get('cu1')[0], args.get(
-            'cu2')[0], args.get('cX')[0], args.get('cY')[0], args.get('cM')[0])
+        c.SetDefaults(args.get('cN')[0],
+                      args.get('cU'),
+                      args.get('cX')[0],
+                      args.get('cY')[0],
+                      args.get('cM'))
         c.main()
 
     if args.get('save'):
