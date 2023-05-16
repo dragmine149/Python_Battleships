@@ -48,6 +48,10 @@ class CreateData:
                 'value': 'no',
                 'colour': Fore.GREEN
             },
+            'Spectate': {
+                'value': 'no',
+                'colour': Fore.GREEN
+            },
             'Password': {
                 'true': None,
                 'value': 'Disabled',
@@ -58,7 +62,7 @@ class CreateData:
         self.cln = Clean()
         self.saveModule = save()
 
-    def SetDefaults(self, name, users, sizeX, sizeY, Multi):
+    def SetDefaults(self, name, users, sizeX, sizeY, Multi, Spec):
         # Perpare screen for information later on
         Message.clear()
         self.showOptions()
@@ -69,6 +73,7 @@ class CreateData:
             self.username(users)
         self.size(sizeX, sizeY)
         self.MultiPlayer(Multi)
+        self.SpectateChange(Spec)
         print('Defaults have been set')
 
     def getGameList(self):
@@ -104,6 +109,7 @@ class CreateData:
 {self.PrintSetting('Size')}
 {self.PrintSetting('Location')}
 {self.PrintSetting('Multiplayer')}
+{self.PrintSetting('Spectate')}
 {self.PrintSetting('Password')}""")
         print('-' * shutil.get_terminal_size().columns)
         print('''Options:
@@ -113,8 +119,9 @@ class CreateData:
 3: Board Size
 4: Save Location
 5: Multiplayer (both on same device, or different devices)
-6: Password
-7: Save and make game
+6: Spectate
+7: Password
+8: Save and make game
 ''')
 
     def quit(self):
@@ -131,15 +138,16 @@ class CreateData:
                 3: self.size,
                 4: self.SaveLocation,
                 5: self.MultiPlayer,
-                6: self.Password,
-                7: self.save
+                6: self.SpectateChange,
+                7: self.Password,
+                8: self.save
             }
             Message.clear()
 
             self.showOptions()
             choice = self.chk.getInput("What would you like to change?: ",
                                        self.chk.ModeEnum.int,
-                                       lower=0, higher=7, clear=False)
+                                       lower=0, higher=8, clear=False)
 
             result = options.get(choice)()
             if result == "Save":
@@ -315,6 +323,15 @@ To return to the default save location, use: ~/r!""")
                 self.chk.ModeEnum.yesno)
 
         self.info['Multiplayer']['value'] = "yes" if multi else "no"
+
+    def SpectateChange(self, sepctate: bool = None):
+        spec = sepctate
+        if sepctate is None:
+            spec = self.chk.getInput(
+                "Let others spectate?: ",
+                self.chk.ModeEnum.yesno)
+
+        self.info['Spectate']['value'] = "yes" if spec else "no"
 
     def __setPasswordUI(self, value: str, colour: str, shown: str):
         self.info['Password']['true'] = value

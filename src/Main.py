@@ -52,6 +52,9 @@ def praser():
     createGroup.add_argument('-cM',
                              help='If multiplayer is enabled',
                              action='store_true')
+    createGroup.add_argument('-cS',
+                             help='Allow spectators',
+                             action='store_true')
     # end create args
     parser.add_argument('--delete',
                         help="Delete old game data.",
@@ -80,7 +83,8 @@ def command_options():
                       args.get('cU'),
                       args.get('cX')[0],
                       args.get('cY')[0],
-                      args.get('cM'))
+                      args.get('cM'),
+                      args.get('cS'))
         c.main()
 
     if args.get('save'):
