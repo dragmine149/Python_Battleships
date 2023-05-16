@@ -38,12 +38,12 @@ class Game:
 
         if self.multiplayer[0] != 'y':
             # Go through each user and get them to place things
-            for user in range(len(self.users)):
-                if not placed[user]:
+            for userIndex, userValue in enumerate(self.users):
+                if not placed[userIndex]:
                     userPlace = Place.Place(self.gamePath,
-                                            self.users[user])
-                    placed[user] = userPlace.Main()
-                    if placed[user] is False:
+                                            userValue)
+                    placed[userIndex] = userPlace.Main()
+                    if placed[userIndex] is False:
                         # person A quit, no need for person B to place.
                         return False
 

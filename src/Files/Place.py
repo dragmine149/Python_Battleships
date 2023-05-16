@@ -171,7 +171,7 @@ class Place:
             if any(not self.placedData.get(ship) for ship in self.placedData):
                 return -2
 
-            self.boardData = self.__ChangeColour()
+            self.__ChangeColour()
             # Gets ship to place
             self.ShowDisplay()
             place = self.chk.getInput("Enter ship number you want to place: ",

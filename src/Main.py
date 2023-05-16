@@ -104,7 +104,6 @@ def command_options():
         sys.exit('Invalid game argument')
 
 
-# pylint: disable=C0415
 class Choices:
     """Stores information about what each option does
     """
@@ -133,8 +132,6 @@ class Choices:
                        encoding=[sv.encoding.JSON,
                                  sv.encoding.BINARY]).get('path')
         return CreateInfo.CreateData(path).main()
-
-# pylint: enable=C0415
 
 
 def Main():
