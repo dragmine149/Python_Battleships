@@ -11,6 +11,7 @@ from PythonFunctions.Save import save
 from PythonFunctions import Run, Board, Message
 
 from Files import Game
+from Files import newGame
 
 
 class Menu:
@@ -19,9 +20,10 @@ class Menu:
         self.dis = Display()
         self.save = save()
         self.cln = Clean()
-        self.path = self.save.Read('Data/Settings',
-                                   encoding=[self.save.encoding.JSON,
-                                             self.save.encoding.BINARY]).get('path')
+        self.path = self.save.Read(
+            "Data/Settings",
+            encoding=[self.save.encoding.JSON, self.save.encoding.BINARY],
+        ).get("path")
         self.header = None
         self.gameList = []
 
@@ -44,33 +46,37 @@ class Menu:
         for gameIndex, game in enumerate(self.gameList):
             Run.Mark("win check")
 
-            completed = ''
-            winner = self.save.Read(f'{self.path}/{game}/win',
-                                    encoding=self.save.encoding.BINARY)
-            if winner != '' and winner is not False:
-                completed = f'{Fore.GREEN}(Winner: {winner}){Fore.RESET}'
+            completed = ""
+            winner = self.save.Read(
+                f"{self.path}/{game}/win", encoding=self.save.encoding.BINARY
+            )
+            if winner != "" and winner is not False:
+                completed = f"{Fore.GREEN}(Winner: {winner}){Fore.RESET}"
 
             Run.Mark("win check end")
 
             # The message showing the winner check time.
             timeDiff = Run.CompareMarkers("win check", "win check end", 2)
-            loadtimeMsg = f'({timeDiff}s winner check time)'
+            loadtimeMsg = f"({timeDiff}s winner check time)"
 
             # the overall message of that row.
-            options[gameIndex + 1] = (self.selectGame,
-                                      f"{game} {completed} {loadtimeMsg}",
-                                      gameIndex)
+            options[gameIndex + 1] = (
+                self.selectGame,
+                f"{game} {completed} {loadtimeMsg}",
+                gameIndex,
+            )
 
         Run.Mark("load game end")
 
         # Works out how long it took to load the files, mainly debug but
         Run.Mark("get game end")
         totalloadtime = Run.CompareMarkers("get game start", "get game end", 2)
-        winloadtime = Run.CompareMarkers("load game start", "load game end",
-                                         2)
+        winloadtime = Run.CompareMarkers("load game start", "load game end", 2)
         loadtimeMessage = f"{totalloadtime}s total ({winloadtime}s winner check)"
 
-        self.header = f"Games found in: {self.path} ({msg}) (Load Time: {loadtimeMessage})"
+        self.header = (
+            f"Games found in: {self.path} ({msg}) (Load Time: {loadtimeMessage})"
+        )
         self.dis.SetOptions(options)
 
     def deleteGame(self, _):
@@ -80,13 +86,14 @@ class Menu:
                 "Please enter game number to delete (leave blank to stop): ",
                 self.chk.ModeEnum.int,
                 lower=1,
-                higher=len(self.gameList))
+                higher=len(self.gameList),
+            )
 
             if gameIndex is False:
                 return
 
             game = self.gameList[gameIndex - 1]
-            self.save.RemoveFolder(f'{self.path}/{game}')
+            self.save.RemoveFolder(f"{self.path}/{game}")
             Message.clear()
             self.dis.ShowHeader(text=self.header)
             self.dis.RemoveOption(gameIndex)
@@ -103,24 +110,27 @@ class Menu:
 
         for user in users:
             print({"User": user})
-            ships = self.save.Read(f'{gamePath}/{user}/ships',
-                                   encoding=self.save.encoding.BINARY)
-            shots = self.save.Read(f'{gamePath}/{user}/shots',
-                                   encoding=self.save.encoding.BINARY)
+            ships = self.save.Read(
+                f"{gamePath}/{user}/ships", encoding=self.save.encoding.BINARY
+            )
+            shots = self.save.Read(
+                f"{gamePath}/{user}/shots", encoding=self.save.encoding.BINARY
+            )
 
             if checkInstances(bool, ships, shots):
                 Message.clear(
-                    "Invalid data found! Either the game is not completed or corrupted. Press anything to continue.")
+                    "Invalid data found! Either the game is not completed or corrupted. Press anything to continue."
+                )
                 readchar.readchar()
                 return False
 
             data.append([ships, shots])
 
-        print('-' * shutil.get_terminal_size().columns)
+        print("-" * shutil.get_terminal_size().columns)
         for user in data:
-            print('Ships\t\t\tShots')
+            print("Ships\t\t\tShots")
             Board.MultiBoardDisplay(user[0], user[1])
-            print('-' * shutil.get_terminal_size().columns)
+            print("-" * shutil.get_terminal_size().columns)
 
         print("\n\nPlease press any key when you are ready to move on")
         readchar.readchar()
@@ -129,20 +139,26 @@ class Menu:
     def selectGame(self, _, pos):
         gamePath = f"{self.path}/{self.gameList[pos]}"
 
-        users = self.cln.clean(self.save.ListFolder(gamePath), ['GameData'])
+        users = self.cln.clean(self.save.ListFolder(gamePath), ["GameData"])
 
-        winner = self.save.Read(f'{gamePath}/win')
+        winner = self.save.Read(f"{gamePath}/win")
         if winner is not False:
             Message.clear()
             print(f'{"-" * shutil.get_terminal_size().columns}')
-            print(f'{Fore.GREEN}GAME OVER!!!{Fore.RESET}')
-            print(f'{Fore.CYAN}WINNER:{winner}{Fore.RESET}')
-            return self.chk.getInput("Would you like to view the boards?: ",
-                                     self.chk.ModeEnum.yesno,
-                                     y=self.__ViewBoards, yA=(gamePath, users),
-                                     n=None)
+            print(f"{Fore.GREEN}GAME OVER!!!{Fore.RESET}")
+            print(f"{Fore.CYAN}WINNER:{winner}{Fore.RESET}")
+            return self.chk.getInput(
+                "Would you like to view the boards?: ",
+                self.chk.ModeEnum.yesno,
+                y=self.__ViewBoards,
+                yA=(gamePath, users),
+                n=None,
+            )
 
-        gameResult = Game.Game(self.path, self.gameList[pos]).Main()
+        # gameResult = Game.Game(self.path, self.gameList[pos]).Main()
+        gameResult = newGame.GameLoader(
+            {"path": self.path, "name": self.gameList[pos]}
+        ).main()
         print(gameResult)
         time.sleep(2)
         return None

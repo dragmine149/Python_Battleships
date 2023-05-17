@@ -13,28 +13,33 @@ from Files import Place, newFire, Spectate
 
 class GameLoader:
     def __init__(self, gameInfo: dict) -> None:
-        self.gamePath = gameInfo.get('path')
-        self.gameName = gameInfo.get('name')
+        self.gamePath = gameInfo.get("path")
+        self.gameName = gameInfo.get("name")
 
         self.sv = save()
 
-        self.gameData = save.Read(f'{self.gamePath}/{self.gameName}/GameData',
-                                  self.sv.encoding.BINARY)
-        self.users = self.gameData.get('users')
+        self.gameData = self.sv.Read(
+            f"{self.gamePath}/{self.gameName}/GameData",
+            encoding=self.sv.encoding.BINARY,
+        )
+        self.users = self.gameData.get("users")
         self.chk = Check()
 
     def GetUser(self):
+        Message.clear()
         print("Attempting to get user by account name")
         user = getpass.getuser()
-        result = self.chk.getInput(
-            f'Are you {user}?: ', self.chk.ModeEnum.yesno)
+        result = self.chk.getInput(f"Are you {user}?: ", self.chk.ModeEnum.yesno)
 
         if result:
             return user
 
         result, user = self.chk.getInput(
-            'Please enter your username: ', self.chk.ModeEnum.str,
-            info=self.users, rCheck=True)
+            "Please enter your username: ",
+            self.chk.ModeEnum.str,
+            info=self.users,
+            rCheck=True,
+        )
 
         if result:
             return user
@@ -44,8 +49,11 @@ class GameLoader:
         return False
 
     def Password(self):
-        password = self.gameData.get('password')
-        if compare_digest(password, 'Disabled'):
+        password = self.gameData.get("password")
+        if password is None:
+            return True
+
+        if compare_digest(password, "Disabled"):
             return True
 
         wordInput = getpass.getpass()
@@ -53,9 +61,11 @@ class GameLoader:
 
     def ShipPlacement(self):
         u1P = self.sv.CheckIfExists(
-            f'{self.gamePath}/{self.gameName}/{self.users[0]}/shots')
+            f"{self.gamePath}/{self.gameName}/{self.users[0]}/shots"
+        )
         u2P = self.sv.CheckIfExists(
-            f'{self.gamePath}/{self.gameName}/{self.users[1]}/shots')
+            f"{self.gamePath}/{self.gameName}/{self.users[1]}/shots"
+        )
 
         return [u1P, u2P]
 
@@ -63,7 +73,7 @@ class GameLoader:
         placement = self.ShipPlacement()
 
         if MultiCheck(placement):
-            # Skip each individual placement stuff
+            # Skip each individual placement stuff
             return True
 
         if not placement[0]:
@@ -78,10 +88,13 @@ class GameLoader:
 
     def main(self):
         _ = self.GetUser()
+        print("Loaded user")
         if self.Password():
+            print("Passed Password")
             if self.PlaceShips():
+                print("Passed Placement")
                 return self.Fire()
 
-            return 'Ended during placement'
+            return "Ended during placement"
 
-        return 'Invalid password'
+        return "Invalid password"
