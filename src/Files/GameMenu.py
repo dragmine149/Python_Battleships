@@ -171,10 +171,6 @@ class Menu:
     def main(self, gameIndex: int = None):
         result = None
         while result is None:
-            if gameIndex is not None:
-                result = self.selectGame(None, gameIndex)
-                if result is not None:
-                    return result
             # Reset
             Message.clear()
             self.dis.RemoveAllOptions()
@@ -182,6 +178,11 @@ class Menu:
             # Make Stuff
             self.GetGameInfo()
             self.MakeDisplay()
+
+            if gameIndex is not None:
+                result = self.selectGame(None, gameIndex - 1)
+                if result is not None:
+                    return result
 
             self.dis.ShowHeader(text=self.header)
             result = self.dis.ShowOptions(useList=True)

@@ -60,6 +60,8 @@ class GameLoader:
         return compare_digest(password, wordInput)
 
     def ShipPlacement(self):
+        print("Shipment")
+        print(self.gamePath, self.gameName)
         u1P = self.sv.CheckIfExists(
             f"{self.gamePath}/{self.gameName}/{self.users[0]}/shots"
         )
@@ -72,14 +74,18 @@ class GameLoader:
     def PlaceShips(self):
         placement = self.ShipPlacement()
 
+        print("PLACE")
+        print(placement)
+        print(MultiCheck(placement))
+
         if MultiCheck(placement):
             # Skip each individual placement stuff
             return True
 
         if not placement[0]:
-            Place.Place(self.gamePath, self.users[0]).Main()
+            Place.Place(f"{self.gamePath}/{self.gameName}", self.users[0]).Main()
         if not placement[1]:
-            Place.Place(self.gamePath, self.users[1]).Main()
+            Place.Place(f"{self.gamePath}/{self.gameName}", self.users[1]).Main()
 
         return self.ShipPlacement()
 

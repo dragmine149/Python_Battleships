@@ -20,48 +20,37 @@ def praser():
         args (list): the arguments inputted via command line
     """
     parser = argparse.ArgumentParser(
-        description="Battleships, in python in a python terminal.")
-    parser.add_argument('menu', default=-.5,
-                        help="The menu or game to load",
-                        metavar="Menu / Game Name", nargs='?')
+        description="Battleships, in python in a python terminal."
+    )
+    parser.add_argument(
+        "menu",
+        default=-0.5,
+        help="The menu or game to load",
+        metavar="Menu / Game Name",
+        nargs="?",
+    )
     # Create args
-    createGroup = parser.add_argument_group(
-        'Create', 'Arguments for creating a game')
-    createGroup.add_argument('-c', '--create',
-                             help='Create a game.',
-                             action='store_true')
-    createGroup.add_argument('-cN',
-                             help='Name of the game',
-                             nargs=1,
-                             default=[None],
-                             metavar='Name')
-    createGroup.add_argument('-cU',
-                             help='Name of the users',
-                             nargs=2,
-                             metavar='User')
-    createGroup.add_argument('-cX',
-                             help='X size of the board',
-                             nargs=1,
-                             default=[10],
-                             metavar='Size')
-    createGroup.add_argument('-cY',
-                             help='Y size of the board',
-                             nargs=1,
-                             default=[10],
-                             metavar='Size')
-    createGroup.add_argument('-cM',
-                             help='If multiplayer is enabled',
-                             action='store_true')
-    createGroup.add_argument('-cS',
-                             help='Allow spectators',
-                             action='store_true')
+    createGroup = parser.add_argument_group("Create", "Arguments for creating a game")
+    createGroup.add_argument(
+        "-c", "--create", help="Create a game.", action="store_true"
+    )
+    createGroup.add_argument(
+        "-cN", help="Name of the game", nargs=1, default=[None], metavar="Name"
+    )
+    createGroup.add_argument("-cU", help="Name of the users", nargs=2, metavar="User")
+    createGroup.add_argument(
+        "-cX", help="X size of the board", nargs=1, default=[10], metavar="Size"
+    )
+    createGroup.add_argument(
+        "-cY", help="Y size of the board", nargs=1, default=[10], metavar="Size"
+    )
+    createGroup.add_argument(
+        "-cM", help="If multiplayer is enabled", action="store_true"
+    )
+    createGroup.add_argument("-cS", help="Allow spectators", action="store_true")
     # end create args
-    parser.add_argument('--delete',
-                        help="Delete old game data.",
-                        action='store_true')
-    parser.add_argument('--save',
-                        nargs=1,
-                        help="Overwrite the save location")
+    parser.add_argument("--delete", help="Delete old game data.", action="store_true")
+    parser.add_argument("--save", nargs=1, help="Overwrite the save location")
     args = vars(parser.parse_args())
     return args
 
@@ -74,43 +63,50 @@ def command_options():
     """
     args = praser()
     print(args)
-    if args.get('create'):
-        path = sv.Read('Data/Settings',
-                       encoding=[sv.encoding.JSON,
-                                 sv.encoding.BINARY]).get('path')
+    if args.get("create"):
+        path = sv.Read(
+            "Data/Settings", encoding=[sv.encoding.JSON, sv.encoding.BINARY]
+        ).get("path")
         c = CreateInfo.CreateData(path)
-        c.SetDefaults(args.get('cN')[0],
-                      args.get('cU'),
-                      args.get('cX')[0],
-                      args.get('cY')[0],
-                      args.get('cM'),
-                      args.get('cS'))
+        c.SetDefaults(
+            args.get("cN")[0],
+            args.get("cU"),
+            args.get("cX")[0],
+            args.get("cY")[0],
+            args.get("cM"),
+            args.get("cS"),
+        )
         c.main()
 
-    if args.get('save'):
+    if args.get("save"):
         # Force updates the save location.
-        settings.saveSettings('path', args.get('save')[0])
+        settings.saveSettings("path", args.get("save")[0])
 
-    if args.get('delete'):
+    if args.get("delete"):
+
         def yes():
-            sv.RemoveFolder(['Saves', 'Data'])
-            sys.exit('Deleted old data. Please rerun')
+            sv.RemoveFolder(["Saves", "Data"])
+            sys.exit("Deleted old data. Please rerun")
 
         chk = Check.Check()
-        chk.getInput("Are you sure you want to delete all data?: ",
-                     chk.ModeEnum.yesno, y=yes, n=sys.exit, nA='Aborted!')
+        chk.getInput(
+            "Are you sure you want to delete all data?: ",
+            chk.ModeEnum.yesno,
+            y=yes,
+            n=sys.exit,
+            nA="Aborted!",
+        )
 
-    if args.get('menu') != -0.5:
-        if IsDigit(args.get('menu')):
-            Menu().main(args.get('menu'))
+    if args.get("menu") != -0.5:
+        if IsDigit(args.get("menu")):
+            Menu().main(int(args.get("menu")))
             return
 
-        sys.exit('Invalid game argument')
+        sys.exit("Invalid game argument")
 
 
 class Choices:
-    """Stores information about what each option does
-    """
+    """Stores information about what each option does"""
 
     def activate(self, pos):
         pos = pos[1]
@@ -132,9 +128,9 @@ class Choices:
         return Menu().main()
 
     def makeGame(self):
-        path = sv.Read('Data/Settings',
-                       encoding=[sv.encoding.JSON,
-                                 sv.encoding.BINARY]).get('path')
+        path = sv.Read(
+            "Data/Settings", encoding=[sv.encoding.JSON, sv.encoding.BINARY]
+        ).get("path")
         return CreateInfo.CreateData(path).main()
 
 
@@ -144,21 +140,20 @@ def Main():
     choice = Choices()
 
     # Delete temparary data stored in Saves/.Temp
-    sv.RemoveFolder('Saves/.Temp')
+    sv.RemoveFolder("Saves/.Temp")
 
     # Make setup files
-    sv.MakeFolders('Saves')
-    sv.MakeFolders('Data')
+    sv.MakeFolders("Saves")
+    sv.MakeFolders("Data")
 
     # banner
-    url = LINKCODE(
-        'https://www.github.com/dragmine149/Python_Battleships', 'Github')
+    url = LINKCODE("https://www.github.com/dragmine149/Python_Battleships", "Github")
     info = f"""Python Battleships ({url})
 
 Creator: dragmine149"""
 
     while True:
-        print("\x1b[2J\x1b[H", end='')
+        print("\x1b[2J\x1b[H", end="")
 
         if result == -0.5:
             dis = Display()
