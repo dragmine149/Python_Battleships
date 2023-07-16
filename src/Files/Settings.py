@@ -33,16 +33,12 @@ class Settings:
             {
                 -2: (self.deleteCache, "Delete Cache"),
                 -1: (self.loadFromFile, "Load fron file"),
-                0: (self.back, "Back"),
                 1: (self.changeLocation,
                     f"Change Location (Current: {self.data.get('path')})"),
                 2: (self.changeWait,
                     f"Timeout (Current: {self.data.get('Timeout')})"),
             }
         )
-
-    def back(self, _):
-        return "Returned"
 
     # Changes default location
     def changeLocation(self, _):
@@ -140,4 +136,7 @@ class Settings:
         while result != "Returned":
             Message.clear()
             self.display.ShowHeader(text="Options")
-            result = self.display.ShowOptions(useList=True)
+            self.display.SetQuitMessage("back")
+            result = self.display.ShowOptions(lineLength=1, quitIsBack=True)
+            if result == "back":
+                return "Returned"
