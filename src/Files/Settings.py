@@ -32,11 +32,11 @@ class Settings:
         self.display.SetOptions(
             {
                 -2: (self.deleteCache, "Delete Cache"),
-                -1: (self.loadFromFile, "Load fron file"),
+                -1: (self.loadFromFile, "Load Settings fron file"),
                 1: (self.changeLocation,
-                    f"Change Location (Current: {self.data.get('path')})"),
+                    f"Change Default Save Location (Current: {self.data.get('path')})"),
                 2: (self.changeWait,
-                    f"Timeout (Current: {self.data.get('Timeout')})"),
+                    f"Timeout (New Name needed) (Current: {self.data.get('Timeout')})"),
             }
         )
 
