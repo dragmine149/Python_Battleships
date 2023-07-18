@@ -9,7 +9,8 @@ from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.Watermark import LINKCODE
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
-from PythonFunctions import Board, Message, cursor, SPACE, lenstr, n, clearLine
+from PythonFunctions import Board, Message
+from PythonFunctions.utils import cursor, SPACE, lenstr, n, clearLine
 from Files import ShipInfo
 
 
@@ -79,6 +80,7 @@ class CreateData:
         # Prints off the current settings and what options are alvalible
         print(
             f"""Current Settings:
+
 {self.PrintSetting('Name')}
 {self.PrintSetting('Players')}
 {self.PrintSetting('Size')}
@@ -90,6 +92,7 @@ class CreateData:
         print("-" * shutil.get_terminal_size().columns)
         print(
             """Options:
+
 0: Quit
 1: Game Name
 2: Usernames

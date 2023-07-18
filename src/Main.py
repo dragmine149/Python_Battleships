@@ -5,11 +5,10 @@ from PythonFunctions.IsDigit import IsDigit
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Watermark import LINKCODE
-from Files import Settings, CreateInfo
+from Files import Settings, CreateInfo, CreateInfo2
 from Files.GameMenu import Menu
 
 sv = save()
-# Pre load settings to make sure all the files are there etc...
 settings = Settings.Settings()
 
 
@@ -131,7 +130,8 @@ class Choices:
         path = sv.Read(
             "Data/Settings", encoding=[sv.encoding.JSON, sv.encoding.BINARY]
         ).get("path")
-        return CreateInfo.CreateData(path).main()
+        # return CreateInfo.CreateData(path).main()
+        return CreateInfo2.CreateGame(path).Main()
 
 
 def Main():

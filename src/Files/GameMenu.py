@@ -12,6 +12,7 @@ from PythonFunctions import Run, Board, Message
 
 from Files import Game
 from Files import newGame
+from Files import CreateInfo
 
 
 class Menu:
@@ -77,6 +78,7 @@ class Menu:
         self.header = (
             f"Games found in: {self.path} ({msg}) (Load Time: {loadtimeMessage})"
         )
+
         self.dis.SetOptions(options)
 
     def deleteGame(self, _):
@@ -169,6 +171,7 @@ class Menu:
         self.dis.AddOption((self.deleteGame, "Delete Game"), index=-2)
 
     def main(self, gameIndex: int = None):
+        cg = CreateInfo.CreateData(self.path)
         result = None
         while result is None:
             # Reset
@@ -177,6 +180,19 @@ class Menu:
 
             # Make Stuff
             self.GetGameInfo()
+
+            if len(self.dis.options) == 0:
+                self.dis.AddOption((self.back, "Go back to main menu"), index=0)
+                self.dis.AddOption(
+                    (self.changePath, "Search under a different directory"), index=1
+                )
+                self.dis.AddOption((cg.main, "Create a new game"), index=2)
+
+                self.dis.ShowHeader(
+                    text=f"No games where found under {self.path}. What would you like to do?"
+                )
+                return self.dis.ShowOptions(useList=True)
+
             self.MakeDisplay()
 
             if gameIndex is not None:
