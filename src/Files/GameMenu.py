@@ -12,7 +12,7 @@ from PythonFunctions import Run, Board, Message
 
 from Files import Game
 from Files import newGame
-from Files import CreateInfo
+from Files import CreateInfo2
 
 
 class Menu:
@@ -81,7 +81,7 @@ class Menu:
 
         self.dis.SetOptions(options)
 
-    def deleteGame(self, _):
+    def deleteGame(self):
         gameIndex = None
         while gameIndex != "":
             gameIndex = self.chk.getInput(
@@ -101,10 +101,10 @@ class Menu:
             self.dis.RemoveOption(gameIndex)
             self.dis.ShowOptions(useList=True, requireResult=False)
 
-    def back(self, _):
+    def back(self):
         return "Returned"
 
-    def changePath(self, _):
+    def changePath(self):
         self.path = input("Please enter the new path location: ")
 
     def __ViewBoards(self, gamePath: str, users: typing.List[str]):
@@ -121,7 +121,8 @@ class Menu:
 
             if checkInstances(bool, ships, shots):
                 Message.clear(
-                    "Invalid data found! Either the game is not completed or corrupted. Press anything to continue."
+                    "Invalid data found! Either the game is not completed or corrupted."
+                    " Press anything to continue."
                 )
                 readchar.readchar()
                 return False
@@ -166,12 +167,12 @@ class Menu:
         return None
 
     def MakeDisplay(self):
-        self.dis.AddOption((self.back, "Back"), index=0)
-        self.dis.AddOption((self.changePath, "Change Path"), index=-1)
-        self.dis.AddOption((self.deleteGame, "Delete Game"), index=-2)
+        self.dis.AddOption(self.back, "Back", index=0)
+        self.dis.AddOption(self.changePath, "Change Path", index=-1)
+        self.dis.AddOption(self.deleteGame, "Delete Game", index=-2)
 
     def main(self, gameIndex: int = None):
-        cg = CreateInfo.CreateData(self.path)
+        cg = CreateInfo2.CreateData(self.path)
         result = None
         while result is None:
             # Reset
@@ -182,14 +183,17 @@ class Menu:
             self.GetGameInfo()
 
             if len(self.dis.options) == 0:
-                self.dis.AddOption((self.back, "Go back to main menu"), index=0)
+                self.dis.AddOption(self.back, "Go back to main menu", index=0)
                 self.dis.AddOption(
-                    (self.changePath, "Search under a different directory"), index=1
+                    self.changePath, "Search under a different directory", index=1
                 )
-                self.dis.AddOption((cg.main, "Create a new game"), index=2)
+                self.dis.AddOption(cg.main, "Create a new game", index=2)
 
                 self.dis.ShowHeader(
-                    text=f"No games where found under {self.path}. What would you like to do?"
+                    text=(
+                        f"No games where found under {self.path}. What would you like"
+                        " to do?"
+                    )
                 )
                 return self.dis.ShowOptions(useList=True)
 

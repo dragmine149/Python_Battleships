@@ -5,7 +5,7 @@ from PythonFunctions.IsDigit import IsDigit
 from PythonFunctions.Save import save
 from PythonFunctions.TerminalDisplay import Display
 from PythonFunctions.Watermark import LINKCODE
-from Files import Settings, CreateInfo, CreateInfo2
+from Files import Settings, CreateInfo2
 from Files.GameMenu import Menu
 
 sv = save()
@@ -66,7 +66,7 @@ def command_options():
         path = sv.Read(
             "Data/Settings", encoding=[sv.encoding.JSON, sv.encoding.BINARY]
         ).get("path")
-        c = CreateInfo.CreateData(path)
+        c = CreateInfo2.CreateGame(path)
         c.SetDefaults(
             args.get("cN")[0],
             args.get("cU"),
@@ -75,7 +75,7 @@ def command_options():
             args.get("cM"),
             args.get("cS"),
         )
-        c.main()
+        c.Main()
 
     if args.get("save"):
         # Force updates the save location.
@@ -130,7 +130,6 @@ class Choices:
         path = sv.Read(
             "Data/Settings", encoding=[sv.encoding.JSON, sv.encoding.BINARY]
         ).get("path")
-        # return CreateInfo.CreateData(path).main()
         return CreateInfo2.CreateGame(path).Main()
 
 

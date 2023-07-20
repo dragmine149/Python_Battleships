@@ -6,15 +6,24 @@ import random
 from PythonFunctions.CleanFolderData import Clean
 from PythonFunctions.utils import n
 from PythonFunctions.Save import save
+from PythonFunctions.IsDigit import IsDigit
+from PythonFunctions.Check import Check
 
 
 class GameChecks:
-    def __init__(self, Location) -> None:
+    def __init__(self, Location, p1) -> None:
         self.cln = Clean()
         self.Location = Location
+        self.p1 = p1
         self.sv = save()
+        self.chk = Check()
 
     def __Forbidden(self, value: str) -> bool:
+        # blank check
+        if value == "":
+            return True
+
+        # actuall forbidden check
         return re.search(r'[\\/:*?"<>|]', value)
 
     def __getGameList(self, Location):
@@ -23,7 +32,7 @@ class GameChecks:
     def name(self, value: str = None):
         # Invalid Character Check
         if self.__Forbidden(value):
-            return "Invalid Characters!"
+            return "Invalid Characters"
 
         if value not in self.__getGameList(self.Location):
             return value
@@ -32,50 +41,77 @@ class GameChecks:
         for _ in range(10):
             randomEnd += random.choice(string.ascii_letters)
 
-        return "Exists", f"{value}_{randomEnd}"
+        return f"{value}_{randomEnd}"
 
-    def username(self, value, index, *, pre=None):
-        end = ""
-        if index == 1:
-            end += "(2)"
+    def P1(self, value: str):
+        if self.__Forbidden(value):
+            return "Invalid Characters"
+
+        if value.lower() == "me":
+            self.p1 = getpass.getuser()
+            return getpass.getuser()
+
+        self.p1 = value
+        return value
+
+    def P2(self, value):
+        end = "(2)"
 
         if self.__Forbidden(value):
-            return "Invalid Characters!"
+            return "Invalid Characters"
 
-        if value == "me":
-            return getpass.getuser() + end
+        if value.lower() == "me":
+            value = getpass.getuser()
 
-        if index == 1 and pre == value:
-            return pre + end
+        if value == self.p1:
+            return value + " " + end
+
+        return value
 
     def sizeX(self, value):
-        if value > 5:
+        if not IsDigit(value):
+            return "NAN"
+
+        value = int(value)
+        if value >= 5:
             return n(value, value, str(value))
+
         return "Low"
 
     def sizeY(self, value):
-        if value > 5:
+        if not IsDigit(value):
+            return "NAN"
+
+        value = int(value)
+        if value >= 5:
             return n(value, value, str(value))
+
         return "Low"
 
     def save(self, value):
         if value == "~/r!":
-            return None
+            return "Return"
 
         try:
             self.sv.Write("test", f"{value}/Battleship.test")
             self.sv.RemoveFile(f"{value}/Battleship.test")
         except (FileNotFoundError, OSError):
-            return "No permission to write"
+            return "NPTW"
 
         self.Location = value
         return value
 
     def multiplayer(self, value):
-        if self.Location == "Saves":
+        if value is False:
             return False
 
-        return n(value, "yes", v2="no")
+        if self.Location == "Saves":
+            return "DSL"
+
+        if value == "True":
+            return True
+
+        return self.chk.getInput("", self.chk.ModeEnum.yesno, vCheck=value)
 
     def Spectate(self, value):
         return n(value, "yes", "no")
@@ -85,7 +121,7 @@ class GameChecks:
             return "Forbidden Characters"
 
         if value.rstrip() == "":
-            return None
+            return "Empty Password"
 
         check = None
         while check is None:
@@ -97,17 +133,21 @@ class GameChecks:
                     return value
                 check = None
             except KeyboardInterrupt:
-                return None
+                return "Retry"
+
+        return "Retry"
 
     def Translate(self, option, value, *, userIndex=None, PreviousUser=None):
         match option:
             case "Name":
                 return self.name(value)
-            case "Players":
-                return self.username(value, index=userIndex, pre=PreviousUser)
-            case "SizeX":
+            case "P1":
+                return self.P1(value)
+            case "P2":
+                return self.P2(value)
+            case "X":
                 return self.sizeX(value)
-            case "SizeY":
+            case "Y":
                 return self.sizeY(value)
             case "Location":
                 return self.save(value)
