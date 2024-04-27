@@ -17,6 +17,7 @@ class GameLoader:
         self.gameName = gameInfo.get("name")
 
         self.sv = save()
+        self.gi = gameInfo
 
         self.gameData = self.sv.Read(
             f"{self.gamePath}/{self.gameName}/GameData",
@@ -56,6 +57,9 @@ class GameLoader:
         if compare_digest(password, "Disabled"):
             return True
 
+        if compare_digest(password, ""):
+            return True
+
         wordInput = getpass.getpass()
         return compare_digest(password, wordInput)
 
@@ -90,7 +94,10 @@ class GameLoader:
         return self.ShipPlacement()
 
     def Fire(self):
-        pass
+        import ipdb
+
+        ipdb.set_trace()
+        newFire.Fire(self.gi, self.users).Fire()
 
     def main(self):
         _ = self.GetUser()

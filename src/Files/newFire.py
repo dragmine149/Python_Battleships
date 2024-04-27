@@ -1,7 +1,10 @@
+import colorama
 import os
 
+from PythonFunctions.Check import Check
+from PythonFunctions.Convert import Location
 from PythonFunctions.Save import save
-from PythonFunctions import Message
+from PythonFunctions import Message, Board, Colours
 from Files import ShipInfo
 
 
@@ -10,11 +13,16 @@ class Fire:
     gameInfo -> Contains data about the game
     userInfo -> Contains user data [fire, target]
     """
+
     def __init__(self, gameInfo, userInfo, localUser=None):
-        self.save = save()
-        
+        self.sv = save()
+        self.ck = Check()
+
         # Loads information
         self.gameInfo = gameInfo
+        self.gameFolder = os.path.join(
+            self.gameInfo.get("path"), self.gameInfo.get("name")
+        )
         self.userInfo = userInfo
         self.localUser = localUser
         self.ships = ShipInfo.shipInfo(ShipInfo.getShips()).Main()
@@ -32,91 +40,77 @@ class Fire:
 
     def __RetrieveBoards(self):
         # Even more information
-        print({"Path": self.gameInfo[1]})
-        self.gameData = Save.save({
-            'path': self.gameInfo[1]
-        })
+
+        self.gameData = self.sv.Read(
+            os.path.join(self.gameFolder, "GameData"), encoding=self.sv.encoding.BINARY
+        )
         # Paths for each individual users.
-    
-        user1 = Save.save({
-            'path': os.path.join(self.gameInfo[1], self.userInfo[0])
-        })
-        user2 = Save.save({
-            'path': os.path.join(self.gameInfo[1], self.userInfo[1])
-        })
-    
-        self.userData = [user1, user2]
 
         self.userBoards = [
             [
-                user1.readFile("shots"),
-                user1.readFile("ships"),
+                self.sv.Read(
+                    os.path.join(self.gameFolder, self.userInfo[0], "shots"),
+                    encoding=self.sv.encoding.BINARY,
+                ),
+                self.sv.Read(
+                    os.path.join(self.gameFolder, self.userInfo[0], "ships"),
+                    encoding=self.sv.encoding.BINARY,
+                ),
             ],
             [
-                user2.readFile("shots"),
-                user2.readFile("ships"),
-            ]
+                self.sv.Read(
+                    os.path.join(self.gameFolder, self.userInfo[1], "shots"),
+                    encoding=self.sv.encoding.BINARY,
+                ),
+                self.sv.Read(
+                    os.path.join(self.gameFolder, self.userInfo[1], "ships"),
+                    encoding=self.sv.encoding.BINARY,
+                ),
+            ],
         ]
 
     def __Display(self):
         # Prints out the display, contains the user and boards.
-        Functions.clear()
-        print("{}{}{}'s turn to shoot\n".format(
-            colours.c(self.userColours[self.turnIndex]),
-            self.turn,
-            colours.c()))
+        Message.clear()
+        print(f"{self.turn}'s turn to shoot!\n")
 
         # Cool feature so if you are playing on two different devices
         # you can see where your ships are as well.
         if self.multiplayer != "n":
             localIndex = self.userInfo.index(self.localUser)
             localOpponentIndex = 0 if localIndex == 1 else 1
-            boards = [self.userBoards[localIndex][0],
-                      self.userBoards[localIndex][1],
-                      self.userBoards[localOpponentIndex][0]]
-            Text = [
-                'Your shots',
-                'Your ships'
+            boards = [
+                self.userBoards[localIndex][0],
+                self.userBoards[localIndex][1],
+                self.userBoards[localOpponentIndex][0],
             ]
-            Functions.board.MultiDisplay(boards, Text)  # noqa E501
+            Text = ["Your shots", "Your ships"]
+            Board.MultiBoardDisplay(boards, Text)
         else:
-            boards = [self.userBoards[self.turnIndex][0],
-                      self.userBoards[self.opponentTurnIndex][0]]
-            Text = [self.userInfo[self.turnIndex] + "'s board",
-                    self.userInfo[self.opponentTurnIndex] + "'s board"]
-            Functions.board.MultiDisplay(boards, Text)
+            boards = [
+                self.userBoards[self.turnIndex][0],
+                self.userBoards[self.opponentTurnIndex][0],
+            ]
+            Text = [
+                self.userInfo[self.turnIndex] + "'s board",
+                self.userInfo[self.opponentTurnIndex] + "'s board",
+            ]
+            Board.MultiBoardDisplay(boards, Text)
 
     def __Clear(self, msg):
-        Functions.clear(1, msg)
+        Message.clear(msg, timeS=1)
         self.__Display()
 
     def __Shot(self):
         takenShot = False
         while not takenShot:
             # get input from user
-            shotPosition = input("Please enter position to shoot (0 = quit): ")
-            if shotPosition == '' or shotPosition is None:
-                # No input test
-                continue
-
-            if shotPosition[0].lower() == "0":
-                # Quit test
-                return False
-
-            # converts to []
-            x, y = Functions.LocationConvert(shotPosition).Convert()
-            if x is None or y is None:  # checks if invalid
-                self.__Clear("Please enter a valid input!")
-                continue
-
-            # off board checks (too big to be on board)
-            if x >= self.game["size"][0]:
-                self.__Clear("X coordinate is not on the board!")
-                continue
-
-            if y >= self.game["size"][1]:
-                self.__Clear("Y coordinate is not on the board!")
-                continue
+            x, y = self.ck.getInput(
+                "Please enter position to shoot (0 = quit): ",
+                self.ck.ModeEnum.location,
+                x=self.game["size"][0],
+                y=self.game["size"][1],
+            )
 
             # Already shot check. (Can't fire twice in the same spot)
             if self.userBoards[self.turnIndex][0][y][x] != "-":
@@ -126,17 +120,34 @@ class Fire:
             # Hit miss check
             if self.userBoards[self.opponentTurnIndex][1][y][x] != "-":
                 self.userBoards[self.turnIndex][0][y][x] = "X"
-                Functions.Print("HIT!", "green", "bold")
+                print(
+                    Colours.Translate(
+                        f"{colorama.Fore.GREEN}HIT!{colorama.Fore.RESET}",
+                        Colours.Format.BOLD,
+                    )
+                )
+
             else:
                 self.userBoards[self.turnIndex][0][y][x] = "+"
-                Functions.Print("Miss :(", "red", "bold")
+                print(
+                    Colours.Translate(
+                        f"{colorama.Fore.RED}Miss :({colorama.Fore.RESET}",
+                        Colours.Format.BOLD,
+                    )
+                )
 
             # Saving data...
             takenShot = True
-            self.userData[0].writeFile(
-                self.userBoards[0][0], "shots")
-            self.userData[1].writeFile(
-                self.userBoards[1][0], "shots")
+            self.sv.Write(
+                self.userBoards[0][0],
+                os.path.join(self.gameFolder, self.userInfo[0], "shots"),
+                encoding=self.sv.encoding.BINARY,
+            )
+            self.sv.Write(
+                self.userBoards[1][0],
+                os.path.join(self.gameFolder, self.userInfo[1], "shots"),
+                encoding=self.sv.encoding.BINARY,
+            )
 
             self.game["turn"] = self.userInfo[self.opponentTurnIndex]
 
@@ -168,7 +179,7 @@ class Fire:
         for ship in ships:
             for y in range(len(self.userBoards[self.turnIndex][0])):
                 for x in range(len(self.userBoards[self.turnIndex][0][y])):
-                    colour = ship.Colour + ship.Symbol + colours.c()
+                    colour = ship.Colour + ship.Symbol + colorama.Style.RESET_ALL
 
                     if BIV[0][y][x] == "X" and OIV[1][y][x] == colour:
                         ship.Health -= 1
@@ -180,18 +191,26 @@ class Fire:
 
         # if more (how) or equal are destroyed, end
         if destroyedAmount >= len(ships):
-            Functions.clear()
+            Message.clear()
             winner = self.userInfo[self.turnIndex]
             looser = self.userInfo[self.opponentTurnIndex]
-            Functions.clear(2, "GG! {} has beaten {}".format(winner, looser))
-            self.gameData.writeFile(self.game, "GameData")
-            self.gameData.writeFile({
-                'win': self.userInfo[self.turnIndex]
-                }, 'win')
+            Message.clear(f"GG! {winner} has beaten {looser}", timeS=2)
+
+            self.sv.Write(
+                self.game,
+                os.path.join(self.gameFolder, "GameData"),
+                encoding=self.sv.encoding.BINARY,
+            )
+            self.sv.Write(
+                {"win": self.userInfo[self.turnIndex]},
+                os.path.join(self.gameFolder, "win"),
+                encoding=self.sv.encoding.BINARY,
+            )
+
             return True
 
         if not winCheck:
-            Functions.clear(2, destroyedText)
+            Message.clear(destroyedText, timeS=2)
 
     def Fire(self):
         # Main game loop
@@ -199,31 +218,35 @@ class Fire:
         while game:
             # This is something we want to avoid really,
             # clearing every loop and recalling data again.
-            Functions.clear()
+            Message.clear()
 
             # Shows the display
             self.__Display()
 
-            if self.multiplayer != 'n':
-                
-                winner = self.gameData.CheckForFile('win')
+            if self.multiplayer != "n":
+                winner = self.gameData.CheckForFile("win")
                 if winner:
-                    winner = self.gameData.readFile('win')['win']
+                    winner = self.gameData.readFile("win")["win"]
                     winnerIndex = self.userInfo.index(winner)
                     looserIndex = 0 if winnerIndex == 1 else 1
-                    Functions.clear(2, "GG! {} has beaten {}".format(self.userInfo[winnerIndex], self.userInfo[looserIndex]))
+                    Message.clear(
+                        (
+                            f"GG! {self.userInfo[winnerIndex]} has beaten"
+                            f" {self.userInfo[looserIndex]}"
+                        ),
+                        timeS=2,
+                    )
                     return "Game Over"
                 # Multiplayer loop
                 if self.turn == self.localUser:  # if current turn, shoot fine.
                     result = self.__Shot()
                     if result is False:
                         return
-                else:  # else wait for instructions
-                    msg = "Waiting for {} to shoot".format(
-                        self.userInfo[self.turnIndex])
-                    returnValue = Functions.waiting(msg)
-                    if returnValue == "Back":
-                        return "Stopped whilst shooting."
+                # else:  # else wait for instructions
+                # msg = f"Waiting for {self.userInfo[self.turnIndex]} to shoot"
+                # returnValue = Functions.waiting(msg)
+                # if returnValue == "Back":
+                #     return "Stopped whilst shooting."
 
                 # Checks if game has already been won (completed.) (TODO)
                 # self.WinGame(True)

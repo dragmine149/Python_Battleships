@@ -1,18 +1,13 @@
 import getpass
-import shutil
-import string
 import random
-import re
 
 from colorama import Fore
 from PythonFunctions.CleanFolderData import Clean
-from PythonFunctions.PrintTraceback import PrintTraceback
 from PythonFunctions.TerminalDisplay import Display
-from PythonFunctions.Watermark import LINKCODE
 from PythonFunctions.Check import Check
 from PythonFunctions.Save import save
 from PythonFunctions import Board, Message
-from PythonFunctions.utils import cursor, SPACE, lenstr, n, clearLine, passOrInput
+from PythonFunctions.utils import passOrInput
 from Files import ShipInfo, CreateChecks
 
 
@@ -137,7 +132,7 @@ class CreateGame:
                     " enabled"
                 )
                 uI = None
-                continue
+                return
 
             if nuI == "Empty Password":
                 print("You entered no password. Please enter a password")
@@ -283,7 +278,7 @@ class CreateGame:
         )
         self.display.AddOption(
             self.ChangeValue,
-            f"Multiplayer: {self.__getValue('Multiplayer', c=True)}",
+            f"Online Multiplayer: {self.__getValue('Multiplayer', c=True)}",
             args="Multiplayer",
         )
         # self.display.AddOption(self.ChangeValue, "Spectate", args="Spectate")

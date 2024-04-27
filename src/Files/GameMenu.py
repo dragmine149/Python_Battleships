@@ -1,3 +1,5 @@
+import datetime as dt
+import os
 import time
 import shutil
 import typing
@@ -27,6 +29,7 @@ class Menu:
         ).get("path")
         self.header = None
         self.gameList = []
+        self.gameInfo = False
 
     def GetGameInfo(self):
         Run.Mark("get game start")
@@ -60,10 +63,31 @@ class Menu:
             timeDiff = Run.CompareMarkers("win check", "win check end", 2)
             loadtimeMsg = f"({timeDiff}s winner check time)"
 
+            Run.Mark("Info Time start")
+            info = ""
+            if self.gameInfo:
+                ctime = os.path.getctime(f"{self.path}/{game}")
+                cdt = dt.datetime.fromtimestamp(ctime)
+                info = (
+                    Fore.CYAN
+                    + "[Created:"
+                    f" {cdt.day}/{cdt.month}/{cdt.year} {cdt.hour}:{cdt.minute}:{cdt.second}]"
+                    + Fore.RESET
+                )
+            Run.Mark("info time end")
+
+            if self.gameInfo:
+                info += (
+                    Fore.CYAN
+                    + " [Info Load Time:"
+                    f" {Run.CompareMarkers('Info Time start', 'info time end', 2)}s]"
+                    + Fore.RESET
+                )
+
             # the overall message of that row.
             options[gameIndex + 1] = (
                 self.selectGame,
-                f"{game} {completed} {loadtimeMsg}",
+                f"{game} {completed} {info} {loadtimeMsg}",
                 gameIndex,
             )
 
@@ -166,13 +190,17 @@ class Menu:
         time.sleep(2)
         return None
 
+    def MoreInfo(self):
+        self.gameInfo = not self.gameInfo
+
     def MakeDisplay(self):
         self.dis.AddOption(self.back, "Back", index=0)
         self.dis.AddOption(self.changePath, "Change Path", index=-1)
         self.dis.AddOption(self.deleteGame, "Delete Game", index=-2)
+        self.dis.AddOption(self.MoreInfo, "More Information", index=-3)
 
     def main(self, gameIndex: int = None):
-        cg = CreateInfo2.CreateData(self.path)
+        cg = CreateInfo2.CreateGame(self.path)
         result = None
         while result is None:
             # Reset
